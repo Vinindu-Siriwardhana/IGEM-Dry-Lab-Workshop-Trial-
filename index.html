@@ -1,0 +1,1936 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Wound Patch Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --ground:#EDF2F0; --surface:#FFFFFF; --surface-2:#E2EAE7; --ink:#10201B; --ink-2:#4A5D57; --line:#C9D6D1;
+  --gel:#0F8577; --gel-soft:#CDEBE6; --gel-ink:#FFFFFF;
+  --wound:#C94A35; --wound-soft:#F6DAD3;
+  --gas:#B97C0B; --gas-soft:#F5E5C0;
+  --bact:#44902A; --bact-soft:#D9EDCF;
+  --tissue:#F2C9BC; --tissue-2:#E7B2A2;
+  --focus:#1D5FD6;
+  --shadow:0 1px 2px rgba(16,32,27,.06),0 8px 24px rgba(16,32,27,.08);
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --hdr:64px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1513; --surface:#14201D; --surface-2:#1B2A26; --ink:#E2EDE9; --ink-2:#9BB0A9; --line:#2B3D38;
+    --gel:#38C0AF; --gel-soft:#123A35; --gel-ink:#06201C;
+    --wound:#EE7A63; --wound-soft:#3B1E18;
+    --gas:#E4AE3E; --gas-soft:#382C10;
+    --bact:#7CC75A; --bact-soft:#1B3216;
+    --tissue:#5A3129; --tissue-2:#6E3C32;
+    --focus:#7FA8FF;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1513; --surface:#14201D; --surface-2:#1B2A26; --ink:#E2EDE9; --ink-2:#9BB0A9; --line:#2B3D38;
+  --gel:#38C0AF; --gel-soft:#123A35; --gel-ink:#06201C;
+  --wound:#EE7A63; --wound-soft:#3B1E18;
+  --gas:#E4AE3E; --gas-soft:#382C10;
+  --bact:#7CC75A; --bact-soft:#1B3216;
+  --tissue:#5A3129; --tissue-2:#6E3C32;
+  --focus:#7FA8FF;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 24px)}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);line-height:1.08;text-wrap:balance;margin:0;letter-spacing:-.01em}
+p{margin:0}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- header ---------- */
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in oklab,var(--ground) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hdr-in{max-width:1280px;margin:0 auto;padding-inline:20px;height:var(--hdr);display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:19px;white-space:nowrap;text-decoration:none;color:var(--ink)}
+.brand-mark{width:28px;height:28px;border-radius:8px;background:var(--gel);position:relative;overflow:hidden;flex:none}
+.brand-mark::before,.brand-mark::after{content:"";position:absolute;left:0;right:0;height:3px;background:var(--gel-soft);opacity:.7}
+.brand-mark::before{top:9px}.brand-mark::after{top:17px}
+.progress{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;padding-block:4px}
+.progress::-webkit-scrollbar{display:none}
+.pchip{flex:none;min-width:34px;height:34px;padding:0 10px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);display:inline-flex;align-items:center;justify-content:center;gap:5px;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-2);transition:background .25s,border-color .25s,color .25s,transform .25s}
+.pchip svg{width:12px;height:12px}
+.pchip[aria-disabled="true"]{opacity:.55;cursor:not-allowed;background:transparent}
+.pchip.done{background:var(--gel-soft);border-color:var(--gel);color:var(--ink)}
+.pchip.current{background:var(--ink);border-color:var(--ink);color:var(--ground);transform:translateY(-1px)}
+.hdr-actions{display:flex;gap:8px;flex:none}
+.ghost{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 12px;font-size:14px;font-weight:700}
+.ghost:hover{border-color:var(--ink-2)}
+.nb-toggle{display:none;gap:6px}
+.scrollbar{position:absolute;left:0;bottom:-1px;height:3px;background:var(--gel);width:calc(var(--sp,0)*100%);transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.shell{max-width:1280px;margin:0 auto;padding-inline:20px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:36px;padding-block:28px 120px}
+main{min-width:0;display:flex;flex-direction:column;gap:28px}
+
+/* ---------- mission ---------- */
+.mission{position:relative}
+.m-top{padding-block:28px 12px;display:grid;gap:18px;max-width:760px}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--gel);font-weight:700}
+.m-title{font-size:clamp(40px,6.4vw,76px);font-weight:800}
+.m-title em{font-style:normal;color:var(--gel);position:relative;white-space:nowrap}
+.m-lede{font-size:clamp(18px,2vw,21px);color:var(--ink-2);max-width:62ch}
+.m-meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--ink-2)}
+.m-meta b{color:var(--ink)}
+.story{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:32px;margin-top:12px}
+.beats{display:flex;flex-direction:column;gap:0;padding-block:6vh 10vh}
+.beat{min-height:58vh;display:flex;flex-direction:column;justify-content:center;gap:10px;opacity:.38;transition:opacity .45s,transform .45s;transform:translateX(-6px)}
+.beat.on{opacity:1;transform:none}
+.beat .tag{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.beat h3{font-size:clamp(24px,2.8vw,32px);font-weight:700}
+.beat p{color:var(--ink-2);max-width:44ch}
+.beat .sci{margin-top:4px}
+.stage-wrap{position:sticky;top:calc(var(--hdr) + 24px);height:min(560px,calc(100vh - var(--hdr) - 48px));align-self:start}
+.stage{position:relative;width:100%;height:100%;background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}
+.stage canvas{display:block;width:100%;height:100%}
+.stage-cap{position:absolute;left:16px;top:14px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink-2);letter-spacing:.06em;text-transform:uppercase;background:color-mix(in oklab,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px}
+.mission-go{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:8px 20px}
+
+/* ---------- buttons ---------- */
+.btn{border:0;border-radius:12px;padding:12px 20px;font-weight:700;font-size:16px;background:var(--ink);color:var(--ground);display:inline-flex;align-items:center;gap:8px;transition:transform .15s,box-shadow .2s,background .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn:active{transform:translateY(1px)}
+.btn.gel{background:var(--gel);color:var(--gel-ink)}
+.btn.soft{background:var(--surface-2);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.big{padding:15px 26px;font-size:18px;border-radius:14px}
+.choice{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 14px;font-weight:700;text-align:left;transition:border-color .2s,background .2s,transform .15s}
+.choice:hover{border-color:var(--ink-2)}
+.choice[aria-pressed="true"]{border-color:var(--ink);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--ink)}
+.choice.good{border-color:var(--gel);background:var(--gel-soft);box-shadow:inset 0 0 0 1px var(--gel)}
+.choice.meh{border-color:var(--gas);background:var(--gas-soft)}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.kbd-hint{font-size:13px;color:var(--ink-2)}
+
+/* ---------- steps ---------- */
+.step{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px clamp(18px,3vw,34px) 26px;box-shadow:var(--shadow);transition:opacity .5s,filter .5s,transform .6s cubic-bezier(.2,.7,.2,1)}
+.step.locked{opacity:.55;filter:saturate(.3);box-shadow:none;background:transparent;border-style:dashed}
+.step.locked > .step-body,.step.locked > .step-foot{pointer-events:none;user-select:none;max-height:240px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 20%,transparent);mask-image:linear-gradient(#000 20%,transparent)}
+.step.unlocking{animation:unlock .8s cubic-bezier(.2,.7,.2,1)}
+@keyframes unlock{0%{transform:scale(.985);box-shadow:0 0 0 0 color-mix(in oklab,var(--gel) 40%,transparent)}60%{box-shadow:0 0 0 12px color-mix(in oklab,var(--gel) 0%,transparent)}100%{transform:none}}
+.lock-veil{display:none;position:absolute;left:50%;top:110px;transform:translateX(-50%);z-index:3;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px;color:var(--ink-2);white-space:nowrap;box-shadow:var(--shadow);align-items:center;gap:8px}
+.lock-veil svg{width:14px;height:14px}
+.step.locked .lock-veil{display:inline-flex}
+.step-head{display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:start;margin-bottom:20px}
+.step-no{grid-column:1/-1;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gel);display:flex;align-items:center;gap:10px}
+.step-no .t{color:var(--ink-2);font-weight:500;letter-spacing:0;text-transform:none}
+.step-done-pill{display:none;background:var(--gel-soft);color:var(--ink);border-radius:999px;padding:2px 10px;font-size:12px;letter-spacing:.02em}
+.step.done .step-done-pill{display:inline-block}
+.step h2{font-size:clamp(26px,3.2vw,36px);font-weight:800}
+.step .lede{grid-column:1;color:var(--ink-2);max-width:62ch;margin-top:4px}
+.hint-btn{grid-row:2;grid-column:2;align-self:start}
+.step-body{display:flex;flex-direction:column;gap:18px}
+.step-foot{display:flex;flex-direction:column;gap:14px;margin-top:20px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+.panel{background:var(--surface-2);border-radius:16px;padding:16px}
+.label{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+.canvas-box{position:relative;background:var(--ground);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.canvas-box canvas{display:block;width:100%;height:100%}
+.say{font-size:16px;padding:12px 14px;border-radius:12px;background:var(--surface-2);border-left:0;display:flex;gap:10px;align-items:flex-start;animation:pop .35s cubic-bezier(.2,.8,.2,1.2)}
+.say.good{background:var(--gel-soft)}
+.say.warn{background:var(--gas-soft)}
+.say.bad{background:var(--wound-soft)}
+.say .ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:var(--surface);font-family:var(--mono)}
+@keyframes pop{from{transform:translateY(6px) scale(.98);opacity:.2}to{transform:none;opacity:1}}
+
+/* discover + badge */
+.discover{border:2px solid var(--gel);border-radius:16px;padding:16px 18px;display:grid;gap:10px;background:linear-gradient(135deg,var(--gel-soft),var(--surface) 70%);animation:pop .5s cubic-bezier(.2,.8,.2,1.1)}
+.discover .k{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gel)}
+.discover .rule{font-family:var(--display);font-size:clamp(20px,2.4vw,26px);font-weight:700;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tile{display:inline-block;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;animation:snap .5s cubic-bezier(.3,1.5,.5,1) both}
+.tile.m{border-color:var(--bact);color:var(--bact)}
+.tile.l{border-color:var(--wound);color:var(--wound)}
+.tile.o{border:0;background:transparent;padding:4px 2px}
+@keyframes snap{from{transform:translateY(-18px) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+.sci{display:inline-flex;align-items:center;gap:8px;font-size:14px;border:1px dashed var(--ink-2);border-radius:999px;padding:4px 12px 4px 6px;color:var(--ink-2);width:max-content;max-width:100%;animation:pop .5s}
+.sci b{color:var(--ink)}
+.sci .flask{width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--ground);display:grid;place-items:center;font-size:11px;font-family:var(--mono);font-weight:700}
+.next-btn{align-self:flex-start}
+.why{display:grid;gap:10px}
+
+/* ---------- step 1 sort ---------- */
+.deck{display:flex;flex-wrap:wrap;gap:10px;min-height:58px;padding:10px;border-radius:14px;background:var(--surface-2)}
+.card{touch-action:none;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 14px;font-weight:700;font-size:15px;box-shadow:0 2px 0 var(--line);user-select:none;display:inline-flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .2s,border-color .2s}
+.card .grip{width:8px;height:14px;background:radial-gradient(circle,var(--ink-2) 1.2px,transparent 1.5px) 0 0/4px 4.6px;opacity:.6}
+.card[aria-pressed="true"]{border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in oklab,var(--focus) 30%,transparent);transform:translateY(-2px)}
+.card.dragging{position:fixed;z-index:100;pointer-events:none;transform:rotate(-3deg) scale(1.04);box-shadow:var(--shadow)}
+.card.placed{box-shadow:none;cursor:default}
+.card.bounce{animation:bounce .5s}
+@keyframes bounce{0%,100%{transform:none}25%{transform:translateX(-8px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
+.bins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.bin{border:2px dashed var(--line);border-radius:16px;padding:12px;min-height:150px;display:flex;flex-direction:column;gap:8px;background:transparent;text-align:left;transition:border-color .2s,background .2s}
+.bin h4{margin:0;font-family:var(--display);font-size:18px;display:flex;align-items:center;gap:8px}
+.bin .sym{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-family:var(--mono);font-weight:800;color:var(--surface)}
+.bin[data-bin="add"] .sym{background:var(--bact)}
+.bin[data-bin="remove"] .sym{background:var(--wound)}
+.bin[data-bin="none"] .sym{background:var(--ink-2)}
+.bin.over,.bin.armed{border-color:var(--focus);background:color-mix(in oklab,var(--focus) 7%,transparent)}
+.bin .slot{display:flex;flex-direction:column;gap:6px}
+
+/* tank */
+.tank-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px}
+.readout{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:var(--surface-2);border-radius:12px;padding:8px 12px;min-width:92px}
+.stat .v{font-family:var(--mono);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat .l{font-size:12px;color:var(--ink-2);font-weight:700}
+.stat.m .v{color:var(--bact)}.stat.l2 .v{color:var(--wound)}.stat.g .v{color:var(--gel)}
+.seq{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-family:var(--mono);font-size:18px;font-weight:700;min-height:36px}
+.seq span{background:var(--surface-2);border-radius:8px;padding:2px 9px;animation:pop .3s}
+.seq span.neg{background:var(--wound);color:var(--surface)}
+.seq i{color:var(--ink-2);font-style:normal;font-weight:400}
+.flash{animation:flash .9s 2}
+@keyframes flash{50%{box-shadow:0 0 0 4px var(--wound);background:var(--wound-soft)}}
+
+/* table step 4 */
+.calc-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.calc-table th{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);text-align:left;padding:6px 8px;border-bottom:1.5px solid var(--line)}
+.calc-table td{padding:6px 8px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:16px}
+.calc-table input{width:96px;border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface);font-family:var(--mono)}
+.calc-table input.ok{border-color:var(--gel);background:var(--gel-soft)}
+.calc-table input.try{border-color:var(--gas)}
+.table-scroll{overflow-x:auto}
+.curve-picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.curve-picks .choice{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.curve-picks svg{width:100%;height:46px}
+.curve-picks path{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:70px 1fr 56px;gap:10px;align-items:center;font-size:14px;font-weight:700}
+.bar .track{height:14px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+.bar .fill{height:100%;border-radius:999px;transition:width .25s}
+.bar.m .fill{background:var(--bact)}.bar.l .fill{background:var(--wound)}
+.microscope{border:2px solid var(--gas);background:var(--gas-soft);border-radius:14px;padding:12px 14px;display:grid;gap:8px;animation:pop .4s}
+
+/* sliders */
+.slider{display:grid;gap:6px}
+.slider .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-weight:700;font-size:15px}
+.slider output{font-family:var(--mono);font-size:18px;color:var(--gel)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--gel) var(--p,50%),var(--surface-2) var(--p,50%))}
+input[type=range]::-moz-range-track{height:8px;border-radius:999px;background:var(--surface-2)}
+input[type=range]::-moz-range-progress{height:8px;border-radius:999px;background:var(--gel)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--surface);border:3px solid var(--gel);margin-top:-8px;box-shadow:var(--shadow)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--surface);border:3px solid var(--gel)}
+
+.meter{height:18px;border-radius:999px;background:var(--surface-2);position:relative;overflow:hidden}
+.meter .fill{position:absolute;inset:0 auto 0 0;background:var(--gas);border-radius:999px;transition:width .2s,background .3s}
+.meter.pass .fill{background:var(--gel)}
+.meter .mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+
+/* step 8 */
+.layer-picker{display:flex;flex-direction:column-reverse;gap:4px;width:100%}
+.lp-btn{height:30px;border-radius:8px;border:1.5px dashed var(--line);background:transparent;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-2);transition:background .2s,border-color .2s}
+.lp-btn.on{background:var(--gel-soft);border:1.5px solid var(--gel);color:var(--ink)}
+.heal{display:grid;gap:6px}
+.heal .meter .fill{background:var(--wound)}
+.heal .meter.pass .fill{background:var(--gel)}
+.design-grid{display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px}
+.locked-opt{position:relative}
+.locked-opt small{display:block;font-weight:400;font-size:12px;color:var(--ink-2)}
+
+/* lab card */
+.labcard{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:0;overflow:hidden;box-shadow:var(--shadow)}
+.lc-head{background:var(--ink);color:var(--ground);padding:22px clamp(18px,3vw,34px);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:end}
+.lc-head h2{font-size:clamp(28px,3.4vw,40px);font-weight:800}
+.lc-head .eyebrow{color:var(--gel-soft)}
+.lc-body{padding:22px clamp(18px,3vw,34px) 28px;display:grid;gap:18px}
+.lc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lc-field{border-top:2px solid var(--ink);padding-top:8px;display:grid;gap:2px}
+.lc-field .v{font-family:var(--display);font-size:26px;font-weight:700}
+.lc-list{margin:0;padding-left:20px;display:grid;gap:4px}
+.lc-locked{color:var(--ink-2);font-style:italic}
+
+/* notebook */
+.notebook{position:sticky;top:calc(var(--hdr) + 24px);align-self:start;max-height:calc(100vh - var(--hdr) - 48px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:16px;box-shadow:var(--shadow);background-image:repeating-linear-gradient(transparent 0 27px,color-mix(in oklab,var(--line) 55%,transparent) 27px 28px)}
+.nb-head{display:flex;justify-content:space-between;align-items:center}
+.nb-head h3{font-size:20px;font-weight:800}
+.nb-count{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink-2)}
+.nb-sec{display:grid;gap:6px}
+.nb-sec ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.nb-sec li{font-size:14.5px;line-height:1.4;background:var(--surface);padding:6px 8px;border-radius:8px;border:1px solid var(--line)}
+.nb-sec li.fresh{animation:ink 1.2s}
+@keyframes ink{0%{background:var(--gas-soft);transform:translateX(8px)}100%{background:var(--surface)}}
+.nb-sec li.empty{border-style:dashed;color:var(--ink-2);background:transparent;font-style:italic}
+.nb-val{display:flex;justify-content:space-between;gap:8px}
+.nb-val b{font-family:var(--mono)}
+.nb-badges{display:flex;flex-wrap:wrap;gap:6px}
+.nb-badge{font-size:12.5px;padding:3px 8px;border-radius:999px;background:var(--ink);color:var(--ground);font-weight:700}
+.nb-close{display:none}
+
+/* dialog */
+dialog{border:1px solid var(--line);border-radius:20px;padding:0;background:var(--surface);color:var(--ink);max-width:min(460px,calc(100vw - 32px));box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(8,16,14,.45)}
+.dlg{padding:22px;display:grid;gap:14px}
+.dlg h3{font-size:22px}
+.dlg input{border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--ground);font-family:var(--mono);font-size:18px;width:120px;letter-spacing:.3em}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--ground);padding:10px 16px;border-radius:12px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:90;max-width:calc(100vw - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+/* reveal on scroll */
+.rv{transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.pre{opacity:0;transform:translateY(28px)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:80}
+
+/* open lab */
+.ol-grid{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:22px}
+
+@media (max-width:1060px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .notebook{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto;max-height:70vh;z-index:60;transform:translateY(calc(100% + 30px));transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+  .notebook.open{transform:none}
+  .nb-toggle{display:inline-flex}
+  .nb-close{display:inline-flex}
+}
+@media (max-width:760px){
+  :root{--hdr:108px}
+  .hdr-in{height:auto;flex-wrap:wrap;padding-block:8px;gap:8px 12px}
+  .progress{order:3;flex-basis:100%}
+  .brand{flex:1;min-width:0;font-size:16px}
+  .hdr-actions .ghost{padding:6px 9px;font-size:13px}
+  .story{grid-template-columns:minmax(0,1fr)}
+  .stage-wrap{top:calc(var(--hdr) + 8px);height:240px;z-index:2;order:-1}
+  .beat{min-height:44vh}
+  .split,.tank-grid,.design-grid,.ol-grid{grid-template-columns:minmax(0,1fr)}
+  .bins{grid-template-columns:minmax(0,1fr)}
+  .bin{min-height:90px}
+  .curve-picks{grid-template-columns:minmax(0,1fr)}
+  .lc-grid{grid-template-columns:minmax(0,1fr)}
+  .step-head{grid-template-columns:1fr}
+  .hint-btn{grid-row:auto;grid-column:1;justify-self:start}
+  .layer-picker{flex-direction:row-reverse}
+  .lp-btn{flex:1}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .rv.pre{opacity:1;transform:none}
+}
+</style>
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-lock" viewBox="0 0 16 16"><path d="M4 7V5a4 4 0 0 1 8 0v2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="2.5" y="7" width="11" height="8" rx="2" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="#mission"><span class="brand-mark" aria-hidden="true"></span>Wound Patch Lab</a>
+    <nav class="progress" id="progress" aria-label="Steps"></nav>
+    <div class="hdr-actions">
+      <button class="ghost nb-toggle" id="nbToggle" aria-controls="notebook" aria-expanded="false">Notebook <span class="num" id="nbToggleCount">0</span></button>
+      <button class="ghost" id="restart">Start over</button>
+    </div>
+  </div>
+  <div class="scrollbar" id="scrollbar" aria-hidden="true"></div>
+</header>
+
+<div class="shell">
+<main id="main">
+
+<!-- ================= MISSION ================= -->
+<section class="mission" id="mission" data-step="0">
+  <div class="m-top">
+    <span class="eyebrow">HKU iGEM · Modelling lab</span>
+    <h1 class="m-title">How thick should the <em>patch</em> be?</h1>
+    <p class="m-lede">A wound that won't heal keeps sending out a warning gas. Our patch sits on that wound, and the bacteria inside it sense the gas and start making a healing medicine. The medicine has to travel back down to the wound, and some is lost on the way.</p>
+    <div class="m-meta"><span><b>8 steps</b> · about 13 minutes</span><span><b>No chemistry</b> needed</span><span>Scroll to see the story</span></div>
+  </div>
+
+  <div class="story">
+    <div class="beats" id="beats">
+      <div class="beat on" data-beat="0">
+        <span class="tag">The problem</span>
+        <h3>A wound that won't heal</h3>
+        <p>It stays red and swollen for weeks. It keeps sending out a warning gas that says "something is wrong here".</p>
+        <span class="sci"><span class="flask">Sc</span>Scientists call these <b>chronic wounds</b> and the gas <b>nitric oxide (NO)</b></span>
+      </div>
+      <div class="beat" data-beat="1">
+        <span class="tag">The patch</span>
+        <h3>The gas rises into the patch</h3>
+        <p>Our patch is a soft gel stacked in layers. Every layer is full of tiny engineered bacteria.</p>
+      </div>
+      <div class="beat" data-beat="2">
+        <span class="tag">The switch</span>
+        <h3>The bacteria sense it and switch on</h3>
+        <p>When the warning gas reaches them, the bacteria start making a healing medicine.</p>
+        <span class="sci"><span class="flask">Sc</span>Scientists call the medicine <b>a therapeutic peptide (TAP2)</b></span>
+      </div>
+      <div class="beat" data-beat="3">
+        <span class="tag">The journey</span>
+        <h3>The medicine travels back down</h3>
+        <p>It has to pass through the gel to reach the wound. Some breaks down on the way. Watch the dots fade.</p>
+      </div>
+      <div class="beat" data-beat="4">
+        <span class="tag">Your mission</span>
+        <h3>More layers, more bacteria. But a longer journey.</h3>
+        <p>A thicker patch makes more medicine, but the medicine has further to travel. How thick should we make it so the most medicine reaches the wound? You'll build a model to find out.</p>
+      </div>
+    </div>
+    <div class="stage-wrap">
+      <div class="stage"><canvas id="missionCanvas" aria-label="Animated cross-section of the patch sitting on the wound"></canvas><span class="stage-cap" id="missionCap">Cross-section</span></div>
+    </div>
+  </div>
+
+  <div class="mission-go rv">
+    <button class="btn gel big" id="startBtn">Start the lab ↓</button>
+    <span class="kbd-hint">Your progress saves in this browser. Refreshing brings you back here.</span>
+  </div>
+</section>
+
+<!-- ================= STEP 1 ================= -->
+<section class="step" id="step-1" data-step="1">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish the mission to unlock</span>
+  <header class="step-head">
+    <span class="step-no">Step 1 <span class="t">· 1 min</span> <span class="step-done-pill">Done</span></span>
+    <h2>What changes the amount of medicine in the patch?</h2>
+    <p class="lede">Drag each card into a box. No mouse? Click a card, then click a box.</p>
+    <button class="ghost hint-btn" data-hint="1">Hint</button>
+  </header>
+  <div class="step-body">
+    <div class="deck" id="deck" aria-label="Cards to sort"></div>
+    <div class="bins">
+      <button class="bin" data-bin="add" aria-label="Adds medicine"><h4><span class="sym">+</span>Adds medicine</h4><div class="slot"></div></button>
+      <button class="bin" data-bin="remove" aria-label="Removes medicine"><h4><span class="sym">−</span>Removes medicine</h4><div class="slot"></div></button>
+      <button class="bin" data-bin="none" aria-label="Doesn't matter"><h4><span class="sym">0</span>Doesn't matter</h4><div class="slot"></div></button>
+    </div>
+    <div id="s1say" aria-live="polite"></div>
+  </div>
+  <div class="step-foot">
+    <div class="discover" id="s1disc" hidden>
+      <span class="k">You just decided</span>
+      <div class="rule"><span class="tile m">made</span><span class="tile o">and</span><span class="tile l">lost</span><span class="tile o">are the only things that matter</span></div>
+      <p>Ignoring colour and shape is a choice. Every model leaves things out on purpose.</p>
+      <span class="sci"><span class="flask">Sc</span>Scientists call "something we pretend is true" an <b>assumption</b></span>
+    </div>
+    <button class="btn next-btn" data-next="2" hidden>Next: the medicine sandbox ↓</button>
+  </div>
+</section>
+
+<!-- ================= STEP 2 ================= -->
+<section class="step locked" id="step-2" data-step="2">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 1 to unlock</span>
+  <header class="step-head">
+    <span class="step-no">Step 2 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
+    <h2>The medicine sandbox</h2>
+    <p class="lede">The patch starts with <b class="num">20</b> medicine. Bacteria make <b class="num">5</b> every minute. <b class="num" id="s2lostTxt">2</b> is lost every minute. What happens?</p>
+    <button class="ghost hint-btn" data-hint="2">Hint</button>
+  </header>
+  <div class="step-body">
+    <div class="tank-grid">
+      <div class="canvas-box" style="height:300px"><canvas id="s2canvas" aria-label="Medicine tank"></canvas></div>
+      <div class="step-body">
+        <div>
+          <p class="label">1 · Predict</p>
+          <div class="choices" id="s2pred" style="margin-top:8px">
+            <button class="choice" data-v="up">⬆ Goes up</button>
+            <button class="choice" data-v="down">⬇ Goes down</button>
+            <button class="choice" data-v="same">= Stays the same</button>
+          </div>
+        </div>
+        <div>
+          <p class="label">2 · Lost each minute</p>
+          <div class="choices" id="s2lost" style="margin-top:8px">
+            <button class="choice" data-v="2" aria-pressed="true">Lost 2</button>
+            <button class="choice" data-v="5" disabled>Lost 5</button>
+            <button class="choice" data-v="7" disabled>Lost 7</button>
+          </div>
+        </div>
+        <div class="row"><button class="btn gel" id="s2run" disabled>Run 3 minutes ▶</button></div>
+        <div>
+          <p class="label">Medicine each minute</p>
+          <div class="seq num" id="s2seq" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+    <div id="s2say" aria-live="polite"></div>
+  </div>
+  <div class="step-foot">
+    <div class="discover" id="s2disc" hidden>
+      <span class="k">You just discovered the rule</span>
+      <div class="rule"><span class="tile">change</span><span class="tile o">=</span><span class="tile m">made</span><span class="tile o">−</span><span class="tile l">lost</span></div>
+      <p>More made than lost: it rises. Equal: it stays flat. More lost: it falls.</p>
+      <div class="row"><span class="sci"><span class="flask">Sc</span>"medicine made" is <b>production</b></span><span class="sci"><span class="flask">Sc</span>"broken down" is <b>degradation</b></span></div>
+    </div>
+    <button class="btn next-btn" data-next="3" hidden>Next: fix the broken model ↓</button>
+  </div>
+</section>
+
+<!-- ================= STEP 3 ================= -->
+<section class="step locked" id="step-3" data-step="3">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 2 to unlock</span>
+  <header class="step-head">
+    <span class="step-no">Step 3 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
+    <h2>Fix the broken model</h2>
+    <p class="lede">The bacteria switch off. The patch has <b class="num">20</b> medicine left. How does it disappear? Try both rules.</p>
+    <button class="ghost hint-btn" data-hint="3">Hint</button>
+  </header>
+  <div class="step-body">
+    <div class="tank-grid">
+      <div class="canvas-box" id="s3box" style="height:300px"><canvas id="s3canvas" aria-label="Medicine tank with bacteria off"></canvas></div>
+      <div class="step-body">
+        <div class="panel" style="display:grid;gap:8px">
+          <div class="row" style="justify-content:space-between"><b>Rule A · lose 5 every minute</b><button class="btn soft" id="s3a">Run A ▶</button></div>
+          <div class="seq num" id="s3seqA"></div>
+        </div>
+        <div class="panel" style="display:grid;gap:8px">
+          <div class="row" style="justify-content:space-between"><b>Rule B · lose 20% every minute</b><button class="btn soft" id="s3b">Run B ▶</button></div>
+          <div class="seq num" id="s3seqB"></div>
+        </div>
+      </div>
+    </div>
+    <div id="s3say" aria-live="polite"></div>
+    <div id="s3explain" hidden>
+      <p class="label">Why does Rule B work?</p>
+      <div class="choices" id="s3opts" style="margin-top:8px">
+        <button class="choice" data-v="share">When there's less medicine, less is lost each minute</button>
+        <button class="choice" data-v="small">20% is a smaller number than 5</button>
+        <button class="choice" data-v="stop">Rule B stops after a few minutes</button>
+      </div>
+      <div class="row" style="margin-top:10px"><button class="ghost" id="s3why">Why? Show me</button></div>
+      <div class="canvas-box" id="s3whyBox" style="height:150px;margin-top:10px" hidden><canvas id="s3whyCanvas" aria-label="More medicine means more lost"></canvas></div>
+    </div>
+  </div>
+  <div class="step-foot">
+    <div class="discover" id="s3disc" hidden>
+      <span class="k">You just fixed the model</span>
+      <div class="rule"><span class="tile l">lost</span><span class="tile o">=</span><span class="tile">20%</span><span class="tile o">×</span><span class="tile">medicine now</span></div>
+      <p>Losing a share, not a fixed amount, means the model can never go below zero.</p>
+      <span class="sci"><span class="flask">Sc</span>"share lost each minute" is the <b>decay rate</b></span>
+    </div>
+    <button class="btn next-btn" data-next="4" hidden>Next: build it step by step ↓</button>
+  </div>
+</section>
+
+<!-- ================= STEP 4 ================= -->
+<section class="step locked" id="step-4" data-step="4">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 3 to unlock</span>
+  <header class="step-head">
+    <span class="step-no">Step 4 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
+    <h2>Build it step by step</h2>
+    <p class="lede">A 3-layer patch makes <b class="num">12</b> medicine a minute and loses <b class="num">20%</b>. It starts empty. Fill in the first three minutes.</p>
+    <button class="ghost hint-btn" data-hint="4">Hint</button>
+  </header>
+  <div class="step-body">
+    <div class="panel num" style="font-size:16px">new = old + <b style="color:var(--bact)">12</b> − <b style="color:var(--wound)">0.2 × old</b></div>
+    <div class="table-scroll">
+      <table class="calc-table" id="s4table">
+        <thead><tr><th>Minute</th><th>Old</th><th>+ made</th><th>− lost</th><th>New</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="s4say" aria-live="polite"></div>
+    <div id="s4predWrap" hidden>
+      <p class="label">Predict · what happens over 50 minutes?</p>
+      <div class="curve-picks" id="s4pred" style="margin-top:8px">
+        <button class="choice" data-v="rise"><svg viewBox="0 0 100 46" aria-hidden="true"><path d="M4 42 L96 4"/></svg>Keeps rising</button>
+        <button class="choice" data-v="flat"><svg viewBox="0 0 100 46" aria-hidden="true"><path d="M4 42 C 30 8, 50 8, 96 8"/></svg>Levels off</button>
+        <button class="choice" data-v="zero"><svg viewBox="0 0 100 46" aria-hidden="true"><path d="M4 42 C 30 4, 50 4, 96 42"/></svg>Drops back to zero</button>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="btn gel" id="s4run" disabled>Auto-fill 50 minutes ▶</button></div>
+    </div>
+    <div class="split" id="s4chartWrap" hidden>
+      <div class="canvas-box" style="height:260px"><canvas id="s4canvas" aria-label="Medicine over 50 minutes"></canvas></div>
+      <div class="step-body">
+        <div class="bars">
+          <div class="bar m"><span>Made</span><div class="track"><div class="fill" id="s4made"></div></div><span class="num" id="s4madeV">0</span></div>
+          <div class="bar l"><span>Lost</span><div class="track"><div class="fill" id="s4lost"></div></div><span class="num" id="s4lostV">0</span></div>
+        </div>
+        <div class="readout"><div class="stat g"><div class="v" id="s4level">0</div><div class="l">In the patch</div></div><div class="stat"><div class="v" id="s4min">0</div><div class="l">Minute</div></div></div>
+        <div id="s4micro"></div>
+        <div class="slider" id="s4whatif" hidden>
+          <div class="top"><label for="s4layers">What if? Layers of bacteria</label><output class="num" id="s4layersOut">3</output></div>
+          <input type="range" id="s4layers" min="1" max="5" step="1" value="3">
+          <span class="sci" style="margin-top:4px"><span class="flask">Sc</span>A setting you can change is a <b>parameter</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="step-foot">
+    <button class="btn next-btn" data-next="5" hidden>Next: the level in the patch ↓</button>
+  </div>
+</section>
+
+<!-- ================= STEP 5 ================= -->
+<section class="step locked" id="step-5" data-step="5">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 4 to unlock</span>
+  <header class="step-head">
+    <span class="step-no">Step 5 <span class="t">· 2 min</span> <span class="step-done-pill">Done</span></span>
+    <h2>The level in the patch</h2>
+    <p class="lede">Why did it go flat at 60? Watch the two bars. Then take the challenge.</p>
+    <button class="ghost hint-btn" data-hint="5">Hint</button>
+  </header>
+  <div class="step-body">
+    <div class="split">
+      <div class="canvas-box" style="height:260px"><canvas id="s5canvas" aria-label="Medicine settling to a flat level"></canvas></div>
+      <div class="step-body">
+        <div class="bars">
+          <div class="bar m"><span>Made</span><div class="track"><div class="fill" id="s5made"></div></div><span class="num" id="s5madeV">0</span></div>
+          <div class="bar l"><span>Lost</span><div class="track"><div class="fill" id="s5lost"></div></div><span class="num" id="s5lostV">0</span></div>
+        </div>
+        <div class="row"><button class="btn soft" id="s5watch">Watch it settle ▶</button></div>
+        <div id="s5why" class="why" hidden>
+          <div class="say good"><span class="ic">!</span><span>It stops rising when <b>lost catches up with made</b>. 20% of 60 is 12, exactly what is made.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="s5challenge" hidden style="display:grid;gap:12px">
+      <p class="label">Challenge</p>
+      <p><b>A thinner patch settles at 20.</b> How much medicine is it making each minute? Move the slider until the line goes flat at 20.</p>
+      <div class="slider">
+        <div class="top"><label for="s5made-in">Medicine made per minute</label><output class="num" id="s5madeOut">12</output></div>
+        <input type="range" id="s5made-in" min="1" max="20" step="1" value="12">
+      </div>
+      <div id="s5say" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="step-foot">
+    <div class="discover" id="s5disc" hidden>
+      <span class="k">You just discovered</span>
+      <div class="rule"><span class="tile">level in the patch</span><span class="tile o">=</span><span class="tile m">made</span><span class="tile o">÷</span><span class="tile l">share lost</span></div>
+      <p class="num">12 ÷ 0.2 = 60 &nbsp;·&nbsp; 4 ÷ 0.2 = 20</p>
+      <span class="sci"><span class="flask">Sc</span>A level that stops changing is a <b>steady state</b></span>
+    </div>
+    <button class="btn next-btn" data-next="6" hidden>Next: match the lab data ↓</button>
+  </div>
+</section>
+
+<!-- ================= STEP 6 ================= -->
+<section class="step locked" id="step-6" data-step="6">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 5 to unlock</span>
+  <header class="step-head">
+    <span class="step-no">Step 6 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
+    <h2>Match the lab data</h2>
+    <p class="lede">We guessed 20% is lost each minute. The lab switched the bacteria off and measured the medicine fading. Move the slider until your model's curve runs through the dots.</p>
+    <button class="ghost hint-btn" data-hint="6">Hint</button>
+  </header>
+  <div class="step-body">
+    <div class="canvas-box" style="height:280px"><canvas id="s6canvas" aria-label="Lab measurements and model curve"></canvas></div>
+    <div class="split">
+      <div class="slider">
+        <div class="top"><label for="s6loss">Share lost each minute</label><output class="num" id="s6lossOut">40%</output></div>
+        <input type="range" id="s6loss" min="5" max="45" step="1" value="40">
+      </div>
+      <div class="slider">
+        <div class="top"><span>Match</span><output class="num" id="s6fitOut">0%</output></div>
+        <div class="meter" id="s6meter"><div class="fill" id="s6fit" style="width:0"></div><div class="mark" style="left:85%" title="85% needed"></div></div>
+        <span class="kbd-hint">85% or more to pass</span>
+      </div>
+    </div>
+    <div id="s6say" aria-live="polite"></div>
+  </div>
+  <div class="step-foot">
+    <div class="discover" id="s6disc" hidden>
+      <span class="k">Your model now matches real measurements</span>
+      <div class="rule"><span class="tile l">share lost</span><span class="tile o">=</span><span class="tile">20% per minute</span></div>
+      <p>Your guess is now backed by data. It's locked into the notebook.</p>
+    </div>
+    <button class="btn next-btn" data-next="7" hidden>Next: down to the wound ↓</button>
+  </div>
+</section>
+
+<!-- ================= STEP 7 ================= -->
+<section class="step locked" id="step-7" data-step="7">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 6 to unlock</span>
+  <header class="step-head">
+    <span class="step-no">Step 7 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
+    <h2>Down to the wound</h2>
+    <p class="lede">The medicine starts at the patch level, <b class="num">60</b>. Each layer it crosses passes on <b class="num">70%</b>. Tap to send it down one layer at a time.</p>
+    <button class="ghost hint-btn" data-hint="7">Hint</button>
+  </header>
+  <div class="step-body">
+    <div class="split">
+      <div class="canvas-box" style="height:320px"><canvas id="s7canvas" aria-label="Medicine dots falling through three layers to the wound"></canvas></div>
+      <div class="step-body">
+        <div class="readout"><div class="stat g"><div class="v" id="s7now">60</div><div class="l">Medicine now</div></div><div class="stat"><div class="v" id="s7layer">0 / 3</div><div class="l">Layers crossed</div></div></div>
+        <div class="seq num" id="s7seq"><span>60</span></div>
+        <div class="row"><button class="btn gel" id="s7next">Next layer ↓</button></div>
+        <div id="s7ask" hidden>
+          <p class="label">Where did the missing medicine go?</p>
+          <div class="choices" id="s7opts" style="margin-top:8px;flex-direction:column;align-items:stretch">
+            <button class="choice" data-v="broke">It broke down on the way</button>
+            <button class="choice" data-v="up">It floated back up</button>
+            <button class="choice" data-v="took">The bacteria took it back</button>
+          </div>
+        </div>
+        <div id="s7say" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="panel" id="s7whatif" hidden style="display:grid;gap:12px">
+      <p class="label">What if? Keep stacking layers</p>
+      <div class="slider">
+        <div class="top"><label for="s7n">Layers to cross</label><output class="num" id="s7nOut">3</output></div>
+        <input type="range" id="s7n" min="1" max="12" step="1" value="3">
+      </div>
+      <div class="canvas-box" style="height:170px"><canvas id="s7bars" aria-label="Medicine arriving after each number of layers"></canvas></div>
+      <div id="s7say2" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="step-foot">
+    <div class="discover" id="s7disc" hidden>
+      <span class="k">Same rule, new direction</span>
+      <div class="rule"><span class="tile">next layer</span><span class="tile o">=</span><span class="tile">70%</span><span class="tile o">×</span><span class="tile">this layer</span></div>
+      <p>It's the step rule from before. The steps are now layers instead of minutes.</p>
+      <div class="row"><span class="sci"><span class="flask">Sc</span>Spreading through the patch is <b>diffusion</b></span><span class="sci" id="s7pen" hidden><span class="flask">Sc</span>How far it can get is the <b>penetration depth</b></span></div>
+    </div>
+    <button class="btn next-btn" data-next="8" hidden>Next: design the patch ↓</button>
+  </div>
+</section>
+
+<!-- ================= STEP 8 ================= -->
+<section class="step locked" id="step-8" data-step="8">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 7 to unlock</span>
+  <header class="step-head">
+    <span class="step-no">Step 8 <span class="t">· 2 min</span> <span class="step-done-pill">Done</span></span>
+    <h2>Design the patch</h2>
+    <p class="lede">Find the thickness that gets the most medicine to the wound. Healing starts when at least <b class="num">18</b> arrives.</p>
+    <button class="ghost hint-btn" data-hint="8">Hint</button>
+  </header>
+  <div class="step-body">
+    <div class="panel" id="s8predWrap" style="display:grid;gap:10px">
+      <p class="label">Predict first</p>
+      <p><b>"More layers means more medicine reaches the wound."</b></p>
+      <div class="choices" id="s8pred"><button class="choice" data-v="true">True</button><button class="choice" data-v="false">False</button></div>
+    </div>
+    <div class="design-grid" id="s8lab" hidden>
+      <div class="step-body" style="gap:14px">
+        <div>
+          <p class="label">Patch thickness</p>
+          <div class="layer-picker" id="s8layers" style="margin-top:8px"></div>
+          <p class="kbd-hint" style="margin-top:6px">A real patch needs 2+ layers so it doesn't tear. The model lets you try 1.</p>
+        </div>
+        <div>
+          <p class="label">Bacteria strength</p>
+          <div class="choices" id="s8bact" style="margin-top:8px;flex-direction:column;align-items:stretch">
+            <button class="choice" data-v="low">Low <small class="num" style="font-weight:400">· 2 per layer</small></button>
+            <button class="choice" data-v="medium" aria-pressed="true">Medium <small class="num" style="font-weight:400">· 4 per layer</small></button>
+            <button class="choice locked-opt" data-v="high" aria-disabled="true"><span style="display:inline-flex;gap:6px;align-items:center"><svg width="12" height="12"><use href="#i-lock"/></svg>High</span><small>The cells burn out</small></button>
+          </div>
+        </div>
+      </div>
+      <div class="step-body" style="gap:14px">
+        <div class="canvas-box" style="height:300px"><canvas id="s8canvas" aria-label="Your patch on the wound"></canvas></div>
+        <div class="readout">
+          <div class="stat m"><div class="v" id="s8made">12</div><div class="l">Made / min</div></div>
+          <div class="stat"><div class="v" id="s8level">60</div><div class="l">Level in patch</div></div>
+          <div class="stat g"><div class="v" id="s8reach">20.6</div><div class="l">Reaching wound</div></div>
+        </div>
+        <div class="heal">
+          <div class="row" style="justify-content:space-between"><span class="label">Healing</span><span class="num kbd-hint">needs 18</span></div>
+          <div class="meter" id="s8meter"><div class="fill" id="s8heal"></div><div class="mark" id="s8mark"></div></div>
+        </div>
+        <div id="s8say" aria-live="polite"></div>
+        <div class="row"><button class="btn gel big" id="s8submit">Submit this design</button></div>
+      </div>
+    </div>
+    <div class="split" id="s8after" hidden>
+      <div class="canvas-box" style="height:220px"><canvas id="s8peak" aria-label="Medicine reaching the wound for 1 to 5 layers"></canvas></div>
+      <div class="step-body">
+        <div class="say good"><span class="ic">!</span><span><b>More is not better.</b> Too thin: not enough medicine is made. Too thick: it can't travel far enough. Only a model shows you where the best point is.</span></div>
+        <div class="panel" style="display:grid;gap:10px">
+          <p class="label">Bonus question</p>
+          <p><b>Can a patch with Low bacteria ever heal the wound?</b></p>
+          <div class="choices" id="s8bonus"><button class="choice" data-v="yes">Yes, with the right thickness</button><button class="choice" data-v="no">No, never</button></div>
+          <div id="s8bonusSay" aria-live="polite"></div>
+        </div>
+        <p class="kbd-hint">Compare your design with your neighbour's. Did you both find the same best thickness?</p>
+      </div>
+    </div>
+  </div>
+  <div class="step-foot">
+    <span class="sci" id="s8sci" hidden><span class="flask">Sc</span>"Enough to heal" is the <b>therapeutic threshold</b></span>
+    <button class="btn next-btn" data-next="9" hidden>See your Lab Card ↓</button>
+  </div>
+</section>
+
+<!-- ================= LAB CARD ================= -->
+<section class="labcard step locked" id="step-9" data-step="9" style="padding:0">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Submit a design to unlock</span>
+  <div class="lc-head">
+    <div style="display:grid;gap:6px"><span class="eyebrow">Lab Card · HKU iGEM</span><h2>Our patch design</h2></div>
+    <button class="ghost" id="lcPrint" style="background:transparent;color:var(--ground);border-color:color-mix(in oklab,var(--ground) 40%,transparent)">Print card</button>
+  </div>
+  <div class="lc-body step-body">
+    <div class="lc-grid">
+      <div class="lc-field rv"><span class="label">Patch thickness</span><span class="v" id="lcLayers">—</span></div>
+      <div class="lc-field rv"><span class="label">Bacteria strength</span><span class="v" id="lcBact">—</span></div>
+      <div class="lc-field rv"><span class="label">Reaching the wound</span><span class="v" id="lcReach">—</span></div>
+    </div>
+    <div class="rv"><p class="label">Things we pretended were true</p><ul class="lc-list" id="lcAssume" style="margin-top:8px"></ul></div>
+    <div class="rv"><p class="label">Rules we built</p><ul class="lc-list num" id="lcRules" style="margin-top:8px;font-size:15px"></ul></div>
+    <div class="rv panel"><p class="label">Next experiment</p><p style="margin-top:6px"><b>Build patches of 2, 3 and 4 layers</b> and measure the medicine at the wound-facing surface. Does 3 layers really win?</p></div>
+    <div class="rv row"><button class="btn gel" id="openLabBtn">Open Lab: change every setting ↓</button></div>
+  </div>
+</section>
+
+<!-- ================= OPEN LAB ================= -->
+<section class="step locked" id="step-10" data-step="10">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Unlocks after the Lab Card</span>
+  <header class="step-head">
+    <span class="step-no">Open Lab <span class="t">· bonus</span></span>
+    <h2>Every setting, unlocked</h2>
+    <p class="lede">Change anything. The chart shows how much medicine reaches the wound for every thickness.</p>
+  </header>
+  <div class="step-body">
+    <div class="ol-grid">
+      <div class="step-body" style="gap:12px" id="olSliders"></div>
+      <div class="step-body" style="gap:12px">
+        <div class="canvas-box" style="height:300px"><canvas id="olcanvas" aria-label="Medicine reaching the wound for each thickness"></canvas></div>
+        <div id="olsay" aria-live="polite"></div>
+        <div class="row"><button class="ghost" id="olReset">Reset to our numbers</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="notebook" id="notebook" aria-label="Lab notebook">
+  <div class="nb-head"><h3>Lab notebook</h3><span class="nb-count" id="nbCount">0 entries</span><button class="ghost nb-close" id="nbClose" aria-label="Close notebook">Close</button></div>
+  <div class="nb-sec"><span class="label">Things we pretend are true</span><ul id="nbAssume"><li class="empty">Sort the cards in step 1</li></ul></div>
+  <div class="nb-sec"><span class="label">Values found</span><ul id="nbValues"><li class="empty">Nothing measured yet</li></ul></div>
+  <div class="nb-sec"><span class="label">Words scientists use</span><div class="nb-badges" id="nbBadges"><span class="kbd-hint">Collect them as you go</span></div></div>
+</aside>
+</div>
+
+<dialog id="hintDlg">
+  <form method="dialog" class="dlg">
+    <h3 id="hintTitle">Hint</h3>
+    <p id="hintText"></p>
+    <details>
+      <summary class="kbd-hint">Helper code</summary>
+      <div class="row" style="margin-top:10px">
+        <label class="sr" for="helperCode">Helper code</label>
+        <input id="helperCode" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="····">
+        <button class="btn soft" type="button" id="helperGo">Unlock</button>
+      </div>
+      <p class="kbd-hint" id="helperMsg" style="margin-top:6px">For workshop helpers: unlocks and completes this step.</p>
+    </details>
+    <div class="row" style="justify-content:flex-end"><button class="btn">Got it</button></div>
+  </form>
+</dialog>
+<div class="toast" id="toast" role="status"></div>
+<canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+<script>
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const HELPER_CODE = "2026";
+const STORE_KEY = "woundPatchLab.v1";
+
+/* ---------------- model ---------------- */
+const Model = {
+  loss: 0.2, pass: 0.7, threshold: 18, perLayer: { low: 2, medium: 4 },
+  next: (lvl, made, loss = 0.2) => lvl + made - loss * lvl,
+  steady: (made, loss = 0.2) => made / loss,
+  design(layers, bact = "medium", o = {}) {
+    const per = o.per ?? Model.perLayer[bact];
+    const loss = o.loss ?? 0.2, pass = o.pass ?? 0.7, thr = o.threshold ?? 18;
+    const made = per * layers, level = made / loss, reach = level * Math.pow(pass, layers);
+    return { made, level, reach, heals: reach >= thr - 1e-9 };
+  }
+};
+const fmt = (v, d = 1) => {
+  if (!isFinite(v)) return "—";
+  const r = Math.round(v * 10 ** d) / 10 ** d;
+  return Math.abs(r - Math.round(r)) < 1e-9 ? String(Math.round(r)) : r.toFixed(d);
+};
+
+/* ---------------- state ---------------- */
+const blank = () => ({ v: 1, done: {}, assume: [], values: {}, badges: [], data: {} });
+let S = blank();
+function load() {
+  try { const raw = localStorage.getItem(STORE_KEY); if (raw) { const o = JSON.parse(raw); if (o && o.v === 1) S = Object.assign(blank(), o); } } catch (e) { /* storage unavailable */ }
+}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } }
+
+/* ---------------- theme tokens ---------------- */
+const C = {};
+function readTokens() {
+  const cs = getComputedStyle(document.documentElement);
+  ["ground", "surface", "surface-2", "ink", "ink-2", "line", "gel", "gel-soft", "wound", "wound-soft", "gas", "gas-soft", "bact", "bact-soft", "tissue", "tissue-2", "focus"]
+    .forEach(k => C[k] = cs.getPropertyValue("--" + k).trim() || "#888");
+  C.mono = cs.getPropertyValue("--mono").trim();
+}
+readTokens();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+/* ---------------- ui helpers ---------------- */
+const ICON = { good: "✓", warn: "?", bad: "!", info: "i" };
+function say(el, kind, html) {
+  if (typeof el === "string") el = $(el);
+  el.innerHTML = `<div class="say ${kind}"><span class="ic" aria-hidden="true">${ICON[kind] || "i"}</span><span>${html}</span></div>`;
+}
+let toastT;
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2600);
+}
+function press(group, btn) { $$("button", group).forEach(b => b.setAttribute("aria-pressed", b === btn ? "true" : "false")); }
+function setRangeFill(inp) { const p = (inp.value - inp.min) / (inp.max - inp.min) * 100; inp.style.setProperty("--p", p + "%"); }
+document.addEventListener("input", e => { if (e.target.type === "range") setRangeFill(e.target); });
+const wait = ms => new Promise(r => setTimeout(r, REDUCED ? Math.min(ms, 60) : ms));
+
+/* ---------------- notebook ---------------- */
+function note(text) { if (!S.assume.includes(text)) { S.assume.push(text); save(); renderNotebook(text); } }
+function value(key, label, val) { S.values[key] = { label, val }; save(); renderNotebook(key); }
+function badge(word) { if (!S.badges.includes(word)) { S.badges.push(word); save(); renderNotebook(word); } }
+function renderNotebook(fresh) {
+  const ua = $("#nbAssume"), uv = $("#nbValues"), ub = $("#nbBadges");
+  ua.innerHTML = S.assume.length ? S.assume.map(a => `<li class="${a === fresh ? "fresh" : ""}">${a}</li>`).join("") : `<li class="empty">Sort the cards in step 1</li>`;
+  const vals = Object.entries(S.values);
+  uv.innerHTML = vals.length ? vals.map(([k, o]) => `<li class="nb-val ${k === fresh ? "fresh" : ""}"><span>${o.label}</span><b>${o.val}</b></li>`).join("") : `<li class="empty">Nothing measured yet</li>`;
+  ub.innerHTML = S.badges.length ? S.badges.map(b => `<span class="nb-badge">${b}</span>`).join("") : `<span class="kbd-hint">Collect them as you go</span>`;
+  const n = S.assume.length + vals.length + S.badges.length;
+  $("#nbCount").textContent = n + (n === 1 ? " entry" : " entries");
+  $("#nbToggleCount").textContent = n;
+  if (fresh && innerWidth <= 1060) { const b = $("#nbToggle"); b.animate?.([{ transform: "scale(1)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }], { duration: 450 }); }
+}
+$("#nbToggle").addEventListener("click", () => { const nb = $("#notebook"); const o = nb.classList.toggle("open"); $("#nbToggle").setAttribute("aria-expanded", o); });
+$("#nbClose").addEventListener("click", () => { $("#notebook").classList.remove("open"); $("#nbToggle").setAttribute("aria-expanded", "false"); });
+
+/* ---------------- steps + progress ---------------- */
+const Steps = {};              // n -> { init(), restore() }
+const LABELS = ["Go", "1", "2", "3", "4", "5", "6", "7", "8", "Card", "Lab"];
+const NAMES = ["Mission", "Sort", "Sandbox", "Broken model", "Step by step", "Patch level", "Match data", "Down to wound", "Design", "Lab Card", "Open Lab"];
+const section = n => document.querySelector(`[data-step="${n}"]`);
+const unlocked = n => n === 0 || !!S.done[n - 1];
+
+function buildProgress() {
+  const nav = $("#progress");
+  nav.innerHTML = LABELS.map((l, i) => `<button class="pchip" data-go="${i}" aria-label="${NAMES[i]}">${l}</button>`).join("");
+  nav.addEventListener("click", e => {
+    const b = e.target.closest(".pchip"); if (!b) return;
+    const n = +b.dataset.go;
+    if (!unlocked(n)) { toast(`Finish ${NAMES[n - 1]} first`); return; }
+    goTo(n);
+  });
+}
+function applyLocks() {
+  for (let n = 0; n <= 10; n++) {
+    const sec = section(n); if (!sec) continue;
+    const lock = !unlocked(n);
+    sec.classList.toggle("locked", lock);
+    sec.classList.toggle("done", !!S.done[n]);
+    $$(":scope > .step-body, :scope > .step-foot, :scope > .step-head .hint-btn", sec).forEach(el => { el.inert = lock; });
+    const nb = $(":scope .next-btn", sec); if (nb) nb.hidden = !S.done[n];
+    const chip = $(`.pchip[data-go="${n}"]`);
+    chip.classList.toggle("done", !!S.done[n]);
+    chip.setAttribute("aria-disabled", lock ? "true" : "false");
+    chip.innerHTML = lock ? `<svg aria-hidden="true"><use href="#i-lock"/></svg>${LABELS[n]}` : S.done[n] && n > 0 && n < 9 ? `<svg aria-hidden="true"><use href="#i-check"/></svg>${LABELS[n]}` : LABELS[n];
+  }
+}
+function complete(n) {
+  if (S.done[n]) return;
+  S.done[n] = true; save(); applyLocks();
+  const nx = section(n + 1);
+  if (nx) {
+    nx.classList.remove("unlocking"); void nx.offsetWidth; nx.classList.add("unlocking");
+    if (n > 0) toast(n === 8 ? "Lab Card unlocked" : n === 9 ? "Open Lab unlocked" : `Step ${n + 1} unlocked`);
+    Steps[n + 1]?.onUnlock?.();
+  }
+}
+function goTo(n) {
+  const sec = section(n); if (!sec) return;
+  sec.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
+  const h = $("h1, h2", sec); if (h) { h.tabIndex = -1; setTimeout(() => h.focus({ preventScroll: true }), REDUCED ? 0 : 600); }
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest(".next-btn"); if (b) goTo(+b.dataset.next);
+});
+
+/* scroll spy + scroll progress bar */
+function initScrollFx() {
+  const secs = $$("[data-step]");
+  const vis = new Map();
+  const io = new IntersectionObserver(es => {
+    es.forEach(en => vis.set(en.target, en.intersectionRatio));
+    let best = null, br = 0; vis.forEach((r, el) => { if (r > br) { br = r; best = el; } });
+    if (best) $$(".pchip").forEach(c => c.classList.toggle("current", c.dataset.go === best.dataset.step));
+  }, { threshold: [0, .15, .3, .5, .7, 1], rootMargin: "-20% 0px -40% 0px" });
+  secs.forEach(s => io.observe(s));
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      $("#scrollbar").style.setProperty("--sp", max > 0 ? Math.min(1, scrollY / max) : 0);
+      ticking = false;
+    });
+  };
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  // reveal-on-scroll: only things below the first screen start hidden
+  const rio = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.remove("pre"); rio.unobserve(en.target); } }), { rootMargin: "0px 0px -8% 0px" });
+  if (!REDUCED) $$(".rv").forEach((el, i) => {
+    if (el.getBoundingClientRect().top > innerHeight) { el.classList.add("pre"); el.style.transitionDelay = (i % 3) * 70 + "ms"; rio.observe(el); }
+  });
+  // steps slide up gently as they arrive
+  if (!REDUCED) {
+    const sio = new IntersectionObserver(es => es.forEach(en => {
+      if (en.isIntersecting) { en.target.animate([{ transform: "translateY(26px)", opacity: .6 }, { transform: "none", opacity: 1 }], { duration: 650, easing: "cubic-bezier(.2,.7,.2,1)" }); sio.unobserve(en.target); }
+    }), { rootMargin: "0px 0px -10% 0px" });
+    $$(".step").forEach(s => { if (s.getBoundingClientRect().top > innerHeight) sio.observe(s); });
+  }
+}
+
+/* ---------------- hint dialog + helper code ---------------- */
+const HINTS = {
+  1: "Think about what could make the amount go up or down. Does the colour of a sticker change how much medicine is inside?",
+  2: "Compare the two numbers: 5 made each minute and 2 lost. Which is bigger? After predicting, run it, then try Lost 5 and Lost 7.",
+  3: "Run both rules. Look closely at Rule A's last number. Can a patch really hold less than nothing?",
+  4: "Minute 1: old is 0, so new = 0 + 12 − 0 = 12. Minute 2: old is 12, so new = 12 + 12 − 2.4. Use the = button if you get stuck.",
+  5: "The line goes flat when lost equals made. Lost is 20% of the level, so a level of 20 loses 4 a minute. What should made be?",
+  6: "Start the slider far away, then move it slowly. Watch the curve bend toward the dots. The match meter turns green at 85%.",
+  7: "Each tap keeps 70% of the medicine: 60 × 0.7 = 42. The medicine doesn't go anywhere else. It fades.",
+  8: "Try every thickness from 1 to 5 and watch the 'Reaching wound' number. The biggest isn't at the end.",
+};
+let hintStep = 1;
+document.addEventListener("click", e => {
+  const b = e.target.closest(".hint-btn"); if (!b) return;
+  hintStep = +b.dataset.hint;
+  $("#hintTitle").textContent = `Hint · Step ${hintStep}`;
+  $("#hintText").textContent = HINTS[hintStep];
+  $("#helperCode").value = ""; $("#helperMsg").textContent = "For workshop helpers: unlocks and completes this step.";
+  const d = $("#hintDlg"); d.showModal ? d.showModal() : d.setAttribute("open", "");
+});
+$("#helperGo").addEventListener("click", () => {
+  if ($("#helperCode").value.trim() !== HELPER_CODE) { $("#helperMsg").textContent = "That code didn't work. Check with the workshop leader."; return; }
+  for (let n = 0; n <= hintStep; n++) if (!S.done[n]) { Steps[n]?.restore?.(); complete(n); }
+  $("#hintDlg").close?.();
+  toast(`Step ${hintStep} completed by a helper`);
+});
+
+let restartArmed = 0;
+$("#restart").addEventListener("click", () => {
+  const b = $("#restart");
+  if (Date.now() - restartArmed > 3000) { restartArmed = Date.now(); b.textContent = "Tap again to clear"; setTimeout(() => b.textContent = "Start over", 3000); return; }
+  try { localStorage.removeItem(STORE_KEY); } catch (e) { }
+  scrollTo(0, 0); location.reload();
+});
+
+/* ---------------- canvas scenes ---------------- */
+const scenes = [];
+class Scene {
+  constructor(canvas, draw) {
+    this.c = canvas; this.ctx = canvas.getContext("2d"); this.draw = draw; this.visible = false; this.t = 0;
+    scenes.push(this); Scene.ro.observe(canvas); Scene.io.observe(canvas); this.resize();
+  }
+  resize() {
+    const r = this.c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+    this.w = Math.max(1, r.width); this.h = Math.max(1, r.height);
+    this.c.width = Math.round(this.w * d); this.c.height = Math.round(this.h * d);
+    this.ctx.setTransform(d, 0, 0, d, 0, 0);
+    this.render(0);
+  }
+  render(dt) { this.t += dt; this.ctx.clearRect(0, 0, this.w, this.h); this.draw(this.ctx, this.w, this.h, dt, this.t); }
+}
+Scene.ro = new ResizeObserver(es => es.forEach(en => scenes.find(s => s.c === en.target)?.resize()));
+Scene.io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(s => s.c === en.target); if (s) s.visible = en.isIntersecting; }));
+let last = 0, rafId = 0;
+function loop(ts) {
+  const dt = Math.min(0.05, (ts - last) / 1000 || 0); last = ts;
+  for (const s of scenes) if (s.visible) s.render(dt);
+  rafId = requestAnimationFrame(loop);
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) cancelAnimationFrame(rafId); else { last = performance.now(); rafId = requestAnimationFrame(loop); }
+});
+
+/* particles: capped at 60 per system */
+class Dots {
+  constructor(max = 60) { this.a = []; this.max = max; }
+  add(p) {
+    if (this.a.length >= this.max) return null;
+    const d = Object.assign({ x: 0, y: 0, vx: 0, vy: 0, r: 4, a: 0, target: 1, color: "gel", life: 1e9, age: 0, tx: null, ty: null, k: 4, dying: false }, p);
+    this.a.push(d); return d;
+  }
+  kill(d) { d.dying = true; }
+  update(dt) {
+    for (const d of this.a) {
+      d.age += dt;
+      if (d.tx != null) { const f = Math.min(1, dt * d.k); d.x += (d.tx - d.x) * f; d.y += (d.ty - d.y) * f; }
+      d.x += d.vx * dt; d.y += d.vy * dt;
+      if (d.dying || d.age > d.life) d.a -= dt * 2.2; else d.a = Math.min(d.target, d.a + dt * 4);
+    }
+    this.a = this.a.filter(d => !(d.dying || d.age > d.life) || d.a > 0);
+  }
+  draw(ctx) {
+    for (const d of this.a) {
+      ctx.globalAlpha = Math.max(0, Math.min(1, d.a));
+      ctx.fillStyle = C[d.color] || d.color;
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.283); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  get live() { return this.a.filter(d => !d.dying).length; }
+}
+
+/* seeded random for stable bacteria positions */
+function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+
+function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
+
+/* the patch-on-wound cross-section, shared by mission, step 7 and step 8 */
+function drawPatch(ctx, w, h, o) {
+  const layers = o.layers ?? 3, maxL = o.maxLayers ?? 5, glow = o.glow ?? 0, heal = o.heal ?? 0, t = o.t ?? 0;
+  const tissueTop = h * (o.tissueAt ?? 0.7);
+  const left = w * 0.1, right = w * 0.9;
+  const lh = Math.min(44, (tissueTop - 34) / maxL);
+  // tissue
+  ctx.fillStyle = C.tissue; ctx.fillRect(0, tissueTop, w, h - tissueTop);
+  ctx.strokeStyle = C["tissue-2"]; ctx.lineWidth = 1.5;
+  for (let i = 1; i < 4; i++) { const y = tissueTop + (h - tissueTop) * i / 4; ctx.beginPath(); ctx.moveTo(0, y); for (let x = 0; x <= w; x += 24) ctx.lineTo(x, y + Math.sin(x / 30 + i) * 3); ctx.stroke(); }
+  // wound
+  const wx = w / 2, wy = tissueTop + 4, ww = w * 0.2, wd = (h - tissueTop) * 0.55;
+  ctx.save(); ctx.globalAlpha = 1 - heal * 0.85;
+  const pulse = 0.85 + 0.15 * Math.sin(t * 3);
+  ctx.fillStyle = C.wound; ctx.beginPath(); ctx.ellipse(wx, wy, ww * (heal ? 1 - heal * 0.4 : 1), wd * pulse * (1 - heal * 0.5), 0, 0, Math.PI); ctx.fill();
+  ctx.restore();
+  if (o.woundLabel !== false) { ctx.fillStyle = C.ink; ctx.globalAlpha = .75; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "left"; ctx.fillText(heal > .5 ? "HEALING TISSUE" : "WOUND", 12, h - 12); ctx.globalAlpha = 1; }
+  // patch
+  const top = tissueTop - layers * lh;
+  const bac = [];
+  for (let i = 0; i < layers; i++) {
+    const y = tissueTop - (i + 1) * lh;
+    ctx.fillStyle = C["gel-soft"]; rr(ctx, left, y + 1, right - left, lh - 2, 6); ctx.fill();
+    ctx.strokeStyle = C.gel; ctx.globalAlpha = .55; ctx.lineWidth = 1.2; rr(ctx, left, y + 1, right - left, lh - 2, 6); ctx.stroke(); ctx.globalAlpha = 1;
+    const R = rng(97 + i * 13), n = Math.max(4, Math.round((right - left) / 60));
+    for (let j = 0; j < n; j++) {
+      const bx = left + 14 + (j + R() * 0.6) * ((right - left - 28) / n), by = y + lh * (0.35 + R() * 0.3), ang = R() * 3;
+      bac.push({ x: bx, y: by, layer: i });
+      if (glow > 0) { ctx.globalAlpha = glow * (0.25 + 0.1 * Math.sin(t * 4 + j)); ctx.fillStyle = C.bact; ctx.beginPath(); ctx.arc(bx, by, 9, 0, 6.283); ctx.fill(); }
+      ctx.globalAlpha = 0.55 + glow * 0.45; ctx.save(); ctx.translate(bx, by); ctx.rotate(ang);
+      ctx.fillStyle = C.bact; rr(ctx, -6, -2.6, 12, 5.2, 2.6); ctx.fill(); ctx.restore(); ctx.globalAlpha = 1;
+    }
+    if (o.layerLabels !== false) { ctx.fillStyle = C["ink-2"]; ctx.font = `700 10px ${C.mono}`; ctx.textAlign = "right"; ctx.fillText("L" + (i + 1), left - 6, y + lh / 2 + 4); }
+  }
+  return { tissueTop, top, left, right, lh, wx, wy, ww, bac };
+}
+
+/* axis chart */
+function axes(ctx, w, h, o) {
+  const pad = { l: 44, r: 14, t: 14, b: 34, ...(o.pad || {}) };
+  const X = v => pad.l + (v - (o.xMin || 0)) / (o.xMax - (o.xMin || 0)) * (w - pad.l - pad.r);
+  const Y = v => h - pad.b - v / o.yMax * (h - pad.t - pad.b);
+  ctx.font = `500 11px ${C.mono}`; ctx.lineWidth = 1;
+  (o.yTicks || []).forEach(v => {
+    ctx.strokeStyle = C.line; ctx.globalAlpha = .7; ctx.beginPath(); ctx.moveTo(pad.l, Y(v)); ctx.lineTo(w - pad.r, Y(v)); ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.fillStyle = C["ink-2"]; ctx.textAlign = "right"; ctx.fillText(v, pad.l - 6, Y(v) + 4);
+  });
+  (o.xTicks || []).forEach(v => { ctx.fillStyle = C["ink-2"]; ctx.textAlign = "center"; ctx.fillText(o.xFmt ? o.xFmt(v) : v, X(v), h - pad.b + 16); });
+  ctx.strokeStyle = C["ink-2"]; ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, h - pad.b); ctx.lineTo(w - pad.r, h - pad.b); ctx.stroke();
+  if (o.xLabel) { ctx.fillStyle = C["ink-2"]; ctx.textAlign = "right"; ctx.fillText(o.xLabel, w - pad.r, h - 4); }
+  if (o.yLabel) { ctx.fillStyle = C["ink-2"]; ctx.textAlign = "left"; ctx.fillText(o.yLabel, pad.l + 6, pad.t + 10); }
+  return { X, Y, pad };
+}
+function polyline(ctx, pts, X, Y, color, width = 3, dash) {
+  if (!pts.length) return;
+  ctx.strokeStyle = C[color] || color; ctx.lineWidth = width; ctx.lineJoin = "round"; ctx.lineCap = "round";
+  ctx.setLineDash(dash || []); ctx.beginPath();
+  pts.forEach(([x, y], i) => i ? ctx.lineTo(X(x), Y(y)) : ctx.moveTo(X(x), Y(y)));
+  ctx.stroke(); ctx.setLineDash([]);
+}
+
+/* tank used in steps 2 and 3 */
+function drawTank(ctx, w, h, level, max, dots, o = {}) {
+  const tw = Math.min(170, w * 0.46), tx = w / 2 - tw / 2, ty = 44, th = h - 80;
+  const lvl = Math.max(o.allowNeg ? -max * .25 : 0, level);
+  const zeroY = ty + th;
+  // tap + drain labels
+  ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "center";
+  ctx.fillStyle = C.bact; ctx.fillText(o.madeLabel ?? "", tx + 26, 20);
+  ctx.fillStyle = C.wound; ctx.fillText(o.lostLabel ?? "", tx + tw - 10, h - 10);
+  // tank
+  ctx.fillStyle = C.surface; rr(ctx, tx, ty, tw, th, 12); ctx.fill();
+  const fillH = Math.max(0, lvl) / max * th;
+  ctx.fillStyle = C["gel-soft"]; rr(ctx, tx, zeroY - fillH, tw, fillH, [0, 0, 12, 12]); ctx.fill();
+  ctx.fillStyle = C.gel; ctx.fillRect(tx, zeroY - fillH, tw, Math.min(3, fillH));
+  if (lvl < 0) { ctx.fillStyle = C.wound; ctx.globalAlpha = .35 + .2 * Math.sin(o.t * 10); rr(ctx, tx, zeroY, tw, -lvl / max * th, 6); ctx.fill(); ctx.globalAlpha = 1; }
+  ctx.strokeStyle = C.ink; ctx.lineWidth = 2; rr(ctx, tx, ty, tw, th, 12); ctx.stroke();
+  // scale
+  ctx.fillStyle = C["ink-2"]; ctx.font = `500 10px ${C.mono}`; ctx.textAlign = "right";
+  for (let v = 0; v <= max; v += max / 4) { const y = zeroY - v / max * th; ctx.fillText(v, tx - 8, y + 3); ctx.strokeStyle = C.line; ctx.beginPath(); ctx.moveTo(tx - 4, y); ctx.lineTo(tx, y); ctx.stroke(); }
+  // value
+  ctx.fillStyle = C.ink; ctx.font = `700 26px ${C.mono}`; ctx.textAlign = "left";
+  ctx.fillText(fmt(level), tx + tw + 14, Math.max(ty + 20, Math.min(zeroY, zeroY - fillH + 9)));
+  dots.update(o.dt || 0); dots.draw(ctx);
+  return { tx, ty, tw, th, zeroY, fillTop: zeroY - fillH };
+}
+
+/* confetti burst for the healed wound */
+function confetti() {
+  if (REDUCED) return;
+  const cv = $("#confetti"), ctx = cv.getContext("2d"), d = Math.min(devicePixelRatio || 1, 2);
+  cv.width = innerWidth * d; cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+  const cols = [C.gel, C.bact, C.gas, C.wound, C.ink];
+  const ps = Array.from({ length: 90 }, () => ({ x: innerWidth / 2, y: innerHeight * .45, vx: (Math.random() - .5) * 700, vy: -Math.random() * 600 - 150, r: Math.random() * 6 + 3, c: cols[Math.random() * 5 | 0], a: Math.random() * 6 }));
+  let t0 = performance.now(), prev = t0;
+  (function f(now) {
+    const dt = (now - prev) / 1000; prev = now; ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ps.forEach(p => { p.vy += 900 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.a += dt * 6; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); });
+    if (now - t0 < 2600) requestAnimationFrame(f); else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  })(t0);
+}
+
+/* ================= MISSION ================= */
+Steps[0] = {
+  init() {
+    let beat = 0, glow = 0, gT = 0, mT = 0;
+    const dots = new Dots(60);
+    const caps = ["Cross-section · wound that won't heal", "Warning gas rising", "Bacteria switching on", "Medicine travelling down", "1 layer? 5 layers?"];
+    new Scene($("#missionCanvas"), (ctx, w, h, dt, t) => {
+      glow += ((beat >= 2 ? 1 : 0) - glow) * Math.min(1, dt * 3);
+      const L = beat === 4 ? 1 + Math.round(2 + 2 * Math.sin(t * 0.9)) : 3;
+      const g = drawPatch(ctx, w, h, { layers: L, glow, t });
+      if (beat >= 1 && beat < 4 && (gT += dt) > 0.2) {
+        gT = 0;
+        dots.add({ x: g.wx + (Math.random() - .5) * g.ww * 1.4, y: g.wy + 6, vy: -(45 + Math.random() * 30), vx: (Math.random() - .5) * 14, color: "gas", r: 3, life: (g.wy - g.top) / 55 + .2, target: .9 });
+      }
+      if (beat >= 3 && (mT += dt) > 0.11) {
+        mT = 0;
+        const b = g.bac[Math.random() * g.bac.length | 0];
+        const d = dots.add({ x: b.x, y: b.y, vy: 40 + Math.random() * 20, vx: (g.wx - b.x) * 0.22, color: "gel", r: 3.8 });
+        if (d) d.chk = b.layer;
+      }
+      dots.update(dt);
+      for (const d of dots.a) {
+        if (d.color !== "gel" || d.dying) continue;
+        const li = Math.floor((g.tissueTop - d.y) / g.lh);
+        if (li < d.chk) { d.chk = li; if (Math.random() < 0.3) dots.kill(d); }
+        if (d.y > g.tissueTop + 8) dots.kill(d);
+      }
+      dots.draw(ctx);
+    });
+    const io = new IntersectionObserver(es => es.forEach(en => {
+      if (!en.isIntersecting) return;
+      beat = +en.target.dataset.beat;
+      $$(".beat").forEach(b => b.classList.toggle("on", b === en.target));
+      $("#missionCap").textContent = caps[beat];
+    }), { rootMargin: "-42% 0px -42% 0px" });
+    $$(".beat").forEach(b => io.observe(b));
+    $("#startBtn").addEventListener("click", () => {
+      badge("chronic wound"); badge("nitric oxide (NO)"); badge("therapeutic peptide (TAP2)");
+      complete(0); goTo(1);
+    });
+  }
+};
+
+/* ================= STEP 1 · SORT ================= */
+Steps[1] = (() => {
+  const CARDS = [
+    { id: "make", t: "The bacteria make medicine", bin: "add", why: "Making medicine puts more into the patch." },
+    { id: "colour", t: "The colour of the patch", bin: "none", why: "A blue or pink patch holds the same medicine." },
+    { id: "break", t: "The medicine breaks down in the gel", bin: "remove", why: "Broken-down medicine is gone from the patch." },
+    { id: "shape", t: "The shape of the sticker", bin: "none", why: "Round or square, the medicine inside doesn't change." },
+    { id: "seep", t: "Some seeps out into the wound", bin: "remove", why: "Medicine that leaves the patch isn't in it any more." },
+  ];
+  const NAME = { add: "Adds medicine", remove: "Removes medicine", none: "Doesn't matter" };
+  let selected = null, placed = 0;
+  const deck = () => $("#deck");
+
+  function arm(on) { $$("#step-1 .bin").forEach(b => b.classList.toggle("armed", on)); }
+  function select(btn) {
+    if (selected === btn) { btn.setAttribute("aria-pressed", "false"); selected = null; arm(false); return; }
+    if (selected) selected.setAttribute("aria-pressed", "false");
+    selected = btn; btn.setAttribute("aria-pressed", "true"); arm(true);
+  }
+  function place(btn, binName, quiet) {
+    const c = CARDS.find(x => x.id === btn.dataset.id);
+    if (selected) selected.setAttribute("aria-pressed", "false"); selected = null; arm(false);
+    if (c.bin !== binName) {
+      btn.classList.remove("bounce"); void btn.offsetWidth; btn.classList.add("bounce");
+      say("#s1say", "warn", `Watch what happens: <b>${c.t.toLowerCase()}</b> bounced back out of "${NAME[binName]}". Hint: ${c.bin === "none" ? "would this change how much medicine is inside?" : "does it put medicine in, or take it away?"}`);
+      btn.focus(); return;
+    }
+    const span = document.createElement("span");
+    span.className = "card placed"; span.textContent = c.t;
+    $(`#step-1 .bin[data-bin="${binName}"] .slot`).appendChild(span);
+    btn.remove(); placed++;
+    if (!quiet) say("#s1say", "good", `${c.why} <span class="num">(${placed}/5)</span>`);
+    if (placed === CARDS.length && !quiet) finish();
+  }
+  function finish() {
+    note("Only three things change the medicine: it's made, it breaks down, it seeps out");
+    note("Colour and shape of the patch don't matter");
+    badge("assumption");
+    $("#s1disc").hidden = false;
+    say("#s1say", "good", "All sorted. You just built the first piece of a model: a list of what matters.");
+    complete(1);
+  }
+  function init() {
+    deck().innerHTML = CARDS.map(c => `<button class="card" data-id="${c.id}" aria-pressed="false"><span class="grip" aria-hidden="true"></span>${c.t}</button>`).join("");
+    let drag = null, suppress = false;
+    deck().addEventListener("click", e => {
+      const b = e.target.closest(".card"); if (!b) return;
+      if (suppress) { suppress = false; return; }
+      select(b);
+    });
+    $$("#step-1 .bin").forEach(bin => bin.addEventListener("click", () => {
+      if (selected) place(selected, bin.dataset.bin);
+      else say("#s1say", "info", "Pick a card first, then choose a box.");
+    }));
+    deck().addEventListener("pointerdown", e => {
+      const b = e.target.closest(".card"); if (!b || e.button > 0) return;
+      drag = { b, x: e.clientX, y: e.clientY, ghost: null, id: e.pointerId };
+    });
+    addEventListener("pointermove", e => {
+      if (!drag) return;
+      if (!drag.ghost) {
+        if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+        const r = drag.b.getBoundingClientRect();
+        drag.ox = e.clientX - r.left; drag.oy = e.clientY - r.top;
+        drag.ghost = drag.b.cloneNode(true); drag.ghost.classList.add("dragging"); drag.ghost.style.width = r.width + "px";
+        document.body.appendChild(drag.ghost); drag.b.style.opacity = ".3";
+      }
+      e.preventDefault();
+      drag.ghost.style.left = e.clientX - drag.ox + "px"; drag.ghost.style.top = e.clientY - drag.oy + "px";
+      const over = document.elementFromPoint(e.clientX, e.clientY)?.closest(".bin");
+      $$("#step-1 .bin").forEach(x => x.classList.toggle("over", x === over));
+    }, { passive: false });
+    const end = e => {
+      if (!drag) return;
+      if (drag.ghost) {
+        const over = document.elementFromPoint(e.clientX, e.clientY)?.closest("#step-1 .bin");
+        drag.ghost.remove(); drag.b.style.opacity = ""; suppress = true;
+        $$("#step-1 .bin").forEach(x => x.classList.remove("over"));
+        if (over) place(drag.b, over.dataset.bin);
+        setTimeout(() => suppress = false, 50);
+      }
+      drag = null;
+    };
+    addEventListener("pointerup", end); addEventListener("pointercancel", end);
+  }
+  function restore() {
+    CARDS.forEach(c => { const b = $(`#deck .card[data-id="${c.id}"]`); if (b) place(b, c.bin, true); });
+    $("#s1disc").hidden = false;
+    if (!S.done[1]) finish();
+  }
+  return { init, restore };
+})();
+
+/* ================= STEP 2 · SANDBOX ================= */
+Steps[2] = (() => {
+  let shown = 20, level = 20, lost = 2, pred = null, running = false, flowing = false, t0 = 0;
+  const tried = new Set();
+  const dots = new Dots(60);
+  let geo = null, mT = 0, lT = 0;
+  function init() {
+    new Scene($("#s2canvas"), (ctx, w, h, dt, t) => {
+      shown += (level - shown) * Math.min(1, dt * 5);
+      if (flowing) {
+        if ((mT += dt) > 0.9 / 5) { mT = 0; if (geo) dots.add({ x: geo.tx + 26, y: 28, vy: 160, color: "bact", r: 3.5, life: (geo.fillTop - 28) / 160 }); }
+        if ((lT += dt) > 0.9 / Math.max(1, lost)) { lT = 0; if (geo) dots.add({ x: geo.tx + geo.tw - 10, y: geo.zeroY + 2, vy: 70, color: "wound", r: 3.5, life: .5 }); }
+      }
+      geo = drawTank(ctx, w, h, shown, 40, dots, { dt, t, madeLabel: "+5 MADE", lostLabel: `−${lost} LOST` });
+    });
+    $("#s2pred").addEventListener("click", e => {
+      const b = e.target.closest(".choice"); if (!b || running) return;
+      pred = b.dataset.v; press($("#s2pred"), b); $("#s2run").disabled = false;
+    });
+    $("#s2lost").addEventListener("click", e => {
+      const b = e.target.closest(".choice"); if (!b || b.disabled || running) return;
+      lost = +b.dataset.v; press($("#s2lost"), b); $("#s2lostTxt").textContent = lost;
+      level = 20; shown = 20; $("#s2seq").innerHTML = ""; pred = null; press($("#s2pred"), null); $("#s2run").disabled = true;
+      say("#s2say", "info", `Lost is now <b class="num">${lost}</b>. Predict again before you run.`);
+    });
+    $("#s2run").addEventListener("click", run);
+  }
+  async function run() {
+    if (running || !pred) return;
+    running = true; $("#s2run").disabled = true; flowing = true;
+    level = 20; shown = 20;
+    const seq = $("#s2seq"); seq.innerHTML = `<span>20</span>`;
+    for (let m = 1; m <= 3; m++) {
+      await wait(750);
+      level = level + 5 - lost;
+      seq.insertAdjacentHTML("beforeend", `<i>→</i><span>${fmt(level)}</span>`);
+    }
+    await wait(500); flowing = false;
+    const actual = lost < 5 ? "up" : lost === 5 ? "same" : "down";
+    const word = { up: "went up", same: "stayed the same", down: "went down" }[actual];
+    const why = lost < 5 ? `5 made is more than ${lost} lost, so it gains ${5 - lost} a minute.` : lost === 5 ? "5 made and 5 lost cancel out, so nothing changes." : `7 lost is more than 5 made, so it drops 2 a minute.`;
+    if (pred === actual) say("#s2say", "good", `You predicted it and it ${word}. ${why}`);
+    else say("#s2say", "warn", `Watch what happens: it ${word}. ${why}`);
+    tried.add(lost);
+    if (lost === 2) { $$("#s2lost .choice").forEach(b => b.disabled = false); $("#s2say .say span:last-child").insertAdjacentHTML("beforeend", " <b>Now try Lost 5 and Lost 7.</b>"); }
+    pred = null; press($("#s2pred"), null);
+    running = false;
+    if (tried.has(5) && tried.has(7)) reveal();
+  }
+  function reveal() {
+    $("#s2disc").hidden = false;
+    badge("production"); badge("degradation");
+    note("Change each minute = made − lost");
+    complete(2);
+  }
+  function restore() { $$("#s2lost .choice").forEach(b => b.disabled = false); $("#s2seq").innerHTML = "<span>20</span><i>→</i><span>23</span><i>→</i><span>26</span><i>→</i><span>29</span>"; tried.add(5); tried.add(7); reveal(); }
+  return { init, restore };
+})();
+
+/* ================= STEP 3 · BROKEN MODEL ================= */
+Steps[3] = (() => {
+  let level = 20, shown = 20, running = false, ranA = false, ranB = false, lostNow = 0;
+  const dots = new Dots(60); let geo = null;
+  function init() {
+    new Scene($("#s3canvas"), (ctx, w, h, dt, t) => {
+      shown += (level - shown) * Math.min(1, dt * 5);
+      geo = drawTank(ctx, w, h, shown, 20, dots, { dt, t, allowNeg: true, madeLabel: "BACTERIA OFF", lostLabel: lostNow ? `−${fmt(lostNow)} LOST` : "" });
+    });
+    const runRule = async (rule) => {
+      if (running) return; running = true;
+      $("#s3a").disabled = $("#s3b").disabled = true;
+      const seq = $(rule === "A" ? "#s3seqA" : "#s3seqB"); seq.innerHTML = "<span>20</span>";
+      level = 20; shown = 20; await wait(300);
+      for (let m = 1; m <= 5; m++) {
+        await wait(650);
+        lostNow = rule === "A" ? 5 : level * 0.2;
+        const n = Math.max(1, Math.round(lostNow));
+        for (let i = 0; i < n && geo; i++) dots.add({ x: geo.tx + geo.tw * (.3 + Math.random() * .4), y: geo.fillTop + 6, vy: 90 + Math.random() * 50, vx: (Math.random() - .5) * 40, color: "wound", r: 3.5, life: .7 });
+        level = level - lostNow;
+        seq.insertAdjacentHTML("beforeend", `<i>→</i><span class="${level < -1e-9 ? "neg" : ""}">${fmt(level)}</span>`);
+      }
+      lostNow = 0;
+      if (rule === "A") {
+        ranA = true;
+        $("#s3box").classList.remove("flash"); void $("#s3box").offsetWidth; $("#s3box").classList.add("flash");
+        say("#s3say", "bad", "<b>Something went wrong.</b> The model says −5. Can a patch hold less than no medicine?");
+      } else {
+        ranB = true;
+        say("#s3say", "good", "Rule B never goes below zero. It loses 4, then 3.2, then 2.6… smaller bites each time.");
+      }
+      running = false; $("#s3a").disabled = $("#s3b").disabled = false;
+      if (ranA && ranB) $("#s3explain").hidden = false;
+    };
+    $("#s3a").addEventListener("click", () => runRule("A"));
+    $("#s3b").addEventListener("click", () => runRule("B"));
+    $("#s3opts").addEventListener("click", e => {
+      const b = e.target.closest(".choice"); if (!b) return;
+      press($("#s3opts"), b);
+      if (b.dataset.v === "share") { b.classList.add("good"); finish(); }
+      else { b.classList.add("meh"); say("#s3say", "warn", "Watch what happens when you press <b>Why? Show me</b>. Look at how much is lost from a full patch compared with an almost empty one."); }
+    });
+    $("#s3why").addEventListener("click", () => {
+      $("#s3whyBox").hidden = false;
+      if (Steps[3].whyScene) return;
+      Steps[3].whyScene = new Scene($("#s3whyCanvas"), (ctx, w, h, dt, t) => {
+        const vals = [20, 10, 5], cw = w / 3;
+        vals.forEach((v, i) => {
+          const bw = Math.min(56, cw * .4), x = cw * i + cw / 2 - bw / 2, base = h - 26, full = h - 50;
+          const hh = v / 20 * full, lh = hh * 0.2, pulse = .5 + .5 * Math.sin(t * 4);
+          ctx.fillStyle = C["gel-soft"]; ctx.fillRect(x, base - hh, bw, hh);
+          ctx.fillStyle = C.wound; ctx.globalAlpha = .45 + .45 * pulse; ctx.fillRect(x, base - hh, bw, lh); ctx.globalAlpha = 1;
+          ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.strokeRect(x, base - full, bw, full);
+          ctx.font = `700 12px ${C.mono}`; ctx.textAlign = "center"; ctx.fillStyle = C.ink;
+          ctx.fillText(`${v} in patch`, x + bw / 2, h - 8);
+          ctx.fillStyle = C.wound; ctx.fillText(`−${fmt(v * .2)}`, x + bw + 20, base - hh + 10);
+        });
+      });
+      $("#s3whyBox").insertAdjacentHTML("afterend", `<p class="kbd-hint" style="margin-top:6px">20% of a full patch is a big bite. 20% of an almost-empty patch is tiny. So it can never go below zero.</p>`);
+    });
+  }
+  function finish() {
+    $("#s3disc").hidden = false;
+    say("#s3say", "good", "Yes. More medicine means more is lost each minute; less medicine means less is lost.");
+    badge("decay rate");
+    value("loss", "Share lost / min", "20% (guess)");
+    complete(3);
+  }
+  function restore() {
+    $("#s3seqA").innerHTML = "<span>20</span><i>→</i><span>15</span><i>→</i><span>10</span><i>→</i><span>5</span><i>→</i><span>0</span><i>→</i><span class=\"neg\">−5</span>";
+    $("#s3seqB").innerHTML = "<span>20</span><i>→</i><span>16</span><i>→</i><span>12.8</span><i>→</i><span>10.2</span><i>→</i><span>8.2</span><i>→</i><span>6.6</span>";
+    $("#s3explain").hidden = false; const b = $('#s3opts [data-v="share"]'); press($("#s3opts"), b); b.classList.add("good");
+    ranA = ranB = true; finish();
+  }
+  return { init, restore };
+})();
+
+/* ================= STEP 4 · STEP BY STEP ================= */
+Steps[4] = (() => {
+  const ANS = [12, 21.6, 29.28];
+  let row = 0, pred = null, animMin = -1, made = 12, ran = false;
+  const series = (m, n = 50) => { const p = [[0, 0]]; let l = 0; for (let i = 1; i <= n; i++) { l = Model.next(l, m); p.push([i, l]); } return p; };
+  function bars(level, mEl, lEl, mv, lv, madeV) {
+    const lost = level * 0.2, max = 22;
+    $(mEl).style.width = Math.min(100, madeV / max * 100) + "%"; $(lEl).style.width = Math.min(100, lost / max * 100) + "%";
+    $(mv).textContent = fmt(madeV); $(lv).textContent = fmt(lost);
+  }
+  function renderRows() {
+    const tb = $("#s4table tbody"); tb.innerHTML = "";
+    for (let i = 0; i <= Math.min(row, 2); i++) {
+      const old = i === 0 ? 0 : ANS[i - 1];
+      const done = i < row;
+      tb.insertAdjacentHTML("beforeend", `<tr>
+        <td>${i + 1}</td><td>${fmt(old)}</td><td style="color:var(--bact)">+12</td>
+        <td style="color:var(--wound)" id="s4lost${i}">${done ? "−" + fmt(old * .2, 2) : "0.2 × " + fmt(old)}</td>
+        <td><label class="sr" for="s4in${i}">New medicine at minute ${i + 1}</label><input id="s4in${i}" class="${done ? "ok" : ""}" inputmode="decimal" autocomplete="off" ${done ? `value="${fmt(ANS[i], 2)}" disabled` : ""}></td>
+        <td>${done ? `<svg width="16" height="16" style="color:var(--gel)"><use href="#i-check"/></svg>` : `<button class="ghost" data-work="${i}">= Help</button>`}</td></tr>`);
+    }
+    const inp = $(`#s4in${row}`);
+    if (inp && row < 3) {
+      const r0 = row;
+      const check = (strict) => {
+        if (row !== r0 || !inp.isConnected) return;
+        const v = parseFloat(inp.value.replace(",", "."));
+        if (isNaN(v)) return;
+        if (Math.abs(v - ANS[row]) <= 0.3) {
+          row++; say("#s4say", "good", row < 3 ? `Right: ${fmt(ANS[row - 1], 2)}. That becomes the <b>old</b> value for minute ${row + 1}.` : "Three minutes done by hand. Now let the computer do the next 47.");
+          renderRows(); if (row === 3) { $("#s4predWrap").hidden = false; } else $(`#s4in${row}`)?.focus();
+        } else if (strict) {
+          inp.classList.add("try");
+          const old = row === 0 ? 0 : ANS[row - 1];
+          say("#s4say", "warn", `Not quite. Try: <span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)}</span>`);
+        }
+      };
+      inp.addEventListener("input", () => { inp.classList.remove("try"); check(false); });
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") check(true); });
+      inp.addEventListener("blur", () => check(true));
+    }
+  }
+  function init() {
+    renderRows();
+    $("#s4table").addEventListener("click", e => {
+      const b = e.target.closest("[data-work]"); if (!b) return;
+      const i = +b.dataset.work, old = i === 0 ? 0 : ANS[i - 1];
+      $(`#s4lost${i}`).textContent = "−" + fmt(old * .2, 2);
+      say("#s4say", "info", `Calculator: <span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)} = ?</span> Type your answer in the box.`);
+      $(`#s4in${i}`)?.focus();
+    });
+    $("#s4pred").addEventListener("click", e => { const b = e.target.closest(".choice"); if (!b || ran) return; pred = b.dataset.v; press($("#s4pred"), b); $("#s4run").disabled = false; });
+    $("#s4run").addEventListener("click", run);
+    new Scene($("#s4canvas"), (ctx, w, h, dt) => {
+      const a = axes(ctx, w, h, { xMax: 50, yMax: 100, xTicks: [0, 10, 20, 30, 40, 50], yTicks: [0, 20, 40, 60, 80, 100], xLabel: "minutes", yLabel: "medicine in patch" });
+      if (animMin < 0) return;
+      const pts = series(made).filter(p => p[0] <= animMin);
+      const st = made / .2;
+      if (animMin >= 50) { ctx.setLineDash([5, 5]); ctx.strokeStyle = C["ink-2"]; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.X(0), a.Y(st)); ctx.lineTo(a.X(50), a.Y(st)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = C["ink-2"]; ctx.textAlign = "right"; ctx.font = `700 11px ${C.mono}`; ctx.fillText(`flat at ${fmt(st)}`, a.X(50), a.Y(st) - 6); }
+      polyline(ctx, pts, a.X, a.Y, "gel", 3);
+      const lp = pts[pts.length - 1]; if (lp) { ctx.fillStyle = C.gel; ctx.beginPath(); ctx.arc(a.X(lp[0]), a.Y(lp[1]), 5, 0, 6.283); ctx.fill(); }
+    });
+    $("#s4layers").addEventListener("input", e => {
+      const n = +e.target.value; made = 4 * n; $("#s4layersOut").textContent = n;
+      const st = made / .2; $("#s4level").textContent = fmt(st); bars(st, "#s4made", "#s4lost", "#s4madeV", "#s4lostV", made);
+      say("#s4micro", "info", `${n} layer${n > 1 ? "s" : ""} make ${made} a minute, so the patch settles at <b class="num">${fmt(st)}</b>.`);
+    });
+  }
+  async function run() {
+    if (ran || !pred) return; ran = true; $("#s4run").disabled = true;
+    $("#s4chartWrap").hidden = false;
+    $("#s4chartWrap").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" });
+    const T = REDUCED ? 1 : 3800, t0 = performance.now();
+    await new Promise(res => {
+      const f = now => {
+        const k = Math.min(1, (now - t0) / T); animMin = 50 * (1 - Math.pow(1 - k, 1.6));
+        const lvl = series(made, Math.floor(animMin))[Math.floor(animMin)][1];
+        $("#s4level").textContent = fmt(lvl); $("#s4min").textContent = Math.floor(animMin);
+        bars(lvl, "#s4made", "#s4lost", "#s4madeV", "#s4lostV", made);
+        k < 1 ? requestAnimationFrame(f) : res();
+      };
+      requestAnimationFrame(f);
+    });
+    animMin = 50;
+    if (pred === "flat") say("#s4micro", "good", "You predicted it: it levels off at <b class='num'>60</b>.");
+    else if (pred === "rise") $("#s4micro").innerHTML = `<div class="microscope"><span class="label">Mistake microscope</span><span>Look at the bars. <b>Made</b> stays at 12, but <b>lost</b> grows as the patch fills up. At 60, lost is 12 too, so nothing changes any more. It can't keep rising.</span></div>`;
+    else $("#s4micro").innerHTML = `<div class="microscope"><span class="label">Mistake microscope</span><span>The bacteria are switched <b>on</b> this time, so 12 keeps arriving every minute. The level can only drop to zero if nothing is made.</span></div>`;
+    finish();
+  }
+  function finish() {
+    $("#s4whatif").hidden = false; setRangeFill($("#s4layers"));
+    badge("parameter");
+    value("made3", "Made by 3 layers", "12 / min");
+    complete(4);
+  }
+  function restore() {
+    row = 3; renderRows(); $("#s4predWrap").hidden = false; ran = true;
+    press($("#s4pred"), $('#s4pred [data-v="flat"]')); $("#s4chartWrap").hidden = false; animMin = 50;
+    $("#s4level").textContent = "60"; $("#s4min").textContent = "50"; bars(60, "#s4made", "#s4lost", "#s4madeV", "#s4lostV", 12);
+    finish();
+  }
+  return { init, restore };
+})();
+
+/* ================= STEP 5 · PATCH LEVEL ================= */
+Steps[5] = (() => {
+  let made = 12, anim = -1, challenge = false, solved = false, target = null;
+  const series = (m) => { const p = [[0, 0]]; let l = 0; for (let i = 1; i <= 50; i++) { l = Model.next(l, m); p.push([i, l]); } return p; };
+  function init() {
+    new Scene($("#s5canvas"), (ctx, w, h) => {
+      const a = axes(ctx, w, h, { xMax: 50, yMax: 100, xTicks: [0, 10, 20, 30, 40, 50], yTicks: [0, 20, 40, 60, 80, 100], xLabel: "minutes", yLabel: "medicine in patch" });
+      if (challenge) {
+        ctx.setLineDash([6, 5]); ctx.strokeStyle = C.gas; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(a.X(0), a.Y(20)); ctx.lineTo(a.X(50), a.Y(20)); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = C.gas; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right"; ctx.fillText("target: flat at 20", a.X(50), a.Y(20) - 6);
+      }
+      if (anim < 0) return;
+      polyline(ctx, series(made).filter(p => p[0] <= anim), a.X, a.Y, solved ? "gel" : "ink", 3);
+    });
+    $("#s5watch").addEventListener("click", async () => {
+      $("#s5watch").disabled = true; made = 12;
+      await play(REDUCED ? 1 : 3000);
+      $("#s5why").hidden = false; $("#s5challenge").hidden = false; challenge = true; setRangeFill($("#s5made-in"));
+      $("#s5challenge").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" });
+    });
+    $("#s5made-in").addEventListener("input", e => {
+      if (solved) return;
+      made = +e.target.value; $("#s5madeOut").textContent = made;
+      clearTimeout(target); anim = 50; updBars(made / .2);
+      target = setTimeout(check, 250);
+    });
+  }
+  function play(T) {
+    const t0 = performance.now();
+    return new Promise(res => {
+      const f = now => {
+        const k = Math.min(1, (now - t0) / T); anim = 50 * k;
+        updBars(series(made)[Math.floor(anim)][1]);
+        k < 1 ? requestAnimationFrame(f) : res();
+      }; requestAnimationFrame(f);
+    });
+  }
+  function updBars(level) {
+    const max = 22;
+    $("#s5made").style.width = Math.min(100, made / max * 100) + "%"; $("#s5lost").style.width = Math.min(100, level * .2 / max * 100) + "%";
+    $("#s5madeV").textContent = fmt(made); $("#s5lostV").textContent = fmt(level * .2);
+  }
+  function check() {
+    const st = made / .2;
+    if (made === 4) finish();
+    else say("#s5say", "info", `Made ${made} settles at <b class="num">${fmt(st)}</b>. That's ${st > 20 ? "too high" : "too low"}. ${st > 20 ? "Make less." : "Make more."}`);
+  }
+  function finish() {
+    solved = true; made = 4; anim = 50; challenge = true;
+    $("#s5made-in").value = 4; $("#s5madeOut").textContent = 4; setRangeFill($("#s5made-in")); updBars(20);
+    say("#s5say", "good", "Flat at 20! It makes <b class='num'>4</b> a minute. That's exactly <b>one layer</b> of bacteria.");
+    $("#s5disc").hidden = false;
+    badge("steady state");
+    note("Every layer holds the same number of bacteria");
+    value("rule", "Patch level", "made ÷ 0.2");
+    value("level3", "3-layer patch level", "60");
+    complete(5);
+  }
+  function restore() { $("#s5watch").disabled = true; $("#s5why").hidden = false; $("#s5challenge").hidden = false; finish(); }
+  return { init, restore };
+})();
+
+/* ================= STEP 6 · MATCH DATA ================= */
+Steps[6] = (() => {
+  const NOISE = [1.2, -1.4, 0.9, -0.6, 1.1, -0.8, 0.5, -0.4];
+  const DATA = NOISE.map((n, t) => [t, Math.round((60 * Math.pow(0.8, t) + n) * 10) / 10]);
+  let loss = 0.4, shownLoss = 0.4, passed = false;
+  const fit = (L) => { const se = DATA.reduce((s, [t, y]) => s + (60 * Math.pow(1 - L, t) - y) ** 2, 0); return Math.max(0, 100 * (1 - Math.sqrt(se / DATA.length) / 14)); };
+  function init() {
+    new Scene($("#s6canvas"), (ctx, w, h, dt, t) => {
+      shownLoss += (loss - shownLoss) * Math.min(1, dt * 10);
+      const a = axes(ctx, w, h, { xMax: 7, yMax: 70, xTicks: [0, 1, 2, 3, 4, 5, 6, 7], yTicks: [0, 20, 40, 60], xLabel: "minutes after switching off", yLabel: "medicine" });
+      const pts = []; for (let x = 0; x <= 7.001; x += 0.1) pts.push([x, 60 * Math.pow(1 - shownLoss, x)]);
+      polyline(ctx, pts, a.X, a.Y, passed ? "gel" : "ink", 3);
+      DATA.forEach(([x, y], i) => {
+        const r = 6 + (passed ? 0 : Math.sin(t * 3 + i) * .6);
+        ctx.fillStyle = C.gas; ctx.beginPath(); ctx.arc(a.X(x), a.Y(y), r, 0, 6.283); ctx.fill();
+        ctx.strokeStyle = C.surface; ctx.lineWidth = 2; ctx.stroke();
+      });
+      ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right"; ctx.fillStyle = C.gas; ctx.fillText("● lab measurements", w - 16, 26);
+      ctx.fillStyle = passed ? C.gel : C.ink; ctx.fillText("— your model", w - 16, 42);
+    });
+    const inp = $("#s6loss"); setRangeFill(inp); update();
+    inp.addEventListener("input", () => { if (passed) return; loss = inp.value / 100; update(); });
+    inp.addEventListener("change", () => { if (!passed && fit(loss) >= 85) finish(); });
+  }
+  function update() {
+    const f = fit(loss);
+    $("#s6lossOut").textContent = Math.round(loss * 100) + "%";
+    $("#s6fitOut").textContent = Math.round(f) + "%";
+    $("#s6fit").style.width = f + "%";
+    $("#s6meter").classList.toggle("pass", f >= 85);
+    if (f >= 85) say("#s6say", "good", "That's a match. Let go of the slider to lock it in.");
+    else if (f > 60) say("#s6say", "info", "Getting close. Keep going slowly.");
+    else say("#s6say", "info", loss > .2 ? "The curve drops too fast. The model is losing too much." : "The curve drops too slowly. The model is losing too little.");
+  }
+  function finish() {
+    passed = true; loss = 0.2; const inp = $("#s6loss"); inp.value = 20; inp.disabled = true; setRangeFill(inp); update();
+    say("#s6say", "good", "Locked at <b class='num'>20%</b>. Your guess from step 3 was right, and now the data backs it up.");
+    $("#s6disc").hidden = false;
+    value("loss", "Share lost / min", "20% (matches data)");
+    note("The bacteria keep working at a steady rate");
+    complete(6);
+  }
+  return { init, restore: finish };
+})();
+
+/* ================= STEP 7 · DOWN TO THE WOUND ================= */
+Steps[7] = (() => {
+  let cross = 0, answered = false, deep = false, busy = false;
+  const dots = new Dots(60);
+  const seed = () => { dots.a = []; for (let i = 0; i < 60; i++) dots.add({ lx: .04 + Math.random() * .92, ly: .15 + Math.random() * .7, layer: 2, r: 3.6, color: "gel", k: 5 }); };
+  function init() {
+    seed();
+    new Scene($("#s7canvas"), (ctx, w, h, dt, t) => {
+      const g = drawPatch(ctx, w, h, { layers: 3, maxLayers: 4, glow: .6, t, tissueAt: .72 });
+      for (const d of dots.a) {
+        let tx, ty;
+        if (d.layer >= 0) { tx = g.left + d.lx * (g.right - g.left); ty = g.tissueTop - (d.layer + 1) * g.lh + d.ly * g.lh; }
+        else { tx = g.wx + (d.lx - .5) * g.ww * 1.6; ty = g.tissueTop + 8 + d.ly * (h - g.tissueTop) * .4; }
+        if (d.tx == null) { d.x = tx; d.y = ty; }
+        d.tx = tx; d.ty = ty;
+      }
+      dots.update(dt); dots.draw(ctx);
+    });
+    $("#s7next").addEventListener("click", step);
+    $("#s7opts").addEventListener("click", e => {
+      const b = e.target.closest(".choice"); if (!b || answered) return;
+      press($("#s7opts"), b);
+      if (b.dataset.v === "broke") {
+        answered = true; b.classList.add("good");
+        say("#s7say", "good", "Yes. Some breaks down inside each layer, so only 70% makes it to the next one.");
+        $("#s7disc").hidden = false; badge("diffusion");
+        $("#s7whatif").hidden = false; setRangeFill($("#s7n"));
+        say("#s7say2", "info", "Now drag the slider to the right. How many layers until almost nothing arrives?");
+      } else {
+        b.classList.add("meh");
+        say("#s7say", "warn", "Watch what happens: press <b>Replay</b> and follow one dot that disappears. It fades out <i>inside</i> the gel. It doesn't go anywhere else.");
+      }
+    });
+    new Scene($("#s7bars"), (ctx, w, h) => {
+      const n = +$("#s7n").value;
+      const a = axes(ctx, w, h, { xMin: -.5, xMax: 12.5, yMax: 60, xTicks: [0, 2, 4, 6, 8, 10, 12], yTicks: [0, 20, 40, 60], xLabel: "layers crossed", pad: { b: 30 } });
+      const bw = (a.X(1) - a.X(0)) * .62;
+      for (let k = 0; k <= 12; k++) {
+        const v = 60 * Math.pow(.7, k);
+        ctx.fillStyle = k === n ? C.gel : C["gel-soft"];
+        ctx.fillRect(a.X(k) - bw / 2, a.Y(v), bw, a.Y(0) - a.Y(v));
+        if (k === n) { ctx.fillStyle = C.ink; ctx.font = `700 12px ${C.mono}`; ctx.textAlign = "center"; ctx.fillText(fmt(v), a.X(k), a.Y(v) - 6); }
+      }
+    });
+    $("#s7n").addEventListener("input", e => {
+      const n = +e.target.value, v = 60 * Math.pow(.7, n); $("#s7nOut").textContent = n;
+      if (n >= 8) {
+        say("#s7say2", "good", `After ${n} layers only <b class="num">${fmt(v)}</b> arrives. The medicine can only get so far.`);
+        if (!deep) { deep = true; $("#s7pen").hidden = false; badge("penetration depth"); note("Every layer behaves the same"); }
+        maybeFinish();
+      } else say("#s7say2", "info", `After ${n} layer${n > 1 ? "s" : ""}: <b class="num">${fmt(v)}</b> arrives. Keep going.`);
+    });
+  }
+  async function step() {
+    if (busy) return;
+    if (cross >= 3) { cross = 0; seed(); $("#s7seq").innerHTML = "<span>60</span>"; upd(); $("#s7next").textContent = "Next layer ↓"; return; }
+    busy = true; cross++;
+    const keep = Math.round(60 * Math.pow(.7, cross));
+    const live = dots.a.filter(d => !d.dying);
+    live.sort(() => Math.random() - .5).slice(0, live.length - keep).forEach(d => dots.kill(d));
+    await wait(350);
+    dots.a.filter(d => !d.dying).forEach(d => { d.layer--; d.ly = .15 + Math.random() * .7; });
+    $("#s7seq").insertAdjacentHTML("beforeend", `<i>→</i><span>${fmt(60 * Math.pow(.7, cross))}</span>`);
+    upd();
+    if (cross === 3) {
+      $("#s7next").textContent = "Replay ↺";
+      say("#s7say", "info", "<b class='num'>20.6</b> reached the wound. We started with 60.");
+      $("#s7ask").hidden = false;
+    }
+    busy = false;
+  }
+  function upd() { $("#s7now").textContent = fmt(60 * Math.pow(.7, cross)); $("#s7layer").textContent = `${cross} / 3`; }
+  function maybeFinish() { if (answered && deep) { value("reach3", "Reaching wound (3 layers)", "20.6"); complete(7); } }
+  function restore() {
+    $("#s7ask").hidden = false; answered = true; const b = $('#s7opts [data-v="broke"]'); press($("#s7opts"), b); b.classList.add("good");
+    $("#s7disc").hidden = false; $("#s7whatif").hidden = false; $("#s7pen").hidden = false; badge("diffusion"); badge("penetration depth");
+    $("#s7n").value = 8; $("#s7nOut").textContent = 8; setRangeFill($("#s7n")); deep = true; maybeFinish();
+  }
+  return { init, restore };
+})();
+
+/* ================= STEP 8 · DESIGN ================= */
+Steps[8] = (() => {
+  let layers = 3, bact = "medium", heal = 0, healTarget = 0, submitted = false, mT = 0;
+  const dots = new Dots(60);
+  function init() {
+    $("#s8layers").innerHTML = [1, 2, 3, 4, 5].map(k => `<button class="lp-btn" data-k="${k}" aria-label="${k} layer${k > 1 ? "s" : ""}">${k} layer${k > 1 ? "s" : ""}</button>`).join("");
+    $("#s8pred").addEventListener("click", e => {
+      const b = e.target.closest(".choice"); if (!b) return;
+      press($("#s8pred"), b); S.data.pred8 = b.dataset.v; save();
+      const first = $("#s8lab").hidden;
+      $("#s8lab").hidden = false; update();
+      if (first) { say("#s8say", "info", "Let's test it. Tap each thickness from 1 to 5 and watch <b>Reaching wound</b>."); $("#s8lab").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" }); }
+    });
+    $("#s8layers").addEventListener("click", e => { const b = e.target.closest(".lp-btn"); if (!b) return; layers = +b.dataset.k; healTarget = 0; update(true); });
+    $("#s8bact").addEventListener("click", e => {
+      const b = e.target.closest(".choice"); if (!b) return;
+      if (b.dataset.v === "high") { say("#s8say", "warn", "High is locked. Bacteria pushed that hard <b>burn out</b> and stop making medicine."); return; }
+      bact = b.dataset.v; press($("#s8bact"), b); healTarget = 0; update(true);
+    });
+    $("#s8submit").addEventListener("click", submit);
+    $("#s8bonus").addEventListener("click", e => {
+      const b = e.target.closest(".choice"); if (!b) return; press($("#s8bonus"), b);
+      if (b.dataset.v === "no") { b.classList.add("good"); say("#s8bonusSay", "good", "Right. With Low bacteria the best is about <b class='num'>10.3</b> at 3 layers, never 18. A model can show a design is impossible before anyone builds it."); }
+      else { b.classList.add("meh"); say("#s8bonusSay", "warn", "Watch what happens: switch to <b>Low</b> and try every thickness. Does the healing bar ever reach the line?"); }
+    });
+    new Scene($("#s8canvas"), (ctx, w, h, dt, t) => {
+      heal += (healTarget - heal) * Math.min(1, dt * 1.2);
+      const g = drawPatch(ctx, w, h, { layers, glow: 1, heal, t, tissueAt: .74 });
+      const r = Model.design(layers, bact);
+      if ((mT += dt) > 1.6 / r.made) {
+        mT = 0; const li = Math.random() * layers | 0, pool = g.bac.filter(x => x.layer === li), b = pool[Math.random() * pool.length | 0] || g.bac[0];
+        const d = dots.add({ x: b.x + (Math.random() - .5) * 40, y: b.y, vy: 55 + Math.random() * 20, vx: (g.wx - b.x) * .18, color: "gel", r: 3.4 }); if (d) d.chk = b.layer;
+      }
+      dots.update(dt);
+      for (const d of dots.a) {
+        if (d.dying) continue;
+        const li = Math.floor((g.tissueTop - d.y) / g.lh);
+        if (li < d.chk) { d.chk = li; if (Math.random() < .3) dots.kill(d); }
+        if (d.y > g.tissueTop + 10) dots.kill(d);
+      }
+      dots.draw(ctx);
+    });
+    new Scene($("#s8peak"), (ctx, w, h) => {
+      const a = axes(ctx, w, h, { xMin: .4, xMax: 5.6, yMax: 25, xTicks: [1, 2, 3, 4, 5], yTicks: [0, 10, 18, 25], xLabel: "layers", yLabel: "reaching the wound", pad: { b: 30 } });
+      ctx.setLineDash([6, 4]); ctx.strokeStyle = C.wound; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(a.X(.4), a.Y(18)); ctx.lineTo(a.X(5.6), a.Y(18)); ctx.stroke(); ctx.setLineDash([]);
+      const bw = (a.X(2) - a.X(1)) * .5;
+      for (let k = 1; k <= 5; k++) {
+        const v = Model.design(k, "medium").reach, sel = submitted && k === S.data.design?.layers;
+        ctx.fillStyle = v >= 18 ? (sel ? C.gel : C["gel-soft"]) : C.surface; ctx.fillRect(a.X(k) - bw / 2, a.Y(v), bw, a.Y(0) - a.Y(v));
+        ctx.strokeStyle = v >= 18 ? C.gel : C["ink-2"]; ctx.lineWidth = 1.5; ctx.strokeRect(a.X(k) - bw / 2, a.Y(v), bw, a.Y(0) - a.Y(v));
+        ctx.fillStyle = C.ink; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "center"; ctx.fillText(fmt(v), a.X(k), a.Y(v) - 6);
+      }
+      polyline(ctx, [1, 2, 3, 4, 5].map(k => [k, Model.design(k, "low").reach]), a.X, a.Y, "ink-2", 2, [3, 4]);
+      ctx.fillStyle = C["ink-2"]; ctx.textAlign = "left"; ctx.fillText("low bacteria", a.X(3.6), a.Y(Model.design(4, "low").reach) - 8);
+    });
+  }
+  function update(interact) {
+    const r = Model.design(layers, bact);
+    $$("#s8layers .lp-btn").forEach(b => { b.classList.toggle("on", +b.dataset.k <= layers); b.setAttribute("aria-pressed", +b.dataset.k === layers); });
+    $("#s8made").textContent = fmt(r.made); $("#s8level").textContent = fmt(r.level); $("#s8reach").textContent = fmt(r.reach);
+    $("#s8heal").style.width = Math.min(100, r.reach / 25 * 100) + "%"; $("#s8mark").style.left = (18 / 25 * 100) + "%";
+    $("#s8meter").classList.toggle("pass", r.heals);
+    if (!interact) return;
+    let msg, kind = "info";
+    if (bact === "low") msg = `Only <b class="num">${fmt(r.reach)}</b> arrives. ${r.heals ? "" : "Low bacteria can't make enough."}`;
+    else if (r.heals) { kind = "good"; msg = `<b class="num">${fmt(r.reach)}</b> reaches the wound. That's enough to heal.${layers === 3 ? " Is this the most you can get?" : ""}`; }
+    else if (layers <= 1) msg = `<b class="num">${fmt(r.reach)}</b> arrives. <b>Too little medicine made</b> in one layer.`;
+    else msg = `<b class="num">${fmt(r.reach)}</b> arrives. <b>Too far to travel</b>: it breaks down on the way.`;
+    say("#s8say", kind, msg);
+  }
+  function submit() {
+    const r = Model.design(layers, bact);
+    if (!r.heals) { say("#s8say", "warn", `Watch what happens: only <b class="num">${fmt(r.reach)}</b> reaches the wound, below the <b>18</b> needed. The wound stays red. Try another design.`); return; }
+    const best = layers === 3 && bact === "medium";
+    S.data.design = { layers, bact, reach: Math.round(r.reach * 10) / 10 }; save();
+    submitted = true; healTarget = 1;
+    say("#s8say", "good", best ? "<b>The wound is healing.</b> 3 layers gets 20.6 through, the most of any design." : `<b>The wound is healing.</b> ${fmt(r.reach)} gets through. Can you find a design that gets even more?`);
+    const wasDone = !!S.done[8];
+    after();
+    if (!wasDone) { confetti(); setTimeout(() => $("#s8after").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" }), 900); }
+  }
+  function after() {
+    $("#s8after").hidden = false; $("#s8sci").hidden = false;
+    badge("therapeutic threshold");
+    note("Healing is a simple on/off line at 18");
+    const d = S.data.design; value("design", "Our design", `${d.layers} layer${d.layers > 1 ? "s" : ""} · ${fmt(d.reach)}`);
+    Steps[9].fill();
+    complete(8);
+  }
+  function restore() {
+    if (!S.data.design) S.data.design = { layers: 3, bact: "medium", reach: 20.6 };
+    layers = S.data.design.layers; bact = S.data.design.bact; press($("#s8bact"), $(`#s8bact [data-v="${bact}"]`));
+    press($("#s8pred"), $(`#s8pred [data-v="${S.data.pred8 || "true"}"]`));
+    $("#s8lab").hidden = false; submitted = true; heal = healTarget = 1; update(); after();
+  }
+  return { init, restore };
+})();
+
+/* ================= LAB CARD ================= */
+Steps[9] = {
+  init() {
+    $("#openLabBtn").addEventListener("click", () => { complete(9); goTo(10); });
+    $("#lcPrint").addEventListener("click", () => { try { print(); } catch (e) { toast("Printing isn't available here. Take a screenshot instead."); } });
+  },
+  fill() {
+    const d = S.data.design || { layers: 3, bact: "medium", reach: 20.6 };
+    $("#lcLayers").textContent = `${d.layers} layer${d.layers > 1 ? "s" : ""}`;
+    $("#lcBact").textContent = d.bact[0].toUpperCase() + d.bact.slice(1);
+    $("#lcReach").innerHTML = `${fmt(d.reach)} <small class="kbd-hint" style="font-family:var(--body)">above the 18 needed</small>`;
+    $("#lcAssume").innerHTML = S.assume.map(a => `<li>${a}</li>`).join("");
+    $("#lcRules").innerHTML = ["change = made − lost", "lost = 20% × medicine now", "level in the patch = made ÷ 0.2", "each layer passes on 70%", "heals if at least 18 reaches the wound"].map(r => `<li>${r}</li>`).join("");
+  },
+  restore() { complete(9); }
+};
+
+/* ================= OPEN LAB ================= */
+Steps[10] = (() => {
+  const DEF = { per: 4, loss: 20, pass: 70, thr: 18, sel: 3 };
+  const P = { ...DEF };
+  const SL = [
+    ["per", "Medicine made per layer", 1, 12, 1, v => v + " / min"],
+    ["loss", "Share lost each minute", 5, 50, 1, v => v + "%"],
+    ["pass", "Share passed per layer", 40, 95, 1, v => v + "%"],
+    ["thr", "Healing level", 5, 40, 1, v => v],
+    ["sel", "Your thickness", 1, 10, 1, v => v + " layers"],
+  ];
+  const calc = k => Model.design(k, null, { per: P.per, loss: P.loss / 100, pass: P.pass / 100, threshold: P.thr });
+  function init() {
+    $("#olSliders").innerHTML = SL.map(([k, l, mn, mx, st, f]) => `<div class="slider"><div class="top"><label for="ol-${k}">${l}</label><output class="num" id="ol-${k}-o">${f(P[k])}</output></div><input type="range" id="ol-${k}" min="${mn}" max="${mx}" step="${st}" value="${P[k]}"></div>`).join("");
+    SL.forEach(([k, , , , , f]) => $(`#ol-${k}`).addEventListener("input", e => { P[k] = +e.target.value; $(`#ol-${k}-o`).textContent = f(P[k]); report(); }));
+    $("#olReset").addEventListener("click", () => { Object.assign(P, DEF); SL.forEach(([k, , , , , f]) => { const i = $(`#ol-${k}`); i.value = P[k]; setRangeFill(i); $(`#ol-${k}-o`).textContent = f(P[k]); }); report(); });
+    new Scene($("#olcanvas"), (ctx, w, h) => {
+      const vals = Array.from({ length: 10 }, (_, i) => calc(i + 1).reach);
+      const top = Math.max(P.thr * 1.25, ...vals) * 1.1, step = top > 100 ? 50 : top > 40 ? 20 : top > 20 ? 10 : 5;
+      const yT = []; for (let v = 0; v <= top; v += step) yT.push(v);
+      const a = axes(ctx, w, h, { xMin: .4, xMax: 10.6, yMax: top, xTicks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], yTicks: yT, xLabel: "layers", yLabel: "reaching the wound", pad: { b: 30 } });
+      ctx.setLineDash([6, 4]); ctx.strokeStyle = C.wound; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(a.X(.4), a.Y(P.thr)); ctx.lineTo(a.X(10.6), a.Y(P.thr)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = C.wound; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right"; ctx.fillText(`heals at ${P.thr}`, a.X(10.5), a.Y(P.thr) - 6);
+      const bw = (a.X(2) - a.X(1)) * .55;
+      vals.forEach((v, i) => {
+        const k = i + 1, ok = v >= P.thr - 1e-9;
+        ctx.fillStyle = k === P.sel ? (ok ? C.gel : C.wound) : (ok ? C["gel-soft"] : C.surface);
+        ctx.fillRect(a.X(k) - bw / 2, a.Y(v), bw, a.Y(0) - a.Y(v));
+        ctx.strokeStyle = ok ? C.gel : C["ink-2"]; ctx.lineWidth = 1.2; ctx.strokeRect(a.X(k) - bw / 2, a.Y(v), bw, a.Y(0) - a.Y(v));
+      });
+    });
+    report();
+  }
+  function report() {
+    const vals = Array.from({ length: 10 }, (_, i) => calc(i + 1));
+    let best = 0; vals.forEach((v, i) => { if (v.reach > vals[best].reach) best = i; });
+    const s = vals[P.sel - 1];
+    say("#olsay", s.heals ? "good" : "warn", `${P.sel} layers: <b class="num">${fmt(s.reach)}</b> reaches the wound (${s.heals ? "heals" : "doesn't heal"}). Best thickness with these settings: <b class="num">${best + 1} layer${best ? "s" : ""}</b> → ${fmt(vals[best].reach)}.`);
+  }
+  return { init, restore() { } };
+})();
+
+/* ================= BOOT ================= */
+(function boot() {
+  load();
+  buildProgress();
+  for (let n = 0; n <= 10; n++) Steps[n]?.init?.();
+  for (let n = 1; n <= 9; n++) if (S.done[n]) Steps[n]?.restore?.();
+  applyLocks();
+  renderNotebook();
+  $$('input[type="range"]').forEach(setRangeFill);
+  initScrollFx();
+  last = performance.now(); rafId = requestAnimationFrame(loop);
+  const next = [1, 2, 3, 4, 5, 6, 7, 8, 9].find(n => S.done[0] && !S.done[n]);
+  if (next) { toast(`Welcome back. Continuing at ${NAMES[next]}.`); setTimeout(() => goTo(next), 500); }
+})();
+</script>
+</body>
+</html>
