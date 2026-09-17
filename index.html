@@ -1541,16 +1541,17 @@ Steps[4] = (() => {
     $("#s4chartWrap").hidden = false;
     $("#s4chartWrap").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" });
     const T = REDUCED ? 1 : 3800, t0 = performance.now();
-    await new Promise(res => {
+    await Promise.race([new Promise(res => {
+      const all = series(made);
       const f = now => {
-        const k = Math.min(1, (now - t0) / T); animMin = 50 * (1 - Math.pow(1 - k, 1.6));
-        const lvl = series(made, Math.floor(animMin))[Math.floor(animMin)][1];
+        const k = Math.min(1, Math.max(0, (now - t0) / T)); animMin = 50 * (1 - Math.pow(1 - k, 1.6));
+        const lvl = all[Math.max(0, Math.min(50, Math.floor(animMin)))][1];
         $("#s4level").textContent = fmt(lvl); $("#s4min").textContent = Math.floor(animMin);
         bars(lvl, "#s4made", "#s4lost", "#s4madeV", "#s4lostV", made);
         k < 1 ? requestAnimationFrame(f) : res();
       };
       requestAnimationFrame(f);
-    });
+    }), wait(T + 1500)]);
     animMin = 50;
     if (pred === "flat") say("#s4micro", "good", "You predicted it: it levels off at <b class='num'>60</b>.");
     else if (pred === "rise") $("#s4micro").innerHTML = `<div class="microscope"><span class="label">Mistake microscope</span><span>Look at the bars. <b>Made</b> stays at 12, but <b>lost</b> grows as the patch fills up. At 60, lost is 12 too, so nothing changes any more. It can't keep rising.</span></div>`;
@@ -1601,13 +1602,14 @@ Steps[5] = (() => {
   }
   function play(T) {
     const t0 = performance.now();
-    return new Promise(res => {
+    return Promise.race([new Promise(res => {
+      const all = series(made);
       const f = now => {
-        const k = Math.min(1, (now - t0) / T); anim = 50 * k;
-        updBars(series(made)[Math.floor(anim)][1]);
+        const k = Math.min(1, Math.max(0, (now - t0) / T)); anim = 50 * k;
+        updBars(all[Math.max(0, Math.min(50, Math.floor(anim)))][1]);
         k < 1 ? requestAnimationFrame(f) : res();
       }; requestAnimationFrame(f);
-    });
+    }), wait(T + 1500)]);
   }
   function updBars(level) {
     const max = 22;
