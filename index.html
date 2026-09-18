@@ -99,7 +99,7 @@ main{min-width:0;display:flex;flex-direction:column;gap:28px}
 .beat h3{font-size:clamp(24px,2.8vw,32px);font-weight:700}
 .beat p{color:var(--ink-2);max-width:44ch}
 .beat .sci{margin-top:4px}
-.stage-wrap{position:sticky;top:calc(var(--hdr) + 24px);height:min(560px,calc(100vh - var(--hdr) - 48px));align-self:start}
+.stage-wrap{position:sticky;top:calc(var(--hdr) + 24px);height:min(460px,calc(100vh - var(--hdr) - 48px));align-self:start}
 .stage{position:relative;width:100%;height:100%;background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}
 .stage canvas{display:block;width:100%;height:100%}
 .stage-cap{position:absolute;left:16px;top:14px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink-2);letter-spacing:.06em;text-transform:uppercase;background:color-mix(in oklab,var(--surface) 80%,transparent);padding:4px 8px;border-radius:6px}
@@ -324,6 +324,18 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .rv.pre{opacity:1;transform:none}
 }
+
+/* --- step 9: python in the page --- */
+.py-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:900px){.py-grid{grid-template-columns:minmax(0,1fr)}}
+.pyeditor{background:var(--surface-2);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.pyeditor textarea{display:block;width:100%;height:340px;resize:vertical;border:0;background:transparent;color:var(--ink);font-family:var(--mono);font-size:13px;line-height:1.6;padding:14px;outline:none;tab-size:4;white-space:pre;overflow:auto}
+.pyeditor:focus-within{border-color:var(--gel)}
+.pyout{background:var(--ground);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.55;white-space:pre-wrap;min-height:96px;max-height:220px;overflow:auto;color:var(--ink-2)}
+.pyout b{color:var(--ink)}
+.pyout .err{color:var(--wound)}
+.pystatus{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.pystatus.on{color:var(--gel)}
 </style>
 <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
@@ -354,7 +366,7 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
   <div class="m-top">
     <span class="eyebrow">HKU iGEM · Modelling lab</span>
     <h1 class="m-title">How thick should the <em>patch</em> be?</h1>
-    <p class="m-lede">A wound that won't heal keeps sending out a warning gas. Our patch sits on that wound, and the bacteria inside it sense the gas and start making a healing medicine. The medicine has to travel back down to the wound, and some is lost on the way.</p>
+    <p class="m-lede">A wound that won't heal keeps sending out a warning gas. Our patch sits on that wound, and the bacteria inside it sense the gas and start making a healing medicine. The gas fades fast as it rises, so only the bacteria near the wound ever smell it. The medicine they make has to travel back down, and some is lost on the way.</p>
     <div class="m-meta"><span><b>8 steps</b> · about 13 minutes</span><span><b>No chemistry</b> needed</span><span>Scroll to see the story</span></div>
   </div>
 
@@ -385,7 +397,7 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
       <div class="beat" data-beat="4">
         <span class="tag">Your mission</span>
         <h3>More layers, more bacteria. But a longer journey.</h3>
-        <p>A thicker patch makes more medicine, but the medicine has further to travel. How thick should we make it so the most medicine reaches the wound? You'll build a model to find out.</p>
+        <p>A thicker patch holds more bacteria &mdash; but the warning gas fades before it reaches the ones near the top, so those never switch on, and the medicine made high up has further to travel. How thick should we make it so the most medicine reaches the wound? You'll build a model to find out.</p>
       </div>
     </div>
     <div class="stage-wrap">
@@ -747,7 +759,7 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
     <div class="split" id="s8after" hidden>
       <div class="canvas-box" style="height:220px"><canvas id="s8peak" aria-label="Medicine reaching the wound for 1 to 5 layers"></canvas></div>
       <div class="step-body">
-        <div class="say good"><span class="ic">!</span><span><b>More is not better.</b> Too thin: not enough medicine is made. Too thick: it can't travel far enough. Only a model shows you where the best point is.</span></div>
+        <div class="say good"><span class="ic">!</span><span><b>More is not better.</b> Too thin: too few bacteria to make enough medicine. Too thick: the gas never reaches the bacteria at the top, so they sit there switched off &mdash; and the medicine that <i>is</i> made has further to travel. Only a model shows you where the best point is.</span></div>
         <div class="panel" style="display:grid;gap:10px">
           <p class="label">Bonus question</p>
           <p><b>Can a patch with Low bacteria ever heal the wound?</b></p>
@@ -760,12 +772,53 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
   </div>
   <div class="step-foot">
     <span class="sci" id="s8sci" hidden><span class="flask">Sc</span>"Enough to heal" is the <b>therapeutic threshold</b></span>
-    <button class="btn next-btn" data-next="9" hidden>See your Lab Card ↓</button>
+    <button class="btn next-btn" data-next="9" hidden>Next: let the computer try it ↓</button>
+  </div>
+</section>
+
+<!-- ================= STEP 9 : RUN IT AS CODE ================= -->
+<section class="step locked" id="step-9" data-step="9">
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 8 to unlock</span>
+  <header class="step-head">
+    <span class="step-no">Step 9 <span class="t">· 3 min</span> <span class="step-done-pill">Done</span></span>
+    <h2>Let the computer try every thickness</h2>
+    <p class="lede">You tested a handful of designs by hand. Here is the <b>same rule you built</b>, written as code. It tests ten thicknesses in less time than it took you to test one.</p>
+    <button class="ghost hint-btn" data-hint="9">Hint</button>
+  </header>
+  <div class="step-body">
+    <div class="py-grid">
+      <div class="step-body" style="gap:10px">
+        <div class="row" style="justify-content:space-between">
+          <p class="label">Your model, written in Python</p>
+          <span class="pystatus" id="pyStatus">starting Python…</span>
+        </div>
+        <div class="pyeditor"><textarea id="pyCode" spellcheck="false" aria-label="Python code for the patch model"></textarea></div>
+        <div class="row">
+          <button class="btn gel" id="pyRun">Run the code ▸</button>
+          <button class="ghost" id="pyReset">Reset</button>
+        </div>
+        <p class="label">What the computer printed</p>
+        <div class="pyout" id="pyOut" aria-live="polite"><span class="kbd-hint">Press <b>Run the code</b>. Nothing is installed — Python runs inside this page.</span></div>
+      </div>
+      <div class="step-body" style="gap:12px">
+        <div class="canvas-box" style="height:300px"><canvas id="pycanvas" aria-label="Medicine reaching the wound for every thickness, drawn from the code output"></canvas></div>
+        <div id="pysay" aria-live="polite"></div>
+        <div class="panel" id="pyChallenge" hidden style="display:grid;gap:10px">
+          <p class="label">Now change one number</p>
+          <p>The medicine gets through a layer <b>better than we thought</b>. In the code, change <b class="num">pass_frac</b> from <b class="num">0.7</b> to <b class="num">0.8</b> and run it again.</p>
+          <p class="kbd-hint">Your old curve stays on the chart in a paler colour, so you can see what moved.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="step-foot">
+    <span class="sci" id="pysci" hidden><span class="flask">Sc</span>Trying every value of a number to see where the answer moves is a <b>parameter sweep</b></span>
+    <button class="btn next-btn" data-next="10" hidden>See your Lab Card ↓</button>
   </div>
 </section>
 
 <!-- ================= LAB CARD ================= -->
-<section class="labcard step locked" id="step-9" data-step="9" style="padding:0">
+<section class="labcard step locked" id="step-10" data-step="10" style="padding:0">
   <span class="lock-veil"><svg><use href="#i-lock"/></svg>Submit a design to unlock</span>
   <div class="lc-head">
     <div style="display:grid;gap:6px"><span class="eyebrow">Lab Card · HKU iGEM</span><h2>Our patch design</h2></div>
@@ -785,7 +838,7 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
 </section>
 
 <!-- ================= OPEN LAB ================= -->
-<section class="step locked" id="step-10" data-step="10">
+<section class="step locked" id="step-11" data-step="11">
   <span class="lock-veil"><svg><use href="#i-lock"/></svg>Unlocks after the Lab Card</span>
   <header class="step-head">
     <span class="step-no">Open Lab <span class="t">· bonus</span></span>
@@ -838,7 +891,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const HELPER_CODE = "2026";
-const STORE_KEY = "woundPatchLab.v1";
+const STORE_KEY = "woundPatchLab.v2";
 
 /* ---------------- model ---------------- */
 const Model = {
@@ -873,6 +926,14 @@ function readTokens() {
   ["ground", "surface", "surface-2", "ink", "ink-2", "line", "gel", "gel-soft", "wound", "wound-soft", "gas", "gas-soft", "bact", "bact-soft", "tissue", "tissue-2", "focus"]
     .forEach(k => C[k] = cs.getPropertyValue("--" + k).trim() || "#888");
   C.mono = cs.getPropertyValue("--mono").trim();
+  C.dark = relLum(C.ground) < relLum(C.ink);
+}
+function relLum(c) {
+  const m = /#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i.exec(c) || (c.match(/\d+/g) || []).slice(0, 3);
+  const p = Array.isArray(m) ? m.map(Number) : [1, 2, 3].map(i => parseInt(m[i], 16));
+  if (p.length < 3 || p.some(isNaN)) return .5;
+  const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
+  return .2126 * f(p[0]) + .7152 * f(p[1]) + .0722 * f(p[2]);
 }
 readTokens();
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
@@ -914,8 +975,8 @@ $("#nbClose").addEventListener("click", () => { $("#notebook").classList.remove(
 
 /* ---------------- steps + progress ---------------- */
 const Steps = {};              // n -> { init(), restore() }
-const LABELS = ["Go", "1", "2", "3", "4", "5", "6", "7", "8", "Card", "Lab"];
-const NAMES = ["Mission", "Sort", "Sandbox", "Broken model", "Step by step", "Patch level", "Match data", "Down to wound", "Design", "Lab Card", "Open Lab"];
+const LABELS = ["Go", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Card", "Lab"];
+const NAMES = ["Mission", "Sort", "Sandbox", "Broken model", "Step by step", "Patch level", "Match data", "Down to wound", "Design", "Run the code", "Lab Card", "Open Lab"];
 const section = n => document.querySelector(`[data-step="${n}"]`);
 const unlocked = n => n === 0 || !!S.done[n - 1];
 
@@ -930,7 +991,7 @@ function buildProgress() {
   });
 }
 function applyLocks() {
-  for (let n = 0; n <= 10; n++) {
+  for (let n = 0; n <= 11; n++) {
     const sec = section(n); if (!sec) continue;
     const lock = !unlocked(n);
     sec.classList.toggle("locked", lock);
@@ -940,7 +1001,7 @@ function applyLocks() {
     const chip = $(`.pchip[data-go="${n}"]`);
     chip.classList.toggle("done", !!S.done[n]);
     chip.setAttribute("aria-disabled", lock ? "true" : "false");
-    chip.innerHTML = lock ? `<svg aria-hidden="true"><use href="#i-lock"/></svg>${LABELS[n]}` : S.done[n] && n > 0 && n < 9 ? `<svg aria-hidden="true"><use href="#i-check"/></svg>${LABELS[n]}` : LABELS[n];
+    chip.innerHTML = lock ? `<svg aria-hidden="true"><use href="#i-lock"/></svg>${LABELS[n]}` : S.done[n] && n > 0 && n < 10 ? `<svg aria-hidden="true"><use href="#i-check"/></svg>${LABELS[n]}` : LABELS[n];
   }
 }
 function complete(n) {
@@ -949,7 +1010,7 @@ function complete(n) {
   const nx = section(n + 1);
   if (nx) {
     nx.classList.remove("unlocking"); void nx.offsetWidth; nx.classList.add("unlocking");
-    if (n > 0) toast(n === 8 ? "Lab Card unlocked" : n === 9 ? "Open Lab unlocked" : `Step ${n + 1} unlocked`);
+    if (n > 0) toast(n === 9 ? "Lab Card unlocked" : n === 10 ? "Open Lab unlocked" : `Step ${n + 1} unlocked`);
     Steps[n + 1]?.onUnlock?.();
   }
 }
@@ -1007,6 +1068,7 @@ const HINTS = {
   6: "Start the slider far away, then move it slowly. Watch the curve bend toward the dots. The match meter turns green at 85%.",
   7: "Each tap keeps 70% of the medicine: 60 × 0.7 = 42. The medicine doesn't go anywhere else. It fades.",
   8: "Try every thickness from 1 to 5 and watch the 'Reaching wound' number. The biggest isn't at the end.",
+  9: "You do not have to write anything. Press Run the code. Then change only the number after pass_frac and press Run again.",
 };
 let hintStep = 1;
 document.addEventListener("click", e => {
@@ -1094,41 +1156,301 @@ function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483
 
 function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
 
-/* the patch-on-wound cross-section, shared by mission, step 7 and step 8 */
+/* the patch-on-wound cross-section, shared by mission, step 7 and step 8
+   thickness axis x runs upward from the wound surface (x = 0):
+     tissue  |  bacterial cellulose (fixed)  |  hydrogel + E. coli (varies)  |  sealed backing
+   NO diffuses UP from the wound and decays; peptide diffuses DOWN from switched-on cells.
+   One threshold governs everything: reachY. Below it NO exists and cells are on;
+   above it there is no NO, no tint, no tracer, and every cell is drawn hollow.
+   o.neutral suppresses activation SIGNALLING only (halos, threshold, hatch, arrows,
+   verdict) -- never a layer's material fill; every region keeps its identity. */
+const NO_LAMBDA = 1.45;   // NO decay length, in layer-thicknesses
+const NO_ON = 0.2;        // concentration a cell needs before it switches on
+
+/* blue-noise point sets on a torus, so drifting tracers never line up into bead-chains.
+   u = position across the device, v = phase; the x axis is weighted so vertical
+   near-collinear runs are rejected harder than horizontal ones. Built once. */
+function poissonTorus(n, axw, minD, seed) {
+  const R = rng(seed), pts = [];
+  for (let i = 0; i < n; i++) {
+    let best = null, bestD = -1;
+    for (let a = 0; a < 40; a++) {
+      const u = R(), v = R();
+      let near = 1e9;
+      for (const q of pts) {
+        let du = Math.abs(q.u - u); if (du > .5) du = 1 - du;
+        let dv = Math.abs(q.v - v); if (dv > .5) dv = 1 - dv;
+        const d2 = du * du * axw * axw + dv * dv;
+        if (d2 < near) near = d2;
+      }
+      if (near > bestD) { bestD = near; best = { u, v }; }
+      if (near > minD * minD) break;
+    }
+    pts.push(best);
+  }
+  return pts;
+}
+const NO_PTS = poissonTorus(18, 4.6, .34, 7717);
+const PEP_PTS = poissonTorus(12, 4.6, .38, 3391);
+
 function drawPatch(ctx, w, h, o) {
-  const layers = o.layers ?? 3, maxL = o.maxLayers ?? 5, glow = o.glow ?? 0, heal = o.heal ?? 0, t = o.t ?? 0;
+  const layers = o.layers ?? 3, maxL = o.maxLayers ?? 5, heal = o.heal ?? 0, t = o.t ?? 0;
+  const neutral = o.neutral === true;
+  const glow = neutral ? 0 : (o.glow ?? 0);
+  const noAmt = neutral ? 0 : (o.no ?? 1), pepAmt = o.pep ?? glow;
   const tissueTop = h * (o.tissueAt ?? 0.7);
-  const left = w * 0.1, right = w * 0.9;
-  const lh = Math.min(44, (tissueTop - 34) / maxL);
-  // tissue
+  // geometry: a label gutter on the right, the patch stack on the left
+  const gut = Math.min(106, Math.max(80, w * 0.23));
+  const left = Math.max(12, w * 0.07), right = Math.max(left + 90, w - gut);
+  const ch = 13, backH = 9;                                   // cellulose + backing are FIXED
+  const lh = Math.max(13, Math.min(64, (tissueTop - 34 - ch - backH) / maxL));
+  const gelBottom = tissueTop - ch;                           // x = L_cellulose
+  const gelTop = gelBottom - layers * lh;                     // x = L_total
+  const top = gelTop - backH;                                 // outer face of the backing
+  const lam = NO_LAMBDA * lh;                                 // NO decay length in px
+  const conc = y => Math.exp(-Math.max(0, tissueTop - y) / lam);
+  const reachY = tissueTop - lam * Math.log(1 / NO_ON);        // conc(reachY) === NO_ON exactly
+  const dead = noAmt > 0.6 && reachY > gelTop + 6;             // is there an inert upper zone?
+  const noTopY = Math.max(gelTop, dead ? reachY : gelTop);     // NO never drawn above this
+  const pw = right - left, cx = (left + right) / 2;
+  // the two flux lanes: fixed before the cells are placed, so no cell sits under one
+  const tickR = left + 20;                                    // right edge of the L1..Ln tick column
+  const keep0 = Math.max(11, Math.min(19, pw / 26)), cellL = tickR + 10, cellR = right - 12;
+  let ax1 = cx - pw * 0.31, ax2 = cx + pw * 0.31;
+  if (ax1 - keep0 - cellL < 24) ax1 = cellL + keep0;
+  if (cellR - (ax2 + keep0) < 24) ax2 = cellR - keep0;
+  const noArrow = noAmt > 0.3, pepArrow = pepAmt > 0.3;
+  const lanes = []; if (noArrow) lanes.push(ax1); if (pepArrow) lanes.push(ax2);
+
+  // ---- tissue ----
   ctx.fillStyle = C.tissue; ctx.fillRect(0, tissueTop, w, h - tissueTop);
   ctx.strokeStyle = C["tissue-2"]; ctx.lineWidth = 1.5;
   for (let i = 1; i < 4; i++) { const y = tissueTop + (h - tissueTop) * i / 4; ctx.beginPath(); ctx.moveTo(0, y); for (let x = 0; x <= w; x += 24) ctx.lineTo(x, y + Math.sin(x / 30 + i) * 3); ctx.stroke(); }
-  // wound
-  const wx = w / 2, wy = tissueTop + 4, ww = w * 0.2, wd = (h - tissueTop) * 0.55;
-  ctx.save(); ctx.globalAlpha = 1 - heal * 0.85;
+  // ---- wound: a soft-edged crater, held back in dark mode so it cannot read as a light source ----
+  const wx = cx, wy = tissueTop + 4, ww = pw * 0.26, wd = (h - tissueTop) * 0.55;
   const pulse = 0.85 + 0.15 * Math.sin(t * 3);
-  ctx.fillStyle = C.wound; ctx.beginPath(); ctx.ellipse(wx, wy, ww * (heal ? 1 - heal * 0.4 : 1), wd * pulse * (1 - heal * 0.5), 0, 0, Math.PI); ctx.fill();
-  ctx.restore();
-  if (o.woundLabel !== false) { ctx.fillStyle = C.ink; ctx.globalAlpha = .75; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "left"; ctx.fillText(heal > .5 ? "HEALING TISSUE" : "WOUND", 12, h - 12); ctx.globalAlpha = 1; }
-  // patch
-  const top = tissueTop - layers * lh;
-  const bac = [];
-  for (let i = 0; i < layers; i++) {
-    const y = tissueTop - (i + 1) * lh;
-    ctx.fillStyle = C["gel-soft"]; rr(ctx, left, y + 1, right - left, lh - 2, 6); ctx.fill();
-    ctx.strokeStyle = C.gel; ctx.globalAlpha = .55; ctx.lineWidth = 1.2; rr(ctx, left, y + 1, right - left, lh - 2, 6); ctx.stroke(); ctx.globalAlpha = 1;
-    const R = rng(97 + i * 13), n = Math.max(4, Math.round((right - left) / 60));
-    for (let j = 0; j < n; j++) {
-      const bx = left + 14 + (j + R() * 0.6) * ((right - left - 28) / n), by = y + lh * (0.35 + R() * 0.3), ang = R() * 3;
-      bac.push({ x: bx, y: by, layer: i });
-      if (glow > 0) { ctx.globalAlpha = glow * (0.25 + 0.1 * Math.sin(t * 4 + j)); ctx.fillStyle = C.bact; ctx.beginPath(); ctx.arc(bx, by, 9, 0, 6.283); ctx.fill(); }
-      ctx.globalAlpha = 0.55 + glow * 0.45; ctx.save(); ctx.translate(bx, by); ctx.rotate(ang);
-      ctx.fillStyle = C.bact; rr(ctx, -6, -2.6, 12, 5.2, 2.6); ctx.fill(); ctx.restore(); ctx.globalAlpha = 1;
-    }
-    if (o.layerLabels !== false) { ctx.fillStyle = C["ink-2"]; ctx.font = `700 10px ${C.mono}`; ctx.textAlign = "right"; ctx.fillText("L" + (i + 1), left - 6, y + lh / 2 + 4); }
+  const crater = (sx, a) => {
+    ctx.globalAlpha = a * (1 - heal * 0.85); ctx.fillStyle = C.wound; ctx.beginPath();
+    const rx = ww * sx * (heal ? 1 - heal * 0.4 : 1), ry = wd * pulse * sx * (1 - heal * 0.5);
+    for (let k = 0; k <= 24; k++) { const th = Math.PI * k / 24, m = 1 + 0.045 * Math.sin(th * 3.3) + 0.03 * Math.sin(th * 6.1 + 1.4); const px = wx + Math.cos(th) * rx * m, py = wy + Math.sin(th) * ry * m; k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
+    ctx.closePath(); ctx.fill();
+    if (sx === 1) { ctx.globalAlpha = (C.dark ? .8 : .5) * (1 - heal * 0.85); ctx.strokeStyle = C["tissue-2"]; ctx.lineWidth = 2; ctx.stroke(); }
+    ctx.globalAlpha = 1;
+  };
+  if (C.dark) { crater(1.12, .05); crater(1.05, .08); crater(1, .4); }
+  else { crater(1.14, .11); crater(1.06, .16); crater(1, .58); }
+  if (o.woundLabel !== false) { ctx.fillStyle = C.ink; ctx.globalAlpha = .8; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.fillText(heal > .5 ? "HEALING TISSUE" : "WOUND", 12, h - 12); ctx.globalAlpha = 1; }
+
+  // ---- ghost of the thickest device, so the empty headroom becomes the comparison ----
+  const ghostTop = gelBottom - maxL * lh - backH;
+  if (o.ghost && layers < maxL) {
+    ctx.strokeStyle = C["ink-2"]; ctx.globalAlpha = .3; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.rect(left + .5, ghostTop + .5, pw - 1, gelBottom - ghostTop - 1); ctx.stroke();
+    ctx.globalAlpha = .2;
+    ctx.beginPath();
+    for (let i = layers + 1; i < maxL; i++) { const y = gelBottom - i * lh; ctx.moveTo(left + 4, y); ctx.lineTo(right - 4, y); }
+    ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+    ctx.font = `700 9px ${C.mono}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillStyle = C["ink-2"]; ctx.globalAlpha = .6;
+    ctx.fillText(maxL + " layers would reach here", cx, ghostTop + 13); ctx.globalAlpha = 1;
   }
-  return { tissueTop, top, left, right, lh, wx, wy, ww, bac };
+
+  // ---- hydrogel matrix (the part whose thickness varies) ----
+  ctx.fillStyle = C["gel-soft"]; rr(ctx, left, gelTop, pw, gelBottom - gelTop, [4, 4, 0, 0]); ctx.fill();
+  // ---- bacterial cellulose membrane: its own material colour, independent of any flux ----
+  ctx.fillStyle = C["gas-soft"]; ctx.fillRect(left, gelBottom, pw, ch);
+  // ---- NO field: rises from the wound, decays, stops dead at the threshold ----
+  if (noAmt > 0.01) {
+    ctx.fillStyle = C.gas;
+    for (let y = tissueTop - 5; y > noTopY; y -= 5) {
+      const a = conc(y) * 0.4 * noAmt;
+      if (a < 0.012) break;
+      ctx.globalAlpha = a; ctx.fillRect(left, Math.max(noTopY, y), pw, Math.min(5, y - noTopY + 5));
+    }
+    ctx.globalAlpha = 1;
+  }
+  // cellulose fibres, drawn over the tint so the membrane still reads as fibrous
+  ctx.strokeStyle = C["ink-2"]; ctx.lineWidth = 1; ctx.globalAlpha = .4;
+  ctx.beginPath();
+  const RF = rng(613), nf = Math.max(8, Math.round(pw / 11));
+  for (let i = 0; i < nf; i++) { const fx = left + 2 + RF() * (pw - 4), fy = gelBottom + 2 + RF() * (ch - 4), dx = 5 + RF() * 5, dy = (RF() - .5) * 5; ctx.moveTo(fx, fy); ctx.lineTo(Math.min(right - 2, fx + dx), fy + dy); }
+  ctx.stroke(); ctx.globalAlpha = 1;
+  ctx.strokeStyle = C["ink-2"]; ctx.globalAlpha = .55; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(left, gelBottom + .6); ctx.lineTo(right, gelBottom + .6);
+  ctx.moveTo(left, tissueTop - .6); ctx.lineTo(right, tissueTop - .6); ctx.stroke(); ctx.globalAlpha = 1;
+
+  // ---- the inert zone: wash + hatch, so it is an object and not an absence ----
+  const dh = reachY - gelTop;
+  if (dead) {
+    ctx.fillStyle = C.ground; ctx.globalAlpha = .34; ctx.fillRect(left, gelTop, pw, dh); ctx.globalAlpha = 1;
+    ctx.save(); ctx.beginPath(); ctx.rect(left, gelTop, pw, dh); ctx.clip();
+    ctx.strokeStyle = C["ink-2"]; ctx.globalAlpha = .14; ctx.lineWidth = 1; ctx.beginPath();
+    for (let x = left - dh; x < right; x += 9) { ctx.moveTo(x, reachY); ctx.lineTo(x + dh, gelTop); }
+    ctx.stroke(); ctx.restore(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = C.gas; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(left, reachY); ctx.lineTo(right, reachY); ctx.stroke(); ctx.setLineDash([]);
+  }
+  // gel outline + internal band marks
+  ctx.strokeStyle = C.gel; ctx.globalAlpha = .55; ctx.lineWidth = 1.2;
+  rr(ctx, left + .5, gelTop + .5, pw - 1, gelBottom - gelTop - 1, [4, 4, 0, 0]); ctx.stroke(); ctx.globalAlpha = 1;
+  ctx.strokeStyle = C.gel; ctx.globalAlpha = .3; ctx.lineWidth = 1; ctx.beginPath();
+  for (let i = 1; i < layers; i++) { const yb = gelBottom - i * lh; ctx.moveTo(left + 2, yb); ctx.lineTo(right - 2, yb); }
+  ctx.stroke(); ctx.globalAlpha = 1;
+  // ---- impermeable backing: a sealed mid-tone cap, zero flux ----
+  ctx.fillStyle = C["ink-2"]; rr(ctx, left, top, pw, backH, [5, 5, 0, 0]); ctx.fill();
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(left, top + backH + .6); ctx.lineTo(right, top + backH + .6); ctx.stroke();
+
+  // ---- place the E. coli first: lane keep-out, then relaxation, then freeze ----
+  const bac = [], hot = [];
+  const rows = lh > 44 ? 2 : 1, perRow = Math.max(9, Math.round(pw / 46));
+  const laneKeep = keep0;
+  // the runs of free width left between the flux lanes
+  const edges = [cellL];
+  for (const ln of lanes.slice().sort((a, b) => a - b)) edges.push(ln - laneKeep, ln + laneKeep);
+  edges.push(cellR);
+  const runs = [];
+  for (let i = 0; i + 1 < edges.length; i += 2) if (edges[i + 1] - edges[i] > 12) runs.push([edges[i], edges[i + 1]]);
+  if (!runs.length) runs.push([cellL, cellR]);
+  const runW = runs.reduce((a, r) => a + (r[1] - r[0]), 0), pitch = runW / perRow;
+  const rodL = Math.max(7, Math.min(12, pitch * 0.58)), rodW = rodL * 0.44;
+  const haloR = Math.max(5.5, Math.min(9, pitch * 0.4));
+  const atRun = u => { let d = u * runW; for (const r of runs) { const wd = r[1] - r[0]; if (d <= wd) return r[0] + d; d -= wd; } return runs[runs.length - 1][1]; };
+  for (let i = 0; i < layers; i++) {
+    const y0 = gelBottom - (i + 1) * lh, R = rng(97 + i * 13);
+    for (let r = 0; r < rows; r++) for (let col = 0; col < perRow; col++) {
+      const c = { x: atRun((col + 0.16 + R() * 0.68) / perRow), y: y0 + lh * (r + 0.22 + R() * 0.56) / rows, layer: i, ang: R() * 3 };
+      const cc = conc(c.y), lit = Math.max(0, Math.min(1, (cc - NO_ON) / (NO_ON * 0.9)));
+      c.on = neutral ? 0 : 1 - noAmt * (1 - lit);
+      bac.push(c); if (c.on > .45) hot.push(c);
+    }
+  }
+
+  // ---- flux lanes: identical treatment for both directions. Constant width, so width
+  //      encodes nothing; the decay is carried entirely by an opacity ramp that fades in
+  //      softly at the source and dissolves at the far end. Drawn under everything. ----
+  const flux = (ax, y0, y1, col) => {
+    const dir = y1 > y0 ? 1 : -1, len = Math.abs(y1 - y0);
+    if (len < 26) return;
+    const hw = 5, hl = 13, hh = 9.5, sy = y1 - dir * hl, sl = Math.abs(sy - y0);
+    const segs = Math.max(20, Math.min(48, Math.round(sl / 3)));
+    ctx.fillStyle = C[col];
+    // segment edges snapped to the half-pixel grid so no seam survives at 2x
+    let e0 = Math.round(y0 * 2) / 2;
+    for (let i = 0; i < segs; i++) {
+      const f = (i + .5) / segs, e1 = Math.round((y0 + dir * sl * (i + 1) / segs) * 2) / 2;
+      if (e1 !== e0) {
+        ctx.globalAlpha = f < .18 ? .62 * (f / .18) : .62 + (.16 - .62) * ((f - .18) / .82);
+        ctx.fillRect(ax - hw, e0, hw * 2, e1 - e0);
+      }
+      e0 = e1;
+    }
+    ctx.globalAlpha = .32;
+    ctx.beginPath(); ctx.moveTo(ax - hh, sy); ctx.lineTo(ax + hh, sy); ctx.lineTo(ax, y1); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = 1;
+  };
+  if (noArrow) flux(ax1, tissueTop + 10, noTopY + 2, "gas");
+  if (pepArrow) flux(ax2, Math.max(gelTop, noTopY) + 5, tissueTop + 20, "gel");
+
+  // ---- flux tracers, drawn UNDER the cells so a tracer can never punch through a rod,
+  //      and kept clear of the tick column so it can never eat a band label ----
+  const rim = C.dark ? C.ground : C.ink;    // whichever token is the dark one in this theme
+  if (noAmt > 0.01) {
+    const span = tissueTop - noTopY, x0 = tickR + 18, xw = right - 10 - x0;
+    ctx.lineWidth = 1.4; ctx.strokeStyle = rim;
+    for (let i = 0; i < NO_PTS.length; i++) {
+      const p = NO_PTS[i], px = x0 + p.u * xw;
+      const ph = (t * 0.32 + p.v) % 1, py = tissueTop - ph * span;
+      const a = noAmt * Math.min(1, conc(py) * 2.9) * Math.min(1, ph * 9) * Math.min(1, (1 - ph) * 5);
+      if (a < .05) continue;
+      ctx.beginPath(); ctx.arc(px, py, 3.1, 0, 6.283);
+      ctx.globalAlpha = a; ctx.fillStyle = C.gas; ctx.fill();
+      ctx.globalAlpha = a * .95; ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  if (pepAmt > 0.01 && hot.length && o.pepDots !== false) {
+    ctx.lineWidth = 1.4; ctx.strokeStyle = rim;
+    for (let i = 0; i < PEP_PTS.length; i++) {
+      const p = PEP_PTS[i], src = hot[Math.min(hot.length - 1, (p.u * hot.length) | 0)], ph = (t * 0.4 + p.v) % 1;
+      const py = src.y + ph * (tissueTop + 6 - src.y), px = Math.max(tickR + 14, src.x + (wx - src.x) * ph * .5);
+      const a = pepAmt * src.on * (1 - ph * .3) * Math.min(1, ph * 9);
+      ctx.beginPath(); ctx.arc(px, py, 3.1, 0, 6.283);
+      ctx.globalAlpha = a; ctx.fillStyle = C.gel; ctx.fill();
+      ctx.globalAlpha = a * .8; ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- E. coli Nissle: filled + haloed = switched on, hollow outline = present but idle ----
+  for (const c of bac) {
+    const on = c.on;
+    if (glow > 0 && on > .2) { ctx.globalAlpha = glow * on * (0.32 + 0.12 * Math.sin(t * 4 + c.x + c.layer)); ctx.fillStyle = C.bact; ctx.beginPath(); ctx.arc(c.x, c.y, haloR, 0, 6.283); ctx.fill(); }
+    ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.ang);
+    rr(ctx, -rodL / 2, -rodW / 2, rodL, rodW, rodW / 2);
+    if (on > .04) { ctx.globalAlpha = 0.3 + 0.7 * on * (0.45 + 0.55 * glow); ctx.fillStyle = C.bact; ctx.fill(); }
+    ctx.globalAlpha = 0.95 - 0.55 * on; ctx.lineWidth = 1.3; ctx.strokeStyle = on > .4 ? C.bact : C["ink-2"]; ctx.stroke();
+    ctx.restore(); ctx.globalAlpha = 1;
+  }
+  // band ticks last, so nothing can sit on top of one
+  if (o.layerLabels !== false) {
+    ctx.font = `700 9px ${C.mono}`; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillStyle = C["ink-2"];
+    for (let i = 0; i < layers; i++) ctx.fillText("L" + (i + 1), left + 4, gelBottom - i * lh - lh / 2);
+  }
+
+  // ---- labels in the right gutter ----
+  if (o.labels !== false) {
+    const lx = right + 15;
+    ctx.font = `700 9.5px ${C.mono}`; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    const tags = [], add = (y, s, at, col, sw) => tags.push({ at: at ?? y, y, s, col: col || "ink-2", sw: sw || null });
+    add(top + backH / 2, "backing");
+    const liveTop = dead ? reachY : gelTop, liveMid = (liveTop + gelBottom) / 2;
+    add(liveMid, "hydrogel");
+    add(liveMid + 11, "+ E. coli");
+    if (dead) {                                   // sits wholly inside the zone it names
+      if (dh > 30) { add(reachY - 18, "no NO", reachY, "gas", 1); add(reachY - 6.5, "cells off", reachY, "gas"); }
+      else add(reachY - 7, "no NO", reachY, "gas", 1);
+    }
+    add(gelBottom + ch / 2, "cellulose");
+    const GAP = 11.5;
+    tags.sort((a, b) => a.y - b.y);
+    let prev = -1e9; for (const g2 of tags) { g2.y = Math.max(g2.y, prev + GAP); prev = g2.y; }
+    let next = h - 30; for (let i = tags.length - 1; i >= 0; i--) { tags[i].y = Math.min(tags[i].y, next); next = tags[i].y - GAP; }
+    prev = 9; for (const g2 of tags) { g2.y = Math.max(g2.y, prev); prev = g2.y + GAP; }
+    // bracket spanning the inert bands, so the callout names a region
+    if (dead) {
+      ctx.strokeStyle = C["ink-2"]; ctx.globalAlpha = .75; ctx.lineWidth = 1.2;
+      const bx2 = right + 5;
+      ctx.beginPath(); ctx.moveTo(bx2 - 3, gelTop + .5); ctx.lineTo(bx2, gelTop + .5); ctx.lineTo(bx2, reachY - .5); ctx.lineTo(bx2 - 3, reachY - .5); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    for (const g2 of tags) {
+      // a real leader that starts INSIDE the device, so it meets the dashed line
+      // wherever that line's last dash happens to fall
+      const gas = g2.col === "gas";
+      ctx.strokeStyle = C[g2.col]; ctx.lineWidth = 1; ctx.globalAlpha = gas ? .9 : .5;
+      ctx.beginPath(); ctx.moveTo(gas ? right - 10 : right + 1, g2.at); ctx.lineTo(right + 8, g2.at); ctx.lineTo(lx - 3, g2.y); ctx.stroke(); ctx.globalAlpha = 1;
+      let sx = lx;
+      if (g2.sw) { ctx.fillStyle = C.gas; ctx.fillRect(lx, g2.y - 1.5, 7, 3); sx = lx + 10; }
+      ctx.fillStyle = C["ink-2"]; ctx.fillText(g2.s, sx, g2.y);
+    }
+    // key, bottom right
+    const ky = h - 15, w1 = ctx.measureText("NO ↑").width, w2 = ctx.measureText("peptide ↓").width;
+    ctx.textAlign = "right";
+    ctx.fillStyle = C["ink-2"]; ctx.fillText("peptide ↓", w - 10, ky);
+    ctx.fillStyle = C.gel; ctx.beginPath(); ctx.arc(w - 14 - w2, ky, 3.2, 0, 6.283); ctx.fill();
+    ctx.fillStyle = C["ink-2"]; ctx.fillText("NO ↑", w - 26 - w2, ky);
+    ctx.fillStyle = C.gas; ctx.beginPath(); ctx.arc(w - 30 - w2 - w1, ky, 3.2, 0, 6.283); ctx.fill();
+    // verdict: pinned to one y for every layer count, so it reads as a readout, not a caption
+    if (noAmt > .6 && o.verdict !== false) {
+      const d1 = Math.min(layers, Math.ceil((gelBottom - reachY) / lh) + 1);
+      const msg = dead ? (d1 >= layers ? `L${layers} gets no NO` : `L${d1}–L${layers} get no NO`) : "NO reaches every cell";
+      ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "center";
+      const half = ctx.measureText(msg).width / 2, minX = o.verdictMinX ?? 0;
+      ctx.fillStyle = C["ink-2"];
+      ctx.fillText(msg, Math.max(cx, minX + half), Math.max(14, ghostTop - 16));
+    }
+  }
+  ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+  return { tissueTop, top, left, right, lh, wx, wy, ww, bac, gelBottom, gelTop, ch, backH, hot, reachY, conc, dead };
 }
 
 /* axis chart */
@@ -1199,27 +1521,32 @@ function confetti() {
 /* ================= MISSION ================= */
 Steps[0] = {
   init() {
-    let beat = 0, glow = 0, gT = 0, mT = 0;
+    let beat = 0, glow = 0, gas = 0, gT = 0, mT = 0;
     const dots = new Dots(60);
     const caps = ["Cross-section · wound that won't heal", "Warning gas rising", "Bacteria switching on", "Medicine travelling down", "1 layer? 5 layers?"];
     new Scene($("#missionCanvas"), (ctx, w, h, dt, t) => {
       glow += ((beat >= 2 ? 1 : 0) - glow) * Math.min(1, dt * 3);
+      gas += ((beat >= 1 ? 1 : 0) - gas) * Math.min(1, dt * 3);
       const L = beat === 4 ? 1 + Math.round(2 + 2 * Math.sin(t * 0.9)) : 3;
-      const g = drawPatch(ctx, w, h, { layers: L, glow, t });
+      const g = drawPatch(ctx, w, h, { layers: L, glow, t, no: gas, pep: beat >= 3 ? glow : 0, tissueAt: h > 430 ? .74 : .7, verdictMinX: 255 });
       if (beat >= 1 && beat < 4 && (gT += dt) > 0.2) {
         gT = 0;
-        dots.add({ x: g.wx + (Math.random() - .5) * g.ww * 1.4, y: g.wy + 6, vy: -(45 + Math.random() * 30), vx: (Math.random() - .5) * 14, color: "gas", r: 3, life: (g.wy - g.top) / 55 + .2, target: .9 });
+        dots.add({ x: g.wx + (Math.random() - .5) * g.ww * 1.4, y: g.wy + 6, vy: -(45 + Math.random() * 30), vx: (Math.random() - .5) * 14, color: "gas", r: 3, target: .9 });
       }
       if (beat >= 3 && (mT += dt) > 0.11) {
         mT = 0;
-        const b = g.bac[Math.random() * g.bac.length | 0];
+        const pool = g.hot.length ? g.hot : g.bac, b = pool[Math.random() * pool.length | 0];
         const d = dots.add({ x: b.x, y: b.y, vy: 40 + Math.random() * 20, vx: (g.wx - b.x) * 0.22, color: "gel", r: 3.8 });
         if (d) d.chk = b.layer;
       }
       dots.update(dt);
+      const stopY = Math.max(g.gelTop, g.reachY);
       for (const d of dots.a) {
-        if (d.color !== "gel" || d.dying) continue;
-        const li = Math.floor((g.tissueTop - d.y) / g.lh);
+        if (d.x < g.left || d.x > g.right) { dots.kill(d); d.a = 0; continue; }
+        if (d.dying) continue;
+        if (d.color === "gas") { if (d.y < stopY + 26) dots.kill(d); continue; }
+        if (d.color !== "gel") continue;
+        const li = Math.floor((g.gelBottom - d.y) / g.lh);
         if (li < d.chk) { d.chk = li; if (Math.random() < 0.3) dots.kill(d); }
         if (d.y > g.tissueTop + 8) dots.kill(d);
       }
@@ -1685,15 +2012,46 @@ Steps[6] = (() => {
 Steps[7] = (() => {
   let cross = 0, answered = false, deep = false, busy = false;
   const dots = new Dots(60);
-  const seed = () => { dots.a = []; for (let i = 0; i < 60; i++) dots.add({ lx: .04 + Math.random() * .92, ly: .15 + Math.random() * .7, layer: 2, r: 3.6, color: "gel", k: 5 }); };
+  // depth is an exponential tail measured in band-heights below the top of the dot's band:
+  // thinning downward with no floor, so a still frame reads as travel, not accumulation.
+  // Stratified ranks make the tail exact rather than lucky: of 60, about 34 stay in the
+  // band, 15 reach the next, 6 the one after, 3 the cellulose and 2 the wound.
+  const DEPTH = u => Math.min(5.4, -Math.log(1 - Math.min(.99, u * .99)) * 1.15);
+  const AR = 5;                                     // one band-height is worth ~1/5 of the width
+  const lay = (n, kept) => {                        // blue-noise in x, stratified in depth
+    for (let i = 0; i < n; i++) {
+      const dep = DEPTH((i + .12 + Math.random() * .76) / n);
+      let best = .5, bestD = -1;
+      for (let a = 0; a < 22; a++) {
+        const lx = .03 + Math.random() * .94;
+        let near = 1e9;
+        for (const q of kept) { const dx = (q.lx - lx) * AR, dy = q.dep - dep, d2 = dx * dx + dy * dy; if (d2 < near) near = d2; }
+        if (near > bestD) { bestD = near; best = lx; }
+        if (near > .105) break;
+      }
+      kept.push({ lx: best, dep });
+    }
+    return kept;
+  };
+  const seed = () => {
+    dots.a = [];
+    for (const pt of lay(60, [])) dots.add({ lx: pt.lx, dep: pt.dep, layer: 2, r: 3.1, color: "gel", k: 5, target: .72 });
+  };
+  const respread = () => {
+    const live = dots.a.filter(d => !d.dying), pts = lay(live.length, []);
+    live.forEach((d, i) => { d.lx = pts[i].lx; d.dep = pts[i].dep; });
+  };
   function init() {
     seed();
     new Scene($("#s7canvas"), (ctx, w, h, dt, t) => {
-      const g = drawPatch(ctx, w, h, { layers: 3, maxLayers: 4, glow: .6, t, tissueAt: .72 });
+      const g = drawPatch(ctx, w, h, { layers: 3, maxLayers: 4, t, tissueAt: .72, neutral: true, pep: .9, pepDots: false });
       for (const d of dots.a) {
         let tx, ty;
-        if (d.layer >= 0) { tx = g.left + d.lx * (g.right - g.left); ty = g.tissueTop - (d.layer + 1) * g.lh + d.ly * g.lh; }
-        else { tx = g.wx + (d.lx - .5) * g.ww * 1.6; ty = g.tissueTop + 8 + d.ly * (h - g.tissueTop) * .4; }
+        if (d.layer >= 0) {
+          tx = g.left + 22 + d.lx * (g.right - g.left - 34);
+          ty = Math.min(g.tissueTop + (h - g.tissueTop) * .36, g.gelBottom - (d.layer + 1) * g.lh + d.dep * g.lh);
+          if (ty > g.gelBottom) { const f = Math.min(1, (ty - g.gelBottom) / (g.tissueTop - g.gelBottom + 14)); tx += (g.wx - tx) * f * .6; }
+        } else { tx = g.wx + (d.lx - .5) * g.ww * 1.6; ty = g.gelBottom + 3 + (d.dep / 5.4) * (h - g.gelBottom) * .42; }
         if (d.tx == null) { d.x = tx; d.y = ty; }
         d.tx = tx; d.ty = ty;
       }
@@ -1742,7 +2100,7 @@ Steps[7] = (() => {
     const live = dots.a.filter(d => !d.dying);
     live.sort(() => Math.random() - .5).slice(0, live.length - keep).forEach(d => dots.kill(d));
     await wait(350);
-    dots.a.filter(d => !d.dying).forEach(d => { d.layer--; d.ly = .15 + Math.random() * .7; });
+    dots.a.filter(d => !d.dying).forEach(d => d.layer--); respread();
     $("#s7seq").insertAdjacentHTML("beforeend", `<i>→</i><span>${fmt(60 * Math.pow(.7, cross))}</span>`);
     upd();
     if (cross === 3) {
@@ -1789,16 +2147,17 @@ Steps[8] = (() => {
     });
     new Scene($("#s8canvas"), (ctx, w, h, dt, t) => {
       heal += (healTarget - heal) * Math.min(1, dt * 1.2);
-      const g = drawPatch(ctx, w, h, { layers, glow: 1, heal, t, tissueAt: .74 });
+      const g = drawPatch(ctx, w, h, { layers, glow: 1, heal, t, tissueAt: .74, pep: 1, ghost: true });
       const r = Model.design(layers, bact);
       if ((mT += dt) > 1.6 / r.made) {
-        mT = 0; const li = Math.random() * layers | 0, pool = g.bac.filter(x => x.layer === li), b = pool[Math.random() * pool.length | 0] || g.bac[0];
-        const d = dots.add({ x: b.x + (Math.random() - .5) * 40, y: b.y, vy: 55 + Math.random() * 20, vx: (g.wx - b.x) * .18, color: "gel", r: 3.4 }); if (d) d.chk = b.layer;
+        mT = 0; const src = g.hot.length ? g.hot : g.bac, b = src[Math.random() * src.length | 0];
+        const d = dots.add({ x: Math.max(g.left + 6, Math.min(g.right - 6, b.x + (Math.random() - .5) * 40)), y: b.y, vy: 55 + Math.random() * 20, vx: (g.wx - b.x) * .18, color: "gel", r: 3.4 }); if (d) d.chk = b.layer;
       }
       dots.update(dt);
       for (const d of dots.a) {
+        if (d.x < g.left || d.x > g.right) { dots.kill(d); d.a = 0; continue; }
         if (d.dying) continue;
-        const li = Math.floor((g.tissueTop - d.y) / g.lh);
+        const li = Math.floor((g.gelBottom - d.y) / g.lh);
         if (li < d.chk) { d.chk = li; if (Math.random() < .3) dots.kill(d); }
         if (d.y > g.tissueTop + 10) dots.kill(d);
       }
@@ -1848,7 +2207,7 @@ Steps[8] = (() => {
     badge("therapeutic threshold");
     note("Healing is a simple on/off line at 18");
     const d = S.data.design; value("design", "Our design", `${d.layers} layer${d.layers > 1 ? "s" : ""} · ${fmt(d.reach)}`);
-    Steps[9].fill();
+    Steps[10].fill();
     complete(8);
   }
   function restore() {
@@ -1861,9 +2220,203 @@ Steps[8] = (() => {
 })();
 
 /* ================= LAB CARD ================= */
-Steps[9] = {
+
+/* ---------------- step 9: run the model as code ---------------- */
+Steps[9] = (() => {
+  const CDN = "https://cdn.jsdelivr.net/pyodide/v0.29.5/full/";
+  const START = `# The rule you built in steps 5 and 7, as code.
+# Change a number, press Run, watch the graph.
+
+made_per_layer = 4     # one layer makes this per minute
+loss           = 0.2   # share lost each minute
+pass_frac      = 0.7   # share getting through one layer
+threshold      = 18    # enough to start healing
+
+def reaching_wound(layers):
+    made  = made_per_layer * layers
+    level = made / loss                 # step 5
+    return level * pass_frac ** layers  # step 7
+
+for layers in range(1, 11):
+    amount = reaching_wound(layers)
+    ok = "heals" if amount >= threshold else ""
+    print(layers, "layers ->", round(amount, 1), ok)
+
+best = max(range(1, 11), key=reaching_wound)
+print()
+print("Best thickness:", best, "layers")
+`;
+  const TAIL = "\n_curve = [float(reaching_wound(L)) for L in range(1, 11)]\n_pass = float(pass_frac)\n_thr = float(threshold)\n";
+
+  let py = null, booting = null, runs = [], scene = null, sweptOnce = false;
+
+  const statusEl = () => $("#pyStatus");
+  function status(txt, on) { const e = statusEl(); if (!e) return; e.textContent = txt; e.classList.toggle("on", !!on); }
+
+  /* load pyodide once, quietly, in the background */
+  function ensure() {
+    if (booting) return booting;
+    booting = (async () => {
+      status("starting Python…");
+      const s = document.createElement("script");
+      s.src = CDN + "pyodide.js";
+      const loaded = new Promise((ok, no) => { s.onload = ok; s.onerror = () => no(new Error("cdn")); });
+      document.head.appendChild(s);
+      await loaded;
+      const p = await loadPyodide({ indexURL: CDN });
+      py = p; status("Python ready", true);
+      return p;
+    })().catch(() => { py = null; status("offline mode", false); return null; });
+    return booting;
+  }
+
+  /* if the CDN is unreachable, run the same model in the page instead */
+  function offlineRun(code) {
+    const num = (name, dflt) => {
+      const m = code.match(new RegExp("^\\s*" + name + "\\s*=\\s*(-?[0-9.]+)", "m"));
+      return m ? parseFloat(m[1]) : dflt;
+    };
+    const per = num("made_per_layer", 4), loss = num("loss", .2), pf = num("pass_frac", .7), thr = num("threshold", 18);
+    const f = L => (per * L) / loss * Math.pow(pf, L);
+    const curve = Array.from({ length: 10 }, (_, i) => f(i + 1));
+    let best = 1; curve.forEach((v, i) => { if (v > curve[best - 1]) best = i + 1; });
+    const lines = curve.map((v, i) => `${i + 1} layers -> ${Math.round(v * 10) / 10}${v >= thr ? " heals" : ""}`);
+    lines.push("", `Best thickness: ${best} layers`);
+    return { text: lines.join("\n"), curve, pass: pf, thr, error: false };
+  }
+
+  async function runCode() {
+    const ta = $("#pyCode"), out = $("#pyOut");
+    const code = ta.value;
+    out.textContent = "running…";
+    await ensure();
+    let res;
+    if (py) {
+      const buf = [];
+      py.setStdout({ batched: s => buf.push(s) });
+      try {
+        py.runPython(code + TAIL);
+        const c = py.globals.get("_curve");
+        res = { text: buf.join("\n"), curve: Array.from(c.toJs()), pass: py.globals.get("_pass"), thr: py.globals.get("_thr"), error: false };
+        c.destroy();
+      } catch (e) {
+        const msg = String((e && e.message) || e).trim().split("\n").filter(Boolean).slice(-3).join("\n");
+        res = { text: msg, error: true };
+      }
+    } else {
+      res = offlineRun(code);
+    }
+
+    if (res.error) {
+      out.innerHTML = `<span class="err">${res.text.replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</span>`;
+      say("#pysay", "bad", "Python stopped on that line. Read the last line of the message — it usually names the word it did not understand. Press <b>Reset</b> to get the working code back.");
+      return;
+    }
+
+    out.textContent = res.text || "(the code printed nothing)";
+    addRun(res);
+  }
+
+  function addRun(res) {
+    const prev = runs[runs.length - 1];
+    runs.push({ curve: res.curve, pass: res.pass, thr: res.thr });
+    if (runs.length > 4) runs.shift();
+    draw();
+
+    const best = bestOf(res.curve);
+    const top = Math.round(res.curve[best - 1] * 10) / 10;
+    value("codeBest", "Best thickness (code)", best + " layers");
+
+    if (!S.done[9]) {
+      say("#pysay", "good", `The computer tested <b class="num">10</b> thicknesses and got the same shape you found by hand: the best is <b class="num">${best}</b> layers, with <b class="num">${top}</b> reaching the wound.`);
+      $("#pyChallenge").hidden = false;
+      $("#pysci").hidden = false;
+      badge("Simulation");
+      complete(9);
+      return;
+    }
+    if (prev && Math.abs(prev.pass - res.pass) > 1e-9) {
+      sweptOnce = true;
+      const was = bestOf(prev.curve);
+      say("#pysay", best === was ? "info" : "good",
+        `Medicine passing <b class="num">${fmt(res.pass, 2)}</b> per layer moves the best thickness from <b class="num">${was}</b> to <b class="num">${best}</b> layers. The patch the wet lab should build depends on a number nobody has measured yet.`);
+      badge("Parameter sweep");
+    } else {
+      say("#pysay", "info", `Best is <b class="num">${best}</b> layers, <b class="num">${top}</b> reaching the wound.`);
+    }
+  }
+
+  const bestOf = c => c.reduce((b, v, i) => v > c[b] ? i : b, 0) + 1;
+
+  function draw() {
+    if (scene) return;
+    scene = new Scene($("#pycanvas"), (ctx, w, h) => {
+      const thr = runs.length ? runs[runs.length - 1].thr : 18;
+      const all = runs.flatMap(r => r.curve);
+      const top = Math.max(thr * 1.35, ...(all.length ? all : [25])) * 1.2;
+      const stepY = top > 100 ? 50 : top > 40 ? 20 : top > 20 ? 10 : 5;
+      const yT = []; for (let v = 0; v <= top; v += stepY) yT.push(v);
+      const a = axes(ctx, w, h, {
+        xMin: .4, xMax: 10.6, yMax: top,
+        xTicks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], yTicks: yT,
+        xLabel: "layers", yLabel: "reaching the wound", pad: { b: 30 }
+      });
+
+      /* healing threshold */
+      ctx.setLineDash([6, 4]); ctx.strokeStyle = C.wound; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(a.X(.4), a.Y(thr)); ctx.lineTo(a.X(10.6), a.Y(thr)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = C.wound; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right";
+      ctx.fillText(`heals at ${fmt(thr)}`, a.X(10.4), a.Y(thr) - 6);
+
+      if (!runs.length) {
+        ctx.fillStyle = C["ink-2"]; ctx.font = `500 13px ${C.mono}`; ctx.textAlign = "center";
+        ctx.fillText("Run the code to draw this", w / 2, h / 2);
+        return;
+      }
+
+      /* older runs fade back; newest is solid — one colour, getting stronger */
+      runs.forEach((r, i) => {
+        const newest = i === runs.length - 1;
+        const alpha = newest ? 1 : 0.18 + 0.12 * i;
+        const pts = r.curve.map((v, k) => [k + 1, v]);
+        ctx.globalAlpha = alpha;
+        polyline(ctx, pts, a.X, a.Y, "gel", newest ? 3 : 2);
+        const b = bestOf(r.curve), bv = r.curve[b - 1];
+        ctx.fillStyle = C.gel;
+        ctx.beginPath(); ctx.arc(a.X(b), a.Y(bv), newest ? 6 : 4.5, 0, 6.283); ctx.fill();
+        ctx.strokeStyle = C.ground; ctx.lineWidth = 2; ctx.stroke();
+        ctx.globalAlpha = newest ? 1 : Math.min(1, alpha + .35);
+        ctx.fillStyle = newest ? C.ink : C["ink-2"];
+        ctx.font = `700 11px ${C.mono}`; ctx.textAlign = a.X(b) > w * .7 ? "right" : "left";
+        const ly = Math.max(a.Y(bv) - 12, a.pad.t + 12);
+        ctx.fillText(`pass ${fmt(r.pass, 2)} · best ${b}`, a.X(b) + (a.X(b) > w * .7 ? -10 : 10), ly);
+        ctx.globalAlpha = 1;
+      });
+    });
+  }
+
+  return {
+    init() {
+      const ta = $("#pyCode"); if (!ta) return;
+      ta.value = START;
+      $("#pyRun").addEventListener("click", runCode);
+      $("#pyReset").addEventListener("click", () => { ta.value = START; say("#pysay", "info", "Original code restored."); });
+      ta.addEventListener("keydown", e => {
+        if (e.key === "Tab") { e.preventDefault(); const s = ta.selectionStart; ta.setRangeText("    ", s, ta.selectionEnd, "end"); }
+        if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); runCode(); }
+      });
+      draw();
+      /* start the download early, staggered so a room of 40 doesn't all fetch at once */
+      setTimeout(ensure, 3000 + Math.random() * 12000);
+    },
+    onUnlock() { ensure(); },
+    restore() { $("#pyChallenge").hidden = false; $("#pysci").hidden = false; draw(); }
+  };
+})();
+
+Steps[10] = {
   init() {
-    $("#openLabBtn").addEventListener("click", () => { complete(9); goTo(10); });
+    $("#openLabBtn").addEventListener("click", () => { complete(10); goTo(11); });
     $("#lcPrint").addEventListener("click", () => { try { print(); } catch (e) { toast("Printing isn't available here. Take a screenshot instead."); } });
   },
   fill() {
@@ -1874,11 +2427,11 @@ Steps[9] = {
     $("#lcAssume").innerHTML = S.assume.map(a => `<li>${a}</li>`).join("");
     $("#lcRules").innerHTML = ["change = made − lost", "lost = 20% × medicine now", "level in the patch = made ÷ 0.2", "each layer passes on 70%", "heals if at least 18 reaches the wound"].map(r => `<li>${r}</li>`).join("");
   },
-  restore() { complete(9); }
+  restore() { complete(10); }
 };
 
 /* ================= OPEN LAB ================= */
-Steps[10] = (() => {
+Steps[11] = (() => {
   const DEF = { per: 4, loss: 20, pass: 70, thr: 18, sel: 3 };
   const P = { ...DEF };
   const SL = [
@@ -1923,14 +2476,14 @@ Steps[10] = (() => {
 (function boot() {
   load();
   buildProgress();
-  for (let n = 0; n <= 10; n++) Steps[n]?.init?.();
-  for (let n = 1; n <= 9; n++) if (S.done[n]) Steps[n]?.restore?.();
+  for (let n = 0; n <= 11; n++) Steps[n]?.init?.();
+  for (let n = 1; n <= 10; n++) if (S.done[n]) Steps[n]?.restore?.();
   applyLocks();
   renderNotebook();
   $$('input[type="range"]').forEach(setRangeFill);
   initScrollFx();
   last = performance.now(); rafId = requestAnimationFrame(loop);
-  const next = [1, 2, 3, 4, 5, 6, 7, 8, 9].find(n => S.done[0] && !S.done[n]);
+  const next = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].find(n => S.done[0] && !S.done[n]);
   if (next) { toast(`Welcome back. Continuing at ${NAMES[next]}.`); setTimeout(() => goTo(next), 500); }
 })();
 </script>
