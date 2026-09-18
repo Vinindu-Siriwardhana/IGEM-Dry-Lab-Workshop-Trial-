@@ -336,6 +336,29 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
 .pyout .err{color:var(--wound)}
 .pystatus{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
 .pystatus.on{color:var(--gel)}
+
+/* --- optional maths panels --- */
+.maths-btn{align-self:flex-start;border-style:dashed;color:var(--ink-2);display:inline-flex;align-items:center;gap:8px}
+.maths-btn .mi{font-family:var(--display);font-style:italic;font-weight:700;font-size:16px;line-height:1;color:var(--gel)}
+.maths-btn[aria-expanded="true"]{border-style:solid;border-color:var(--gel);color:var(--ink)}
+.maths-panel{background:var(--surface-2);border-radius:14px;padding:16px;display:grid;gap:14px;justify-items:start;animation:pop .35s cubic-bezier(.2,.8,.2,1.2)}
+.maths-panel>p{font-size:15.5px;max-width:64ch}
+.maths-eq{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 16px;display:grid;gap:14px;width:100%}
+.eq{font-family:var(--mono);font-size:16.5px;color:var(--ink);display:block;text-align:center;line-height:2.6}
+.eq .fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.25}
+.eq .fr>span:first-child{border-bottom:1.5px solid var(--ink);padding:0 6px 2px}
+.eq .fr>span:last-child{padding:2px 6px 0}
+.eq .op{color:var(--ink-2);margin:0 5px}
+.eq .sep{display:inline-block;width:30px}
+.eq .rad{border-top:1.5px solid var(--ink);padding:3px 5px 0;margin-left:-4px;display:inline-block;vertical-align:middle}
+.eq .st{display:inline-block;white-space:nowrap}
+.eq .big{font-size:22px}
+.eq sub{font-size:.66em;vertical-align:sub}
+.eq sup{font-size:.66em;vertical-align:super}
+.eq-key{font-size:13.5px;color:var(--ink-2);display:grid;gap:6px}
+.eq-key b{color:var(--ink);font-family:var(--mono);font-weight:700}
+.maths-more{font-size:13.5px;padding:5px 11px}
+@media (max-width:560px){.eq{font-size:14.5px}.maths-panel{padding:14px}}
 </style>
 <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
@@ -2221,6 +2244,89 @@ Steps[8] = (() => {
 
 /* ================= LAB CARD ================= */
 
+/* ---------------- optional: the maths behind each step ---------------- */
+const FR = (a, b) => `<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const OP = o => `<span class="op">${o}</span>`;
+const MATHS = {
+  1: {
+    bridge: "Your three boxes are the only three things that can change how much of a substance sits anywhere: something makes it, something removes it, and it spreads from where there is a lot to where there is little. Every transport model in biology is those three terms added together.",
+    eq: `${FR("∂P", "∂t")} ${OP("=")} D ${FR("∂²P", "∂x²")} ${OP("−")} kP ${OP("+")} S`,
+    key: [["∂P/∂t", "how fast the amount is changing"], ["D ∂²P/∂x²", "spreading out"], ["kP", "being lost"], ["S", "being made"]]
+  },
+  2: {
+    bridge: "When you only care how much medicine is in the patch in total, and not whereabouts in the patch it is, the spreading term drops out. What is left is the simplest useful model in biology — and you built it from two numbers.",
+    eq: `${FR("dP", "dt")} ${OP("=")} S ${OP("−")} kP`,
+    key: [["S", "made each minute"], ["k", "share lost each minute"], ["P", "how much is in the patch right now"]]
+  },
+  3: {
+    bridge: "Losing a share instead of a fixed amount is what real molecules do, and it is why a share-based rule can never take you below zero. Chemists usually quote it as a half-life — the time for half of what is there to vanish — and the decay rate follows straight from it.",
+    eq: `<span class="st">k ${OP("=")} ${FR("ln 2", "t½")}</span><span class="sep"></span><span class="st">P(t) ${OP("=")} P<sub>0</sub> e<sup>−kt</sup></span>`,
+    key: [["t½", "half-life"], ["example", "a molecule with a 4-second half-life has k ≈ 0.17 per second"]]
+  },
+  4: {
+    bridge: "Filling that table one minute at a time has a name: forward Euler integration. It is exactly how a computer solves an equation that algebra cannot crack. The only difference is the step size — a solver takes steps of a thousandth of a second, so its staircase looks like a smooth curve.",
+    eq: `P(t ${OP("+")} Δt) ${OP("=")} P(t) ${OP("+")} Δt ( S ${OP("−")} k P(t) )`,
+    key: [["Δt", "the size of one step"], ["yours", "you used Δt = 1 minute"]]
+  },
+  5: {
+    bridge: "You set the change to zero and solved for the level. That move is the steady-state approximation, and it is the most used shortcut in the whole field: when one part of a system settles much faster than everything around it, you stop tracking it through time and just solve for where it lands.",
+    eq: `<span class="st">${FR("dP", "dt")} ${OP("=")} 0</span> ${OP("⟹")} <span class="st">P<sub>ss</sub> ${OP("=")} ${FR("S", "k")}</span>`,
+    key: [["P<sub>ss</sub>", "the level it settles at"], ["your numbers", "12 ÷ 0.2 = 60"]]
+  },
+  6: {
+    bridge: "Dragging the slider until the curve sits on the dots is parameter estimation. A computer does the same thing without eyes: it adds up the squared gap between the curve and every measurement, then hunts for the value that makes that total as small as it can be.",
+    eq: `<span class="st">min<sub>k</sub> <span class="big">Σ</span><sub>i</sub> ( P<sub>model</sub>(t<sub>i</sub>) ${OP("−")} P<sub>measured</sub>(t<sub>i</sub>) )²</span>`,
+    key: [["Σ", "add up, over every measurement"], ["squared", "so a gap above and a gap below both count against you"], ["the meter", "is this total, turned into a percentage"]]
+  },
+  7: {
+    bridge: "Passing on 70% per layer is a staircase version of something smooth. Concentration really falls away continuously with depth, and the distance over which it fades to about a third has a name — the penetration depth. It is one number that says how far a molecule gets before it decays.",
+    eq: `<span class="st">L<sub>d</sub> ${OP("=")} √<span class="rad">${FR("D", "k")}</span></span><span class="sep"></span><span class="st">P(x) ${OP("=")} P<sub>0</sub> e<sup>−x / L<sub>d</sub></sup></span>`,
+    key: [["D", "how fast it diffuses"], ["k", "how fast it decays"], ["your 0.7", "is e<sup>−Δx/L<sub>d</sub></sup> for one layer's thickness"], ["sealed top", "with a sealed backing the exact shape is a cosh curve, but it fades the same way"]]
+  },
+  8: {
+    bridge: "You found the best thickness by trying five of them. You can also solve for it outright: write the amount reaching the wound as a formula in thickness, differentiate it, set that to zero. The peak you found by hand falls out as a single expression.",
+    eq: `<span class="st">R(L) ${OP("=")} ${FR("S L", "k")} p<sup>L</sup></span><span class="sep"></span><span class="st">${FR("dR", "dL")} ${OP("=")} 0</span> ${OP("⟹")} <span class="st">L* ${OP("=")} ${FR("−1", "ln p")}</span>`,
+    key: [["p", "the share that gets through one layer"], ["with p = 0.7", "L* = 2.80 — which is why 3 layers wins"], ["the point", "the best thickness depends only on how well the medicine travels"]]
+  },
+  9: {
+    bridge: "The loop you ran is what a solver does, one dimension at a time: evaluate the model right across the range of a parameter and read the shape of the answer instead of a single number. When the model is a partial differential equation the idea is the same — chop space and time into small pieces and march forward.",
+    eq: `L* ${OP("=")} argmax<sub>L</sub> R(L ; p)`,
+    key: [["argmax", "the value of L that makes R biggest"], ["sweeping p", "and re-finding L* is a sensitivity analysis — it tells you which measurement matters most"]]
+  }
+};
+
+function buildMaths() {
+  Object.keys(MATHS).forEach(k => {
+    const n = +k, m = MATHS[k];
+    const foot = $(`[data-step="${n}"] .step-foot`); if (!foot) return;
+    const id = "maths-" + n;
+    const btn = document.createElement("button");
+    btn.className = "ghost maths-btn"; btn.type = "button";
+    btn.setAttribute("aria-expanded", "false"); btn.setAttribute("aria-controls", id);
+    btn.innerHTML = `<span class="mi" aria-hidden="true">ƒ</span>The maths behind this`;
+    const panel = document.createElement("div");
+    panel.className = "maths-panel"; panel.id = id; panel.hidden = true;
+    panel.innerHTML =
+      `<p>${m.bridge}</p>` +
+      `<button class="ghost maths-more" type="button" aria-expanded="false">Show the equation</button>` +
+      `<div class="maths-eq" hidden><div class="eq">${m.eq}</div>` +
+      `<div class="eq-key">${m.key.map(([a, b]) => `<div><b>${a}</b> &nbsp;${b}</div>`).join("")}</div></div>`;
+    const next = $(":scope > .next-btn", foot);
+    foot.insertBefore(btn, next); foot.insertBefore(panel, next);
+    btn.addEventListener("click", () => {
+      const open = panel.hidden;
+      panel.hidden = !open; btn.setAttribute("aria-expanded", open);
+      if (open) badge("Curious");
+    });
+    const more = $(".maths-more", panel), eq = $(".maths-eq", panel);
+    more.addEventListener("click", () => {
+      const open = eq.hidden;
+      eq.hidden = !open; more.setAttribute("aria-expanded", open);
+      more.textContent = open ? "Hide the equation" : "Show the equation";
+    });
+  });
+}
+
 /* ---------------- step 9: run the model as code ---------------- */
 Steps[9] = (() => {
   const CDN = "https://cdn.jsdelivr.net/pyodide/v0.29.5/full/";
@@ -2477,6 +2583,7 @@ Steps[11] = (() => {
   load();
   buildProgress();
   for (let n = 0; n <= 11; n++) Steps[n]?.init?.();
+  buildMaths();
   for (let n = 1; n <= 10; n++) if (S.done[n]) Steps[n]?.restore?.();
   applyLocks();
   renderNotebook();
