@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Wound Patch Lab</title>
+<script>
+/* language before first paint: ?lang=zh or ?lang=en in the link wins, then the last choice on this device */
+(function () {
+  var l = null;
+  try { l = new URLSearchParams(location.search).get("lang"); } catch (e) { }
+  if (l !== "zh" && l !== "en") { try { l = localStorage.getItem("woundPatchLab.lang"); } catch (e) { } }
+  if (l === "zh") { var h = document.documentElement; h.setAttribute("data-lang", "zh"); h.lang = "zh-Hant-HK"; document.title = "傷口貼片實驗室"; }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap">
@@ -359,6 +368,59 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
 .eq-key b{color:var(--ink);font-family:var(--mono);font-weight:700}
 .maths-more{font-size:13.5px;padding:5px 11px}
 @media (max-width:560px){.eq{font-size:14.5px}.maths-panel{padding:14px}}
+
+/* --- language: every text exists in both languages; only one is shown --- */
+html:not([data-lang="zh"]) [data-l="zh"],html[data-lang="zh"] [data-l="en"]{display:none!important}
+html[data-lang="zh"]{
+  --display:"Bricolage Grotesque","PingFang HK","PingFang TC","Noto Sans HK","Noto Sans TC","Noto Sans CJK HK","Noto Sans CJK TC","Microsoft JhengHei",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","PingFang HK","PingFang TC","Noto Sans HK","Noto Sans TC","Noto Sans CJK HK","Noto Sans CJK TC","Microsoft JhengHei","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,"PingFang HK","Noto Sans HK","Noto Sans CJK HK","Microsoft JhengHei",monospace;
+}
+html[data-lang="zh"] h1,html[data-lang="zh"] h2,html[data-lang="zh"] h3{letter-spacing:.01em;line-height:1.22}
+html[data-lang="zh"] .m-lede,html[data-lang="zh"] .step .lede,html[data-lang="zh"] .beat p{line-height:1.75}
+html[data-lang="zh"] .sci .flask{font-size:0}
+html[data-lang="zh"] .sci .flask::after{content:"科";font-size:11px}
+.lang{display:inline-flex;align-items:center;gap:2px;padding:2px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);flex:none}
+.lang button{border:0;background:transparent;border-radius:7px;padding:5px 10px;font-size:13.5px;font-weight:700;line-height:1.25;color:var(--ink-2);white-space:nowrap;transition:background .2s,color .2s}
+.lang button:hover{color:var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+/* phones: the name makes way, and the toggle becomes one button that names the other language */
+@media (max-width:560px){
+  .brand-name{display:none}
+  .lang{padding:0;border:0;background:transparent}
+  .lang button[aria-pressed="true"]{display:none}
+  .lang button{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;font-size:13px;color:var(--ink)}
+}
+
+/* --- optional quick quiz, one question per step --- */
+.extras{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.quiz-btn{border-style:dashed;color:var(--ink-2);display:inline-flex;align-items:center;gap:8px}
+.quiz-btn .qi{width:19px;height:19px;border-radius:50%;background:var(--gas);color:var(--surface);display:grid;place-items:center;font-family:var(--mono);font-size:11.5px;font-weight:800;line-height:1;flex:none}
+.quiz-btn .qi svg{width:11px;height:11px}
+.quiz-btn[aria-expanded="true"]{border-style:solid;border-color:var(--gas);color:var(--ink)}
+.quiz-btn.solved .qi{background:var(--gel)}
+.quiz-panel{background:var(--surface-2);border-radius:14px;padding:16px;display:grid;gap:12px;border-left:4px solid var(--gas);animation:pop .35s cubic-bezier(.2,.8,.2,1.2)}
+.quiz-panel.solved{border-left-color:var(--gel)}
+.quiz-panel .qq{font-weight:700;font-size:16.5px;max-width:64ch}
+.quiz-opts{display:grid;gap:8px;max-width:640px}
+.quiz-opts .choice{display:flex;gap:10px;align-items:flex-start;font-weight:600}
+.quiz-opts .choice .qk{flex:none;width:24px;height:24px;border-radius:7px;background:var(--surface-2);display:grid;place-items:center;font-family:var(--mono);font-size:12.5px;font-weight:800}
+.quiz-opts .choice.bad{border-color:var(--wound);background:var(--wound-soft);box-shadow:none}
+.quiz-opts .choice.good .qk{background:var(--gel);color:var(--gel-ink)}
+.quiz-opts .choice.bad .qk{background:var(--wound);color:var(--surface)}
+.quiz-opts .choice:disabled{cursor:default;opacity:1}
+.quiz-opts .choice:disabled:not(.good){opacity:.6}
+.quiz-say:empty{display:none}
+/* keep the "You just discovered" boxes and science chips inside the card on phones
+   (a max-content chip used to stretch the grid track past the card edge) */
+.discover,.slider{grid-template-columns:minmax(0,1fr)}
+.quiz-btn.solved[aria-expanded="true"]{border-color:var(--gel)}
+/* Chinese has no italics: emphasis becomes bold, hints stay upright */
+html[data-lang="zh"] [data-l="zh"] i{font-style:normal;font-weight:700}
+html[data-lang="zh"] .nb-badge [data-l="zh"] i{font-weight:400}
+html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style:normal}
+.nb-badge i{font-style:normal;font-weight:400;opacity:.72}
+@media (max-width:560px){.quiz-panel{padding:14px}}
 </style>
 <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
@@ -371,11 +433,15 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
 
 <header class="hdr">
   <div class="hdr-in">
-    <a class="brand" href="#mission"><span class="brand-mark" aria-hidden="true"></span>Wound Patch Lab</a>
-    <nav class="progress" id="progress" aria-label="Steps"></nav>
+    <a class="brand" href="#mission"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name"><span data-l="en">Wound Patch Lab</span><span data-l="zh">傷口貼片實驗室</span></span></a>
+    <nav class="progress" id="progress" aria-label="Steps" data-aria-zh="步驟"></nav>
     <div class="hdr-actions">
-      <button class="ghost nb-toggle" id="nbToggle" aria-controls="notebook" aria-expanded="false">Notebook <span class="num" id="nbToggleCount">0</span></button>
-      <button class="ghost" id="restart">Start over</button>
+      <div class="lang" role="group" aria-label="Language · 語言">
+        <button type="button" data-setlang="en" aria-pressed="true" lang="en">EN</button>
+        <button type="button" data-setlang="zh" aria-pressed="false" lang="zh-Hant-HK">中文</button>
+      </div>
+      <button class="ghost nb-toggle" id="nbToggle" aria-controls="notebook" aria-expanded="false"><span data-l="en">Notebook</span><span data-l="zh">筆記簿</span> <span class="num" id="nbToggleCount">0</span></button>
+      <button class="ghost" id="restart"><span data-l="en">Start over</span><span data-l="zh">重新開始</span></button>
     </div>
   </div>
   <div class="scrollbar" id="scrollbar" aria-hidden="true"></div>
@@ -387,114 +453,115 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
 <!-- ================= MISSION ================= -->
 <section class="mission" id="mission" data-step="0">
   <div class="m-top">
-    <span class="eyebrow">HKU iGEM · Modelling lab</span>
-    <h1 class="m-title">How thick should the <em>patch</em> be?</h1>
-    <p class="m-lede">A wound that won't heal keeps sending out a warning gas. Our patch sits on that wound, and the bacteria inside it sense the gas and start making a healing medicine. The gas fades fast as it rises, so only the bacteria near the wound ever smell it. The medicine they make has to travel back down, and some is lost on the way.</p>
-    <div class="m-meta"><span><b>8 steps</b> · about 13 minutes</span><span><b>No chemistry</b> needed</span><span>Scroll to see the story</span></div>
+    <span class="eyebrow"><span data-l="en">HKU iGEM · Modelling lab</span><span data-l="zh">HKU iGEM · 建模實驗室</span></span>
+    <h1 class="m-title"><span data-l="en">How thick should the <em>patch</em> be?</span><span data-l="zh"><em>貼片</em>應該有多厚？</span></h1>
+    <p class="m-lede"><span data-l="en">A wound that won't heal keeps sending out a warning gas. Our patch sits on that wound, and the bacteria inside it sense the gas and start making a healing medicine. The gas fades fast as it rises, so only the bacteria near the wound ever smell it. The medicine they make has to travel back down, and some is lost on the way.</span><span data-l="zh">一個無法癒合的傷口會不斷釋放一種警告氣體。我們的貼片就貼在這個傷口上，貼片內的細菌感應到這種氣體後，便會開始製造療傷藥物。氣體向上升時會迅速消散，所以只有靠近傷口的細菌才「嗅」得到它。細菌製造的藥物要向下走回傷口，途中有一部分會流失。</span></p>
+    <div class="m-meta"><span data-l="en"><b>9 steps</b> · about 15 minutes</span><span data-l="zh"><b>9 個步驟</b> · 約 15 分鐘</span><span data-l="en"><b>No chemistry</b> needed</span><span data-l="zh"><b>不需要</b>化學知識</span><span data-l="en">Scroll to see the story</span><span data-l="zh">向下捲動，看看故事</span></div>
   </div>
 
   <div class="story">
     <div class="beats" id="beats">
       <div class="beat on" data-beat="0">
-        <span class="tag">The problem</span>
-        <h3>A wound that won't heal</h3>
-        <p>It stays red and swollen for weeks. It keeps sending out a warning gas that says "something is wrong here".</p>
-        <span class="sci"><span class="flask">Sc</span>Scientists call these <b>chronic wounds</b> and the gas <b>nitric oxide (NO)</b></span>
+        <span class="tag"><span data-l="en">The problem</span><span data-l="zh">問題</span></span>
+        <h3><span data-l="en">A wound that won't heal</span><span data-l="zh">一個無法癒合的傷口</span></h3>
+        <p><span data-l="en">It stays red and swollen for weeks. It keeps sending out a warning gas that says "something is wrong here".</span><span data-l="zh">傷口一連幾個星期都又紅又腫，還不斷釋放一種警告氣體，好像在說：「這裡出事了！」</span></p>
+        <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Scientists call these <b>chronic wounds</b> and the gas <b>nitric oxide (NO)</b></span><span data-l="zh">科學家稱這類傷口為<b>慢性傷口</b>（chronic wound），這種氣體是<b>一氧化氮（NO）</b></span></span>
       </div>
       <div class="beat" data-beat="1">
-        <span class="tag">The patch</span>
-        <h3>The gas rises into the patch</h3>
-        <p>Our patch is a soft gel stacked in layers. Every layer is full of tiny engineered bacteria.</p>
+        <span class="tag"><span data-l="en">The patch</span><span data-l="zh">貼片</span></span>
+        <h3><span data-l="en">The gas rises into the patch</span><span data-l="zh">氣體上升，進入貼片</span></h3>
+        <p><span data-l="en">Our patch is a soft gel stacked in layers. Every layer is full of tiny engineered bacteria.</span><span data-l="zh">我們的貼片由一層層軟凝膠疊成，每一層都充滿經過改造的微小細菌。</span></p>
       </div>
       <div class="beat" data-beat="2">
-        <span class="tag">The switch</span>
-        <h3>The bacteria sense it and switch on</h3>
-        <p>When the warning gas reaches them, the bacteria start making a healing medicine.</p>
-        <span class="sci"><span class="flask">Sc</span>Scientists call the medicine <b>a therapeutic peptide (TAP2)</b></span>
+        <span class="tag"><span data-l="en">The switch</span><span data-l="zh">開關</span></span>
+        <h3><span data-l="en">The bacteria sense it and switch on</span><span data-l="zh">細菌感應到氣體，隨即啟動</span></h3>
+        <p><span data-l="en">When the warning gas reaches them, the bacteria start making a healing medicine.</span><span data-l="zh">警告氣體一到，細菌便開始製造療傷藥物。</span></p>
+        <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Scientists call the medicine <b>a therapeutic peptide (TAP2)</b></span><span data-l="zh">科學家稱這種藥物為<b>治療性多肽 TAP2</b>（therapeutic peptide）</span></span>
       </div>
       <div class="beat" data-beat="3">
-        <span class="tag">The journey</span>
-        <h3>The medicine travels back down</h3>
-        <p>It has to pass through the gel to reach the wound. Some breaks down on the way. Watch the dots fade.</p>
+        <span class="tag"><span data-l="en">The journey</span><span data-l="zh">旅程</span></span>
+        <h3><span data-l="en">The medicine travels back down</span><span data-l="zh">藥物向下走回傷口</span></h3>
+        <p><span data-l="en">It has to pass through the gel to reach the wound. Some breaks down on the way. Watch the dots fade.</span><span data-l="zh">藥物要穿過凝膠才能到達傷口，途中有一部分會分解。留意那些逐漸消失的圓點。</span></p>
       </div>
       <div class="beat" data-beat="4">
-        <span class="tag">Your mission</span>
-        <h3>More layers, more bacteria. But a longer journey.</h3>
-        <p>A thicker patch holds more bacteria &mdash; but the warning gas fades before it reaches the ones near the top, so those never switch on, and the medicine made high up has further to travel. How thick should we make it so the most medicine reaches the wound? You'll build a model to find out.</p>
+        <span class="tag"><span data-l="en">Your mission</span><span data-l="zh">你的任務</span></span>
+        <h3><span data-l="en">More layers, more bacteria. But a longer journey.</span><span data-l="zh">層數越多，細菌越多，但路程也越長。</span></h3>
+        <p><span data-l="en">A thicker patch holds more bacteria &mdash; but the warning gas fades before it reaches the ones near the top, so those never switch on, and the medicine made high up has further to travel. How thick should we make it so the most medicine reaches the wound? You'll build a model to find out.</span><span data-l="zh">較厚的貼片可以容納更多細菌——但警告氣體還未到達頂部的細菌就已經消散，所以那些細菌永遠不會啟動；而在高處製造的藥物，要走的路也更長。貼片要做多厚，才能讓最多藥物到達傷口？你將會建立一個模型來找出答案。</span></p>
       </div>
     </div>
     <div class="stage-wrap">
-      <div class="stage"><canvas id="missionCanvas" aria-label="Animated cross-section of the patch sitting on the wound"></canvas><span class="stage-cap" id="missionCap">Cross-section</span></div>
+      <div class="stage"><canvas id="missionCanvas" aria-label="Animated cross-section of the patch sitting on the wound" data-aria-zh="貼在傷口上的貼片剖面動畫"></canvas><span class="stage-cap" id="missionCap"><span data-l="en">Cross-section</span><span data-l="zh">剖面圖</span></span></div>
     </div>
   </div>
 
   <div class="mission-go rv">
-    <button class="btn gel big" id="startBtn">Start the lab ↓</button>
-    <span class="kbd-hint">Your progress saves in this browser. Refreshing brings you back here.</span>
+    <button class="btn gel big" id="startBtn"><span data-l="en">Start the lab ↓</span><span data-l="zh">開始實驗 ↓</span></button>
+    <span class="kbd-hint"><span data-l="en">Your progress saves in this browser. Refreshing brings you back here.</span><span data-l="zh">你的進度會儲存在這個瀏覽器中，重新整理頁面後會回到這裡。</span></span>
   </div>
 </section>
 
 <!-- ================= STEP 1 ================= -->
 <section class="step" id="step-1" data-step="1">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish the mission to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish the mission to unlock</span><span data-l="zh">完成任務簡介後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Step 1 <span class="t">· 1 min</span> <span class="step-done-pill">Done</span></span>
-    <h2>What changes the amount of medicine in the patch?</h2>
-    <p class="lede">Drag each card into a box. No mouse? Click a card, then click a box.</p>
-    <button class="ghost hint-btn" data-hint="1">Hint</button>
+    <span class="step-no"><span data-l="en">Step 1</span><span data-l="zh">第 1 步</span> <span class="t">· 1 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
+    <h2><span data-l="en">What changes the amount of medicine in the patch?</span><span data-l="zh">甚麼會改變貼片內的藥物量？</span></h2>
+    <p class="lede"><span data-l="en">Drag each card into a box. No mouse? Click a card, then click a box.</span><span data-l="zh">把每張卡片拖進其中一個格子。沒有滑鼠？先按一張卡片，再按一個格子。</span></p>
+    <button class="ghost hint-btn" data-hint="1"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
-    <div class="deck" id="deck" aria-label="Cards to sort"></div>
+    <div class="deck" id="deck" aria-label="Cards to sort" data-aria-zh="待分類的卡片"></div>
     <div class="bins">
-      <button class="bin" data-bin="add" aria-label="Adds medicine"><h4><span class="sym">+</span>Adds medicine</h4><div class="slot"></div></button>
-      <button class="bin" data-bin="remove" aria-label="Removes medicine"><h4><span class="sym">−</span>Removes medicine</h4><div class="slot"></div></button>
-      <button class="bin" data-bin="none" aria-label="Doesn't matter"><h4><span class="sym">0</span>Doesn't matter</h4><div class="slot"></div></button>
+      <button class="bin" data-bin="add" aria-label="Adds medicine" data-aria-zh="增加藥物"><h4><span class="sym">+</span><span data-l="en">Adds medicine</span><span data-l="zh">增加藥物</span></h4><div class="slot"></div></button>
+      <button class="bin" data-bin="remove" aria-label="Removes medicine" data-aria-zh="減少藥物"><h4><span class="sym">−</span><span data-l="en">Removes medicine</span><span data-l="zh">減少藥物</span></h4><div class="slot"></div></button>
+      <button class="bin" data-bin="none" aria-label="Doesn't matter" data-aria-zh="沒有影響"><h4><span class="sym">0</span><span data-l="en">Doesn't matter</span><span data-l="zh">沒有影響</span></h4><div class="slot"></div></button>
     </div>
     <div id="s1say" aria-live="polite"></div>
   </div>
   <div class="step-foot">
     <div class="discover" id="s1disc" hidden>
-      <span class="k">You just decided</span>
-      <div class="rule"><span class="tile m">made</span><span class="tile o">and</span><span class="tile l">lost</span><span class="tile o">are the only things that matter</span></div>
-      <p>Ignoring colour and shape is a choice. Every model leaves things out on purpose.</p>
-      <span class="sci"><span class="flask">Sc</span>Scientists call "something we pretend is true" an <b>assumption</b></span>
+      <span class="k"><span data-l="en">You just decided</span><span data-l="zh">你剛剛決定了</span></span>
+      <div class="rule" data-l="en"><span class="tile m">made</span><span class="tile o">and</span><span class="tile l">lost</span><span class="tile o">are the only things that matter</span></div>
+      <div class="rule" data-l="zh"><span class="tile o">只有</span><span class="tile m">製造</span><span class="tile o">和</span><span class="tile l">流失</span><span class="tile o">才是重要的</span></div>
+      <p><span data-l="en">Ignoring colour and shape is a choice. Every model leaves things out on purpose.</span><span data-l="zh">忽略顏色和形狀是一個選擇。每個模型都會刻意省略一些東西。</span></p>
+      <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Scientists call "something we pretend is true" an <b>assumption</b></span><span data-l="zh">科學家把「我們姑且當作是真的事」稱為<b>假設</b>（assumption）</span></span>
     </div>
-    <button class="btn next-btn" data-next="2" hidden>Next: the medicine sandbox ↓</button>
+    <button class="btn next-btn" data-next="2" hidden><span data-l="en">Next: the medicine sandbox ↓</span><span data-l="zh">下一步：藥物沙盒 ↓</span></button>
   </div>
 </section>
 
 <!-- ================= STEP 2 ================= -->
 <section class="step locked" id="step-2" data-step="2">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 1 to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish step 1 to unlock</span><span data-l="zh">完成第 1 步後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Step 2 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
-    <h2>The medicine sandbox</h2>
-    <p class="lede">The patch starts with <b class="num">20</b> medicine. Bacteria make <b class="num">5</b> every minute. <b class="num" id="s2lostTxt">2</b> is lost every minute. What happens?</p>
-    <button class="ghost hint-btn" data-hint="2">Hint</button>
+    <span class="step-no"><span data-l="en">Step 2</span><span data-l="zh">第 2 步</span> <span class="t">· 1.5 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
+    <h2><span data-l="en">The medicine sandbox</span><span data-l="zh">藥物沙盒</span></h2>
+    <p class="lede"><span data-l="en">The patch starts with <b class="num">20</b> medicine. Bacteria make <b class="num">5</b> every minute. <b class="num s2lostTxt">2</b> is lost every minute. What happens?</span><span data-l="zh">貼片一開始有 <b class="num">20</b> 份藥物。細菌每分鐘製造 <b class="num">5</b> 份，每分鐘流失 <b class="num s2lostTxt">2</b> 份。會發生甚麼事？</span></p>
+    <button class="ghost hint-btn" data-hint="2"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
     <div class="tank-grid">
-      <div class="canvas-box" style="height:300px"><canvas id="s2canvas" aria-label="Medicine tank"></canvas></div>
+      <div class="canvas-box" style="height:300px"><canvas id="s2canvas" aria-label="Medicine tank" data-aria-zh="藥物容器"></canvas></div>
       <div class="step-body">
         <div>
-          <p class="label">1 · Predict</p>
+          <p class="label"><span data-l="en">1 · Predict</span><span data-l="zh">1 · 預測</span></p>
           <div class="choices" id="s2pred" style="margin-top:8px">
-            <button class="choice" data-v="up">⬆ Goes up</button>
-            <button class="choice" data-v="down">⬇ Goes down</button>
-            <button class="choice" data-v="same">= Stays the same</button>
+            <button class="choice" data-v="up"><span data-l="en">⬆ Goes up</span><span data-l="zh">⬆ 上升</span></button>
+            <button class="choice" data-v="down"><span data-l="en">⬇ Goes down</span><span data-l="zh">⬇ 下降</span></button>
+            <button class="choice" data-v="same"><span data-l="en">= Stays the same</span><span data-l="zh">= 保持不變</span></button>
           </div>
         </div>
         <div>
-          <p class="label">2 · Lost each minute</p>
+          <p class="label"><span data-l="en">2 · Lost each minute</span><span data-l="zh">2 · 每分鐘流失</span></p>
           <div class="choices" id="s2lost" style="margin-top:8px">
-            <button class="choice" data-v="2" aria-pressed="true">Lost 2</button>
-            <button class="choice" data-v="5" disabled>Lost 5</button>
-            <button class="choice" data-v="7" disabled>Lost 7</button>
+            <button class="choice" data-v="2" aria-pressed="true"><span data-l="en">Lost 2</span><span data-l="zh">流失 2</span></button>
+            <button class="choice" data-v="5" disabled><span data-l="en">Lost 5</span><span data-l="zh">流失 5</span></button>
+            <button class="choice" data-v="7" disabled><span data-l="en">Lost 7</span><span data-l="zh">流失 7</span></button>
           </div>
         </div>
-        <div class="row"><button class="btn gel" id="s2run" disabled>Run 3 minutes ▶</button></div>
+        <div class="row"><button class="btn gel" id="s2run" disabled><span data-l="en">Run 3 minutes ▶</span><span data-l="zh">運行 3 分鐘 ▶</span></button></div>
         <div>
-          <p class="label">Medicine each minute</p>
+          <p class="label"><span data-l="en">Medicine each minute</span><span data-l="zh">每分鐘的藥物量</span></p>
           <div class="seq num" id="s2seq" aria-live="polite"></div>
         </div>
       </div>
@@ -503,138 +570,140 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
   </div>
   <div class="step-foot">
     <div class="discover" id="s2disc" hidden>
-      <span class="k">You just discovered the rule</span>
-      <div class="rule"><span class="tile">change</span><span class="tile o">=</span><span class="tile m">made</span><span class="tile o">−</span><span class="tile l">lost</span></div>
-      <p>More made than lost: it rises. Equal: it stays flat. More lost: it falls.</p>
-      <div class="row"><span class="sci"><span class="flask">Sc</span>"medicine made" is <b>production</b></span><span class="sci"><span class="flask">Sc</span>"broken down" is <b>degradation</b></span></div>
+      <span class="k"><span data-l="en">You just discovered the rule</span><span data-l="zh">你剛剛發現了規律</span></span>
+      <div class="rule" data-l="en"><span class="tile">change</span><span class="tile o">=</span><span class="tile m">made</span><span class="tile o">−</span><span class="tile l">lost</span></div>
+      <div class="rule" data-l="zh"><span class="tile">變化</span><span class="tile o">=</span><span class="tile m">製造</span><span class="tile o">−</span><span class="tile l">流失</span></div>
+      <p><span data-l="en">More made than lost: it rises. Equal: it stays flat. More lost: it falls.</span><span data-l="zh">製造多於流失：上升。兩者相等：保持不變。流失多於製造：下降。</span></p>
+      <div class="row"><span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">"medicine made" is <b>production</b></span><span data-l="zh">「製造藥物」稱為<b>生成</b>（production）</span></span><span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">"broken down" is <b>degradation</b></span><span data-l="zh">「分解」稱為<b>降解</b>（degradation）</span></span></div>
     </div>
-    <button class="btn next-btn" data-next="3" hidden>Next: fix the broken model ↓</button>
+    <button class="btn next-btn" data-next="3" hidden><span data-l="en">Next: fix the broken model ↓</span><span data-l="zh">下一步：修正有問題的模型 ↓</span></button>
   </div>
 </section>
 
 <!-- ================= STEP 3 ================= -->
 <section class="step locked" id="step-3" data-step="3">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 2 to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish step 2 to unlock</span><span data-l="zh">完成第 2 步後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Step 3 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
-    <h2>Fix the broken model</h2>
-    <p class="lede">The bacteria switch off. The patch has <b class="num">20</b> medicine left. How does it disappear? Try both rules.</p>
-    <button class="ghost hint-btn" data-hint="3">Hint</button>
+    <span class="step-no"><span data-l="en">Step 3</span><span data-l="zh">第 3 步</span> <span class="t">· 1.5 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
+    <h2><span data-l="en">Fix the broken model</span><span data-l="zh">修正有問題的模型</span></h2>
+    <p class="lede"><span data-l="en">The bacteria switch off. The patch has <b class="num">20</b> medicine left. How does it disappear? Try both rules.</span><span data-l="zh">細菌關閉了，貼片內剩下 <b class="num">20</b> 份藥物。藥物會怎樣消失？兩條規則都試試看。</span></p>
+    <button class="ghost hint-btn" data-hint="3"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
     <div class="tank-grid">
-      <div class="canvas-box" id="s3box" style="height:300px"><canvas id="s3canvas" aria-label="Medicine tank with bacteria off"></canvas></div>
+      <div class="canvas-box" id="s3box" style="height:300px"><canvas id="s3canvas" aria-label="Medicine tank with bacteria off" data-aria-zh="細菌關閉時的藥物容器"></canvas></div>
       <div class="step-body">
         <div class="panel" style="display:grid;gap:8px">
-          <div class="row" style="justify-content:space-between"><b>Rule A · lose 5 every minute</b><button class="btn soft" id="s3a">Run A ▶</button></div>
+          <div class="row" style="justify-content:space-between"><b><span data-l="en">Rule A · lose 5 every minute</span><span data-l="zh">規則 A · 每分鐘流失 5</span></b><button class="btn soft" id="s3a"><span data-l="en">Run A ▶</span><span data-l="zh">運行 A ▶</span></button></div>
           <div class="seq num" id="s3seqA"></div>
         </div>
         <div class="panel" style="display:grid;gap:8px">
-          <div class="row" style="justify-content:space-between"><b>Rule B · lose 20% every minute</b><button class="btn soft" id="s3b">Run B ▶</button></div>
+          <div class="row" style="justify-content:space-between"><b><span data-l="en">Rule B · lose 20% every minute</span><span data-l="zh">規則 B · 每分鐘流失 20%</span></b><button class="btn soft" id="s3b"><span data-l="en">Run B ▶</span><span data-l="zh">運行 B ▶</span></button></div>
           <div class="seq num" id="s3seqB"></div>
         </div>
       </div>
     </div>
     <div id="s3say" aria-live="polite"></div>
     <div id="s3explain" hidden>
-      <p class="label">Why does Rule B work?</p>
+      <p class="label"><span data-l="en">Why does Rule B work?</span><span data-l="zh">為甚麼規則 B 行得通？</span></p>
       <div class="choices" id="s3opts" style="margin-top:8px">
-        <button class="choice" data-v="share">When there's less medicine, less is lost each minute</button>
-        <button class="choice" data-v="small">20% is a smaller number than 5</button>
-        <button class="choice" data-v="stop">Rule B stops after a few minutes</button>
+        <button class="choice" data-v="share"><span data-l="en">When there's less medicine, less is lost each minute</span><span data-l="zh">藥物越少，每分鐘流失的量也越少</span></button>
+        <button class="choice" data-v="small"><span data-l="en">20% is a smaller number than 5</span><span data-l="zh">20% 是一個比 5 小的數字</span></button>
+        <button class="choice" data-v="stop"><span data-l="en">Rule B stops after a few minutes</span><span data-l="zh">規則 B 幾分鐘後就會停止</span></button>
       </div>
-      <div class="row" style="margin-top:10px"><button class="ghost" id="s3why">Why? Show me</button></div>
-      <div class="canvas-box" id="s3whyBox" style="height:150px;margin-top:10px" hidden><canvas id="s3whyCanvas" aria-label="More medicine means more lost"></canvas></div>
+      <div class="row" style="margin-top:10px"><button class="ghost" id="s3why"><span data-l="en">Why? Show me</span><span data-l="zh">為甚麼？給我看看</span></button></div>
+      <div class="canvas-box" id="s3whyBox" style="height:150px;margin-top:10px" hidden><canvas id="s3whyCanvas" aria-label="More medicine means more lost" data-aria-zh="藥物越多，流失越多"></canvas></div>
     </div>
   </div>
   <div class="step-foot">
     <div class="discover" id="s3disc" hidden>
-      <span class="k">You just fixed the model</span>
-      <div class="rule"><span class="tile l">lost</span><span class="tile o">=</span><span class="tile">20%</span><span class="tile o">×</span><span class="tile">medicine now</span></div>
-      <p>Losing a share, not a fixed amount, means the model can never go below zero.</p>
-      <span class="sci"><span class="flask">Sc</span>"share lost each minute" is the <b>decay rate</b></span>
+      <span class="k"><span data-l="en">You just fixed the model</span><span data-l="zh">你剛剛修正了模型</span></span>
+      <div class="rule" data-l="en"><span class="tile l">lost</span><span class="tile o">=</span><span class="tile">20%</span><span class="tile o">×</span><span class="tile">medicine now</span></div>
+      <div class="rule" data-l="zh"><span class="tile l">流失</span><span class="tile o">=</span><span class="tile">20%</span><span class="tile o">×</span><span class="tile">現有藥物</span></div>
+      <p><span data-l="en">Losing a share, not a fixed amount, means the model can never go below zero.</span><span data-l="zh">每次流失的是一個比例，而不是固定的量，所以模型永遠不會跌到零以下。</span></p>
+      <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">"share lost each minute" is the <b>decay rate</b></span><span data-l="zh">「每分鐘流失的比例」稱為<b>衰減率</b>（decay rate）</span></span>
     </div>
-    <button class="btn next-btn" data-next="4" hidden>Next: build it step by step ↓</button>
+    <button class="btn next-btn" data-next="4" hidden><span data-l="en">Next: build it step by step ↓</span><span data-l="zh">下一步：一步一步計算 ↓</span></button>
   </div>
 </section>
 
 <!-- ================= STEP 4 ================= -->
 <section class="step locked" id="step-4" data-step="4">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 3 to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish step 3 to unlock</span><span data-l="zh">完成第 3 步後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Step 4 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
-    <h2>Build it step by step</h2>
-    <p class="lede">A 3-layer patch makes <b class="num">12</b> medicine a minute and loses <b class="num">20%</b>. It starts empty. Fill in the first three minutes.</p>
-    <button class="ghost hint-btn" data-hint="4">Hint</button>
+    <span class="step-no"><span data-l="en">Step 4</span><span data-l="zh">第 4 步</span> <span class="t">· 1.5 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
+    <h2><span data-l="en">Build it step by step</span><span data-l="zh">一步一步計算</span></h2>
+    <p class="lede"><span data-l="en">A 3-layer patch makes <b class="num">12</b> medicine a minute and loses <b class="num">20%</b>. It starts empty. Fill in the first three minutes.</span><span data-l="zh">一塊 3 層的貼片每分鐘製造 <b class="num">12</b> 份藥物，同時流失 <b class="num">20%</b>。貼片一開始是空的。請填寫頭三分鐘的數值。</span></p>
+    <button class="ghost hint-btn" data-hint="4"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
-    <div class="panel num" style="font-size:16px">new = old + <b style="color:var(--bact)">12</b> − <b style="color:var(--wound)">0.2 × old</b></div>
+    <div class="panel num" style="font-size:16px"><span data-l="en">new = old + <b style="color:var(--bact)">12</b> − <b style="color:var(--wound)">0.2 × old</b></span><span data-l="zh">新 = 舊 + <b style="color:var(--bact)">12</b> − <b style="color:var(--wound)">0.2 × 舊</b></span></div>
     <div class="table-scroll">
       <table class="calc-table" id="s4table">
-        <thead><tr><th>Minute</th><th>Old</th><th>+ made</th><th>− lost</th><th>New</th><th></th></tr></thead>
+        <thead><tr><th><span data-l="en">Minute</span><span data-l="zh">分鐘</span></th><th><span data-l="en">Old</span><span data-l="zh">舊</span></th><th><span data-l="en">+ made</span><span data-l="zh">+ 製造</span></th><th><span data-l="en">− lost</span><span data-l="zh">− 流失</span></th><th><span data-l="en">New</span><span data-l="zh">新</span></th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
     <div id="s4say" aria-live="polite"></div>
     <div id="s4predWrap" hidden>
-      <p class="label">Predict · what happens over 50 minutes?</p>
+      <p class="label"><span data-l="en">Predict · what happens over 50 minutes?</span><span data-l="zh">預測 · 50 分鐘內會發生甚麼事？</span></p>
       <div class="curve-picks" id="s4pred" style="margin-top:8px">
-        <button class="choice" data-v="rise"><svg viewBox="0 0 100 46" aria-hidden="true"><path d="M4 42 L96 4"/></svg>Keeps rising</button>
-        <button class="choice" data-v="flat"><svg viewBox="0 0 100 46" aria-hidden="true"><path d="M4 42 C 30 8, 50 8, 96 8"/></svg>Levels off</button>
-        <button class="choice" data-v="zero"><svg viewBox="0 0 100 46" aria-hidden="true"><path d="M4 42 C 30 4, 50 4, 96 42"/></svg>Drops back to zero</button>
+        <button class="choice" data-v="rise"><svg viewBox="0 0 100 46" aria-hidden="true"><path d="M4 42 L96 4"/></svg><span data-l="en">Keeps rising</span><span data-l="zh">一直上升</span></button>
+        <button class="choice" data-v="flat"><svg viewBox="0 0 100 46" aria-hidden="true"><path d="M4 42 C 30 8, 50 8, 96 8"/></svg><span data-l="en">Levels off</span><span data-l="zh">趨於平穩</span></button>
+        <button class="choice" data-v="zero"><svg viewBox="0 0 100 46" aria-hidden="true"><path d="M4 42 C 30 4, 50 4, 96 42"/></svg><span data-l="en">Drops back to zero</span><span data-l="zh">跌回零</span></button>
       </div>
-      <div class="row" style="margin-top:12px"><button class="btn gel" id="s4run" disabled>Auto-fill 50 minutes ▶</button></div>
+      <div class="row" style="margin-top:12px"><button class="btn gel" id="s4run" disabled><span data-l="en">Auto-fill 50 minutes ▶</span><span data-l="zh">自動填寫 50 分鐘 ▶</span></button></div>
     </div>
     <div class="split" id="s4chartWrap" hidden>
-      <div class="canvas-box" style="height:260px"><canvas id="s4canvas" aria-label="Medicine over 50 minutes"></canvas></div>
+      <div class="canvas-box" style="height:260px"><canvas id="s4canvas" aria-label="Medicine over 50 minutes" data-aria-zh="50 分鐘內的藥物量"></canvas></div>
       <div class="step-body">
         <div class="bars">
-          <div class="bar m"><span>Made</span><div class="track"><div class="fill" id="s4made"></div></div><span class="num" id="s4madeV">0</span></div>
-          <div class="bar l"><span>Lost</span><div class="track"><div class="fill" id="s4lost"></div></div><span class="num" id="s4lostV">0</span></div>
+          <div class="bar m"><span><span data-l="en">Made</span><span data-l="zh">製造</span></span><div class="track"><div class="fill" id="s4made"></div></div><span class="num" id="s4madeV">0</span></div>
+          <div class="bar l"><span><span data-l="en">Lost</span><span data-l="zh">流失</span></span><div class="track"><div class="fill" id="s4lost"></div></div><span class="num" id="s4lostV">0</span></div>
         </div>
-        <div class="readout"><div class="stat g"><div class="v" id="s4level">0</div><div class="l">In the patch</div></div><div class="stat"><div class="v" id="s4min">0</div><div class="l">Minute</div></div></div>
+        <div class="readout"><div class="stat g"><div class="v" id="s4level">0</div><div class="l"><span data-l="en">In the patch</span><span data-l="zh">貼片內</span></div></div><div class="stat"><div class="v" id="s4min">0</div><div class="l"><span data-l="en">Minute</span><span data-l="zh">分鐘</span></div></div></div>
         <div id="s4micro"></div>
         <div class="slider" id="s4whatif" hidden>
-          <div class="top"><label for="s4layers">What if? Layers of bacteria</label><output class="num" id="s4layersOut">3</output></div>
+          <div class="top"><label for="s4layers"><span data-l="en">What if? Layers of bacteria</span><span data-l="zh">如果改變細菌層數？</span></label><output class="num" id="s4layersOut">3</output></div>
           <input type="range" id="s4layers" min="1" max="5" step="1" value="3">
-          <span class="sci" style="margin-top:4px"><span class="flask">Sc</span>A setting you can change is a <b>parameter</b></span>
+          <span class="sci" style="margin-top:4px"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">A setting you can change is a <b>parameter</b></span><span data-l="zh">可以調整的設定稱為<b>參數</b>（parameter）</span></span>
         </div>
       </div>
     </div>
   </div>
   <div class="step-foot">
-    <button class="btn next-btn" data-next="5" hidden>Next: the level in the patch ↓</button>
+    <button class="btn next-btn" data-next="5" hidden><span data-l="en">Next: the level in the patch ↓</span><span data-l="zh">下一步：貼片內的藥物水平 ↓</span></button>
   </div>
 </section>
 
 <!-- ================= STEP 5 ================= -->
 <section class="step locked" id="step-5" data-step="5">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 4 to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish step 4 to unlock</span><span data-l="zh">完成第 4 步後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Step 5 <span class="t">· 2 min</span> <span class="step-done-pill">Done</span></span>
-    <h2>The level in the patch</h2>
-    <p class="lede">Why did it go flat at 60? Watch the two bars. Then take the challenge.</p>
-    <button class="ghost hint-btn" data-hint="5">Hint</button>
+    <span class="step-no"><span data-l="en">Step 5</span><span data-l="zh">第 5 步</span> <span class="t">· 2 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
+    <h2><span data-l="en">The level in the patch</span><span data-l="zh">貼片內的藥物水平</span></h2>
+    <p class="lede"><span data-l="en">Why did it go flat at 60? Watch the two bars. Then take the challenge.</span><span data-l="zh">為甚麼曲線會停在 60？留意那兩條橫棒，然後接受挑戰。</span></p>
+    <button class="ghost hint-btn" data-hint="5"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
     <div class="split">
-      <div class="canvas-box" style="height:260px"><canvas id="s5canvas" aria-label="Medicine settling to a flat level"></canvas></div>
+      <div class="canvas-box" style="height:260px"><canvas id="s5canvas" aria-label="Medicine settling to a flat level" data-aria-zh="藥物量逐漸穩定下來"></canvas></div>
       <div class="step-body">
         <div class="bars">
-          <div class="bar m"><span>Made</span><div class="track"><div class="fill" id="s5made"></div></div><span class="num" id="s5madeV">0</span></div>
-          <div class="bar l"><span>Lost</span><div class="track"><div class="fill" id="s5lost"></div></div><span class="num" id="s5lostV">0</span></div>
+          <div class="bar m"><span><span data-l="en">Made</span><span data-l="zh">製造</span></span><div class="track"><div class="fill" id="s5made"></div></div><span class="num" id="s5madeV">0</span></div>
+          <div class="bar l"><span><span data-l="en">Lost</span><span data-l="zh">流失</span></span><div class="track"><div class="fill" id="s5lost"></div></div><span class="num" id="s5lostV">0</span></div>
         </div>
-        <div class="row"><button class="btn soft" id="s5watch">Watch it settle ▶</button></div>
+        <div class="row"><button class="btn soft" id="s5watch"><span data-l="en">Watch it settle ▶</span><span data-l="zh">看它如何穩定下來 ▶</span></button></div>
         <div id="s5why" class="why" hidden>
-          <div class="say good"><span class="ic">!</span><span>It stops rising when <b>lost catches up with made</b>. 20% of 60 is 12, exactly what is made.</span></div>
+          <div class="say good"><span class="ic">!</span><span><span data-l="en">It stops rising when <b>lost catches up with made</b>. 20% of 60 is 12, exactly what is made.</span><span data-l="zh">當<b>流失追上製造</b>時，它便不再上升。60 的 20% 是 12，剛好等於製造的量。</span></span></div>
         </div>
       </div>
     </div>
     <div class="panel" id="s5challenge" hidden style="display:grid;gap:12px">
-      <p class="label">Challenge</p>
-      <p><b>A thinner patch settles at 20.</b> How much medicine is it making each minute? Move the slider until the line goes flat at 20.</p>
+      <p class="label"><span data-l="en">Challenge</span><span data-l="zh">挑戰</span></p>
+      <p><span data-l="en"><b>A thinner patch settles at 20.</b> How much medicine is it making each minute? Move the slider until the line goes flat at 20.</span><span data-l="zh"><b>一塊較薄的貼片最後穩定在 20。</b>它每分鐘製造多少藥物？移動滑桿，直到曲線在 20 變平。</span></p>
       <div class="slider">
-        <div class="top"><label for="s5made-in">Medicine made per minute</label><output class="num" id="s5madeOut">12</output></div>
+        <div class="top"><label for="s5made-in"><span data-l="en">Medicine made per minute</span><span data-l="zh">每分鐘製造的藥物</span></label><output class="num" id="s5madeOut">12</output></div>
         <input type="range" id="s5made-in" min="1" max="20" step="1" value="12">
       </div>
       <div id="s5say" aria-live="polite"></div>
@@ -642,239 +711,242 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
   </div>
   <div class="step-foot">
     <div class="discover" id="s5disc" hidden>
-      <span class="k">You just discovered</span>
-      <div class="rule"><span class="tile">level in the patch</span><span class="tile o">=</span><span class="tile m">made</span><span class="tile o">÷</span><span class="tile l">share lost</span></div>
+      <span class="k"><span data-l="en">You just discovered</span><span data-l="zh">你剛剛發現了</span></span>
+      <div class="rule" data-l="en"><span class="tile">level in the patch</span><span class="tile o">=</span><span class="tile m">made</span><span class="tile o">÷</span><span class="tile l">share lost</span></div>
+      <div class="rule" data-l="zh"><span class="tile">貼片內的藥物水平</span><span class="tile o">=</span><span class="tile m">製造</span><span class="tile o">÷</span><span class="tile l">流失比例</span></div>
       <p class="num">12 ÷ 0.2 = 60 &nbsp;·&nbsp; 4 ÷ 0.2 = 20</p>
-      <span class="sci"><span class="flask">Sc</span>A level that stops changing is a <b>steady state</b></span>
+      <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">A level that stops changing is a <b>steady state</b></span><span data-l="zh">不再改變的水平稱為<b>穩態</b>（steady state）</span></span>
     </div>
-    <button class="btn next-btn" data-next="6" hidden>Next: match the lab data ↓</button>
+    <button class="btn next-btn" data-next="6" hidden><span data-l="en">Next: match the lab data ↓</span><span data-l="zh">下一步：配合實驗數據 ↓</span></button>
   </div>
 </section>
 
 <!-- ================= STEP 6 ================= -->
 <section class="step locked" id="step-6" data-step="6">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 5 to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish step 5 to unlock</span><span data-l="zh">完成第 5 步後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Step 6 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
-    <h2>Match the lab data</h2>
-    <p class="lede">We guessed 20% is lost each minute. The lab switched the bacteria off and measured the medicine fading. Move the slider until your model's curve runs through the dots.</p>
-    <button class="ghost hint-btn" data-hint="6">Hint</button>
+    <span class="step-no"><span data-l="en">Step 6</span><span data-l="zh">第 6 步</span> <span class="t">· 1.5 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
+    <h2><span data-l="en">Match the lab data</span><span data-l="zh">配合實驗數據</span></h2>
+    <p class="lede"><span data-l="en">We guessed 20% is lost each minute. The lab switched the bacteria off and measured the medicine fading. Move the slider until your model's curve runs through the dots.</span><span data-l="zh">我們之前猜每分鐘流失 20%。實驗室關閉了細菌，然後測量藥物如何逐漸減少。移動滑桿，直到模型的曲線穿過那些圓點。</span></p>
+    <button class="ghost hint-btn" data-hint="6"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
-    <div class="canvas-box" style="height:280px"><canvas id="s6canvas" aria-label="Lab measurements and model curve"></canvas></div>
+    <div class="canvas-box" style="height:280px"><canvas id="s6canvas" aria-label="Lab measurements and model curve" data-aria-zh="實驗測量值與模型曲線"></canvas></div>
     <div class="split">
       <div class="slider">
-        <div class="top"><label for="s6loss">Share lost each minute</label><output class="num" id="s6lossOut">40%</output></div>
+        <div class="top"><label for="s6loss"><span data-l="en">Share lost each minute</span><span data-l="zh">每分鐘流失的比例</span></label><output class="num" id="s6lossOut">40%</output></div>
         <input type="range" id="s6loss" min="5" max="45" step="1" value="40">
       </div>
       <div class="slider">
-        <div class="top"><span>Match</span><output class="num" id="s6fitOut">0%</output></div>
-        <div class="meter" id="s6meter"><div class="fill" id="s6fit" style="width:0"></div><div class="mark" style="left:85%" title="85% needed"></div></div>
-        <span class="kbd-hint">85% or more to pass</span>
+        <div class="top"><span><span data-l="en">Match</span><span data-l="zh">吻合度</span></span><output class="num" id="s6fitOut">0%</output></div>
+        <div class="meter" id="s6meter"><div class="fill" id="s6fit" style="width:0"></div><div class="mark" style="left:85%" title="85% needed" data-title-zh="需要 85%"></div></div>
+        <span class="kbd-hint"><span data-l="en">85% or more to pass</span><span data-l="zh">達到 85% 或以上便過關</span></span>
       </div>
     </div>
     <div id="s6say" aria-live="polite"></div>
   </div>
   <div class="step-foot">
     <div class="discover" id="s6disc" hidden>
-      <span class="k">Your model now matches real measurements</span>
-      <div class="rule"><span class="tile l">share lost</span><span class="tile o">=</span><span class="tile">20% per minute</span></div>
-      <p>Your guess is now backed by data. It's locked into the notebook.</p>
+      <span class="k"><span data-l="en">Your model now matches real measurements</span><span data-l="zh">你的模型現在與真實測量值吻合</span></span>
+      <div class="rule" data-l="en"><span class="tile l">share lost</span><span class="tile o">=</span><span class="tile">20% per minute</span></div>
+      <div class="rule" data-l="zh"><span class="tile l">流失比例</span><span class="tile o">=</span><span class="tile">每分鐘 20%</span></div>
+      <p><span data-l="en">Your guess is now backed by data. It's locked into the notebook.</span><span data-l="zh">你的猜測現在有數據支持了，已經記錄在筆記簿中。</span></p>
     </div>
-    <button class="btn next-btn" data-next="7" hidden>Next: down to the wound ↓</button>
+    <button class="btn next-btn" data-next="7" hidden><span data-l="en">Next: down to the wound ↓</span><span data-l="zh">下一步：向下到達傷口 ↓</span></button>
   </div>
 </section>
 
 <!-- ================= STEP 7 ================= -->
 <section class="step locked" id="step-7" data-step="7">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 6 to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish step 6 to unlock</span><span data-l="zh">完成第 6 步後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Step 7 <span class="t">· 1.5 min</span> <span class="step-done-pill">Done</span></span>
-    <h2>Down to the wound</h2>
-    <p class="lede">The medicine starts at the patch level, <b class="num">60</b>. Each layer it crosses passes on <b class="num">70%</b>. Tap to send it down one layer at a time.</p>
-    <button class="ghost hint-btn" data-hint="7">Hint</button>
+    <span class="step-no"><span data-l="en">Step 7</span><span data-l="zh">第 7 步</span> <span class="t">· 1.5 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
+    <h2><span data-l="en">Down to the wound</span><span data-l="zh">向下到達傷口</span></h2>
+    <p class="lede"><span data-l="en">The medicine starts at the patch level, <b class="num">60</b>. Each layer it crosses passes on <b class="num">70%</b>. Tap to send it down one layer at a time.</span><span data-l="zh">藥物從貼片內的水平 <b class="num">60</b> 出發。每穿過一層，只有 <b class="num">70%</b> 能傳到下一層。按一下，讓藥物一層一層往下走。</span></p>
+    <button class="ghost hint-btn" data-hint="7"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
     <div class="split">
-      <div class="canvas-box" style="height:320px"><canvas id="s7canvas" aria-label="Medicine dots falling through three layers to the wound"></canvas></div>
+      <div class="canvas-box" style="height:320px"><canvas id="s7canvas" aria-label="Medicine dots falling through three layers to the wound" data-aria-zh="藥物圓點穿過三層到達傷口"></canvas></div>
       <div class="step-body">
-        <div class="readout"><div class="stat g"><div class="v" id="s7now">60</div><div class="l">Medicine now</div></div><div class="stat"><div class="v" id="s7layer">0 / 3</div><div class="l">Layers crossed</div></div></div>
+        <div class="readout"><div class="stat g"><div class="v" id="s7now">60</div><div class="l"><span data-l="en">Medicine now</span><span data-l="zh">現有藥物</span></div></div><div class="stat"><div class="v" id="s7layer">0 / 3</div><div class="l"><span data-l="en">Layers crossed</span><span data-l="zh">已穿過層數</span></div></div></div>
         <div class="seq num" id="s7seq"><span>60</span></div>
-        <div class="row"><button class="btn gel" id="s7next">Next layer ↓</button></div>
+        <div class="row"><button class="btn gel" id="s7next"><span data-l="en">Next layer ↓</span><span data-l="zh">下一層 ↓</span></button></div>
         <div id="s7ask" hidden>
-          <p class="label">Where did the missing medicine go?</p>
+          <p class="label"><span data-l="en">Where did the missing medicine go?</span><span data-l="zh">不見了的藥物去了哪裡？</span></p>
           <div class="choices" id="s7opts" style="margin-top:8px;flex-direction:column;align-items:stretch">
-            <button class="choice" data-v="broke">It broke down on the way</button>
-            <button class="choice" data-v="up">It floated back up</button>
-            <button class="choice" data-v="took">The bacteria took it back</button>
+            <button class="choice" data-v="broke"><span data-l="en">It broke down on the way</span><span data-l="zh">在途中分解了</span></button>
+            <button class="choice" data-v="up"><span data-l="en">It floated back up</span><span data-l="zh">飄回上面去了</span></button>
+            <button class="choice" data-v="took"><span data-l="en">The bacteria took it back</span><span data-l="zh">被細菌收回了</span></button>
           </div>
         </div>
         <div id="s7say" aria-live="polite"></div>
       </div>
     </div>
     <div class="panel" id="s7whatif" hidden style="display:grid;gap:12px">
-      <p class="label">What if? Keep stacking layers</p>
+      <p class="label"><span data-l="en">What if? Keep stacking layers</span><span data-l="zh">如果繼續疊加層數？</span></p>
       <div class="slider">
-        <div class="top"><label for="s7n">Layers to cross</label><output class="num" id="s7nOut">3</output></div>
+        <div class="top"><label for="s7n"><span data-l="en">Layers to cross</span><span data-l="zh">要穿過的層數</span></label><output class="num" id="s7nOut">3</output></div>
         <input type="range" id="s7n" min="1" max="12" step="1" value="3">
       </div>
-      <div class="canvas-box" style="height:170px"><canvas id="s7bars" aria-label="Medicine arriving after each number of layers"></canvas></div>
+      <div class="canvas-box" style="height:170px"><canvas id="s7bars" aria-label="Medicine arriving after each number of layers" data-aria-zh="穿過不同層數後到達的藥物量"></canvas></div>
       <div id="s7say2" aria-live="polite"></div>
     </div>
   </div>
   <div class="step-foot">
     <div class="discover" id="s7disc" hidden>
-      <span class="k">Same rule, new direction</span>
-      <div class="rule"><span class="tile">next layer</span><span class="tile o">=</span><span class="tile">70%</span><span class="tile o">×</span><span class="tile">this layer</span></div>
-      <p>It's the step rule from before. The steps are now layers instead of minutes.</p>
-      <div class="row"><span class="sci"><span class="flask">Sc</span>Spreading through the patch is <b>diffusion</b></span><span class="sci" id="s7pen" hidden><span class="flask">Sc</span>How far it can get is the <b>penetration depth</b></span></div>
+      <span class="k"><span data-l="en">Same rule, new direction</span><span data-l="zh">同一條規則，新的方向</span></span>
+      <div class="rule" data-l="en"><span class="tile">next layer</span><span class="tile o">=</span><span class="tile">70%</span><span class="tile o">×</span><span class="tile">this layer</span></div>
+      <div class="rule" data-l="zh"><span class="tile">下一層</span><span class="tile o">=</span><span class="tile">70%</span><span class="tile o">×</span><span class="tile">這一層</span></div>
+      <p><span data-l="en">It's the step rule from before. The steps are now layers instead of minutes.</span><span data-l="zh">這就是之前那條逐步計算的規則，只不過每一步由「一分鐘」變成了「一層」。</span></p>
+      <div class="row"><span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Spreading through the patch is <b>diffusion</b></span><span data-l="zh">在貼片中散開稱為<b>擴散</b>（diffusion）</span></span><span class="sci" id="s7pen" hidden><span class="flask" aria-hidden="true">Sc</span><span data-l="en">How far it can get is the <b>penetration depth</b></span><span data-l="zh">藥物能走多遠稱為<b>穿透深度</b>（penetration depth）</span></span></div>
     </div>
-    <button class="btn next-btn" data-next="8" hidden>Next: design the patch ↓</button>
+    <button class="btn next-btn" data-next="8" hidden><span data-l="en">Next: design the patch ↓</span><span data-l="zh">下一步：設計貼片 ↓</span></button>
   </div>
 </section>
 
 <!-- ================= STEP 8 ================= -->
 <section class="step locked" id="step-8" data-step="8">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 7 to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish step 7 to unlock</span><span data-l="zh">完成第 7 步後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Step 8 <span class="t">· 2 min</span> <span class="step-done-pill">Done</span></span>
-    <h2>Design the patch</h2>
-    <p class="lede">Find the thickness that gets the most medicine to the wound. Healing starts when at least <b class="num">18</b> arrives.</p>
-    <button class="ghost hint-btn" data-hint="8">Hint</button>
+    <span class="step-no"><span data-l="en">Step 8</span><span data-l="zh">第 8 步</span> <span class="t">· 2 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
+    <h2><span data-l="en">Design the patch</span><span data-l="zh">設計貼片</span></h2>
+    <p class="lede"><span data-l="en">Find the thickness that gets the most medicine to the wound. Healing starts when at least <b class="num">18</b> arrives.</span><span data-l="zh">找出能讓最多藥物到達傷口的厚度。至少要有 <b class="num">18</b> 份藥物到達，傷口才會開始癒合。</span></p>
+    <button class="ghost hint-btn" data-hint="8"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
     <div class="panel" id="s8predWrap" style="display:grid;gap:10px">
-      <p class="label">Predict first</p>
-      <p><b>"More layers means more medicine reaches the wound."</b></p>
-      <div class="choices" id="s8pred"><button class="choice" data-v="true">True</button><button class="choice" data-v="false">False</button></div>
+      <p class="label"><span data-l="en">Predict first</span><span data-l="zh">先預測</span></p>
+      <p><b><span data-l="en">"More layers means more medicine reaches the wound."</span><span data-l="zh">「層數越多，到達傷口的藥物就越多。」</span></b></p>
+      <div class="choices" id="s8pred"><button class="choice" data-v="true"><span data-l="en">True</span><span data-l="zh">正確</span></button><button class="choice" data-v="false"><span data-l="en">False</span><span data-l="zh">錯誤</span></button></div>
     </div>
     <div class="design-grid" id="s8lab" hidden>
       <div class="step-body" style="gap:14px">
         <div>
-          <p class="label">Patch thickness</p>
+          <p class="label"><span data-l="en">Patch thickness</span><span data-l="zh">貼片厚度</span></p>
           <div class="layer-picker" id="s8layers" style="margin-top:8px"></div>
-          <p class="kbd-hint" style="margin-top:6px">A real patch needs 2+ layers so it doesn't tear. The model lets you try 1.</p>
+          <p class="kbd-hint" style="margin-top:6px"><span data-l="en">A real patch needs 2+ layers so it doesn't tear. The model lets you try 1.</span><span data-l="zh">真正的貼片至少要有 2 層才不會撕裂，但在模型中你可以試試 1 層。</span></p>
         </div>
         <div>
-          <p class="label">Bacteria strength</p>
+          <p class="label"><span data-l="en">Bacteria strength</span><span data-l="zh">細菌強度</span></p>
           <div class="choices" id="s8bact" style="margin-top:8px;flex-direction:column;align-items:stretch">
-            <button class="choice" data-v="low">Low <small class="num" style="font-weight:400">· 2 per layer</small></button>
-            <button class="choice" data-v="medium" aria-pressed="true">Medium <small class="num" style="font-weight:400">· 4 per layer</small></button>
-            <button class="choice locked-opt" data-v="high" aria-disabled="true"><span style="display:inline-flex;gap:6px;align-items:center"><svg width="12" height="12"><use href="#i-lock"/></svg>High</span><small>The cells burn out</small></button>
+            <button class="choice" data-v="low"><span data-l="en">Low</span><span data-l="zh">低</span> <small class="num" style="font-weight:400"><span data-l="en">· 2 per layer</span><span data-l="zh">· 每層 2</span></small></button>
+            <button class="choice" data-v="medium" aria-pressed="true"><span data-l="en">Medium</span><span data-l="zh">中</span> <small class="num" style="font-weight:400"><span data-l="en">· 4 per layer</span><span data-l="zh">· 每層 4</span></small></button>
+            <button class="choice locked-opt" data-v="high" aria-disabled="true"><span style="display:inline-flex;gap:6px;align-items:center"><svg width="12" height="12"><use href="#i-lock"/></svg><span data-l="en">High</span><span data-l="zh">高</span></span><small><span data-l="en">The cells burn out</span><span data-l="zh">細胞會過勞衰竭</span></small></button>
           </div>
         </div>
       </div>
       <div class="step-body" style="gap:14px">
-        <div class="canvas-box" style="height:300px"><canvas id="s8canvas" aria-label="Your patch on the wound"></canvas></div>
+        <div class="canvas-box" style="height:300px"><canvas id="s8canvas" aria-label="Your patch on the wound" data-aria-zh="貼在傷口上的貼片"></canvas></div>
         <div class="readout">
-          <div class="stat m"><div class="v" id="s8made">12</div><div class="l">Made / min</div></div>
-          <div class="stat"><div class="v" id="s8level">60</div><div class="l">Level in patch</div></div>
-          <div class="stat g"><div class="v" id="s8reach">20.6</div><div class="l">Reaching wound</div></div>
+          <div class="stat m"><div class="v" id="s8made">12</div><div class="l"><span data-l="en">Made / min</span><span data-l="zh">製造 / 分鐘</span></div></div>
+          <div class="stat"><div class="v" id="s8level">60</div><div class="l"><span data-l="en">Level in patch</span><span data-l="zh">貼片內水平</span></div></div>
+          <div class="stat g"><div class="v" id="s8reach">20.6</div><div class="l"><span data-l="en">Reaching wound</span><span data-l="zh">到達傷口</span></div></div>
         </div>
         <div class="heal">
-          <div class="row" style="justify-content:space-between"><span class="label">Healing</span><span class="num kbd-hint">needs 18</span></div>
+          <div class="row" style="justify-content:space-between"><span class="label"><span data-l="en">Healing</span><span data-l="zh">癒合</span></span><span class="num kbd-hint"><span data-l="en">needs 18</span><span data-l="zh">需要 18</span></span></div>
           <div class="meter" id="s8meter"><div class="fill" id="s8heal"></div><div class="mark" id="s8mark"></div></div>
         </div>
         <div id="s8say" aria-live="polite"></div>
-        <div class="row"><button class="btn gel big" id="s8submit">Submit this design</button></div>
+        <div class="row"><button class="btn gel big" id="s8submit"><span data-l="en">Submit this design</span><span data-l="zh">提交這個設計</span></button></div>
       </div>
     </div>
     <div class="split" id="s8after" hidden>
-      <div class="canvas-box" style="height:220px"><canvas id="s8peak" aria-label="Medicine reaching the wound for 1 to 5 layers"></canvas></div>
+      <div class="canvas-box" style="height:220px"><canvas id="s8peak" aria-label="Medicine reaching the wound for 1 to 5 layers" data-aria-zh="1 至 5 層時到達傷口的藥物量"></canvas></div>
       <div class="step-body">
-        <div class="say good"><span class="ic">!</span><span><b>More is not better.</b> Too thin: too few bacteria to make enough medicine. Too thick: the gas never reaches the bacteria at the top, so they sit there switched off &mdash; and the medicine that <i>is</i> made has further to travel. Only a model shows you where the best point is.</span></div>
+        <div class="say good"><span class="ic">!</span><span><span data-l="en"><b>More is not better.</b> Too thin: too few bacteria to make enough medicine. Too thick: the gas never reaches the bacteria at the top, so they sit there switched off &mdash; and the medicine that <i>is</i> made has further to travel. Only a model shows you where the best point is.</span><span data-l="zh"><b>越多不一定越好。</b>太薄：細菌太少，製造不到足夠的藥物。太厚：氣體到不了頂部的細菌，它們只會一直處於關閉狀態——而<i>真正</i>製造出來的藥物，要走的路也更長。只有模型才能告訴你最佳點在哪裡。</span></span></div>
         <div class="panel" style="display:grid;gap:10px">
-          <p class="label">Bonus question</p>
-          <p><b>Can a patch with Low bacteria ever heal the wound?</b></p>
-          <div class="choices" id="s8bonus"><button class="choice" data-v="yes">Yes, with the right thickness</button><button class="choice" data-v="no">No, never</button></div>
+          <p class="label"><span data-l="en">Bonus question</span><span data-l="zh">附加題</span></p>
+          <p><b><span data-l="en">Can a patch with Low bacteria ever heal the wound?</span><span data-l="zh">細菌強度「低」的貼片，有可能令傷口癒合嗎？</span></b></p>
+          <div class="choices" id="s8bonus"><button class="choice" data-v="yes"><span data-l="en">Yes, with the right thickness</span><span data-l="zh">可以，只要厚度合適</span></button><button class="choice" data-v="no"><span data-l="en">No, never</span><span data-l="zh">不可能</span></button></div>
           <div id="s8bonusSay" aria-live="polite"></div>
         </div>
-        <p class="kbd-hint">Compare your design with your neighbour's. Did you both find the same best thickness?</p>
+        <p class="kbd-hint"><span data-l="en">Compare your design with your neighbour's. Did you both find the same best thickness?</span><span data-l="zh">和旁邊的同學比較一下設計。你們找到的最佳厚度一樣嗎？</span></p>
       </div>
     </div>
   </div>
   <div class="step-foot">
-    <span class="sci" id="s8sci" hidden><span class="flask">Sc</span>"Enough to heal" is the <b>therapeutic threshold</b></span>
-    <button class="btn next-btn" data-next="9" hidden>Next: let the computer try it ↓</button>
+    <span class="sci" id="s8sci" hidden><span class="flask" aria-hidden="true">Sc</span><span data-l="en">"Enough to heal" is the <b>therapeutic threshold</b></span><span data-l="zh">「足以令傷口癒合的量」稱為<b>治療閾值</b>（therapeutic threshold）</span></span>
+    <button class="btn next-btn" data-next="9" hidden><span data-l="en">Next: let the computer try it ↓</span><span data-l="zh">下一步：讓電腦試試看 ↓</span></button>
   </div>
 </section>
 
 <!-- ================= STEP 9 : RUN IT AS CODE ================= -->
 <section class="step locked" id="step-9" data-step="9">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Finish step 8 to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish step 8 to unlock</span><span data-l="zh">完成第 8 步後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Step 9 <span class="t">· 3 min</span> <span class="step-done-pill">Done</span></span>
-    <h2>Let the computer try every thickness</h2>
-    <p class="lede">You tested a handful of designs by hand. Here is the <b>same rule you built</b>, written as code. It tests ten thicknesses in less time than it took you to test one.</p>
-    <button class="ghost hint-btn" data-hint="9">Hint</button>
+    <span class="step-no"><span data-l="en">Step 9</span><span data-l="zh">第 9 步</span> <span class="t">· 3 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
+    <h2><span data-l="en">Let the computer try every thickness</span><span data-l="zh">讓電腦試遍每一種厚度</span></h2>
+    <p class="lede"><span data-l="en">You tested a handful of designs by hand. Here is the <b>same rule you built</b>, written as code. It tests ten thicknesses in less time than it took you to test one.</span><span data-l="zh">你剛才用手測試了幾個設計。這裡是<b>你建立的同一條規則</b>，寫成了程式碼。它測試十種厚度所用的時間，比你測試一種還要短。</span></p>
+    <button class="ghost hint-btn" data-hint="9"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
     <div class="py-grid">
       <div class="step-body" style="gap:10px">
         <div class="row" style="justify-content:space-between">
-          <p class="label">Your model, written in Python</p>
-          <span class="pystatus" id="pyStatus">starting Python…</span>
+          <p class="label"><span data-l="en">Your model, written in Python</span><span data-l="zh">用 Python 寫成的模型</span></p>
+          <span class="pystatus" id="pyStatus"><span data-l="en">starting Python…</span><span data-l="zh">正在啟動 Python…</span></span>
         </div>
-        <div class="pyeditor"><textarea id="pyCode" spellcheck="false" aria-label="Python code for the patch model"></textarea></div>
+        <div class="pyeditor"><textarea id="pyCode" spellcheck="false" aria-label="Python code for the patch model" data-aria-zh="貼片模型的 Python 程式碼"></textarea></div>
         <div class="row">
-          <button class="btn gel" id="pyRun">Run the code ▸</button>
-          <button class="ghost" id="pyReset">Reset</button>
+          <button class="btn gel" id="pyRun"><span data-l="en">Run the code ▸</span><span data-l="zh">執行程式碼 ▸</span></button>
+          <button class="ghost" id="pyReset"><span data-l="en">Reset</span><span data-l="zh">重設</span></button>
         </div>
-        <p class="label">What the computer printed</p>
-        <div class="pyout" id="pyOut" aria-live="polite"><span class="kbd-hint">Press <b>Run the code</b>. Nothing is installed — Python runs inside this page.</span></div>
+        <p class="label"><span data-l="en">What the computer printed</span><span data-l="zh">電腦輸出的結果</span></p>
+        <div class="pyout" id="pyOut" aria-live="polite"><span class="kbd-hint"><span data-l="en">Press <b>Run the code</b>. Nothing is installed — Python runs inside this page.</span><span data-l="zh">按<b>執行程式碼</b>。不需要安裝任何東西——Python 就在這個網頁內運行。</span></span></div>
       </div>
       <div class="step-body" style="gap:12px">
-        <div class="canvas-box" style="height:300px"><canvas id="pycanvas" aria-label="Medicine reaching the wound for every thickness, drawn from the code output"></canvas></div>
+        <div class="canvas-box" style="height:300px"><canvas id="pycanvas" aria-label="Medicine reaching the wound for every thickness, drawn from the code output" data-aria-zh="根據程式輸出，畫出每種厚度下到達傷口的藥物量"></canvas></div>
         <div id="pysay" aria-live="polite"></div>
         <div class="panel" id="pyChallenge" hidden style="display:grid;gap:10px">
-          <p class="label">Now change one number</p>
-          <p>The medicine gets through a layer <b>better than we thought</b>. In the code, change <b class="num">pass_frac</b> from <b class="num">0.7</b> to <b class="num">0.8</b> and run it again.</p>
-          <p class="kbd-hint">Your old curve stays on the chart in a paler colour, so you can see what moved.</p>
+          <p class="label"><span data-l="en">Now change one number</span><span data-l="zh">現在改一個數字</span></p>
+          <p><span data-l="en">The medicine gets through a layer <b>better than we thought</b>. In the code, change <b class="num">pass_frac</b> from <b class="num">0.7</b> to <b class="num">0.8</b> and run it again.</span><span data-l="zh">藥物穿過每一層的能力<b>比我們預期中好</b>。在程式碼中，把 <b class="num">pass_frac</b> 由 <b class="num">0.7</b> 改為 <b class="num">0.8</b>，然後再執行一次。</span></p>
+          <p class="kbd-hint"><span data-l="en">Your old curve stays on the chart in a paler colour, so you can see what moved.</span><span data-l="zh">舊的曲線會以較淡的顏色留在圖上，讓你看到甚麼改變了。</span></p>
         </div>
       </div>
     </div>
   </div>
   <div class="step-foot">
-    <span class="sci" id="pysci" hidden><span class="flask">Sc</span>Trying every value of a number to see where the answer moves is a <b>parameter sweep</b></span>
-    <button class="btn next-btn" data-next="10" hidden>See your Lab Card ↓</button>
+    <span class="sci" id="pysci" hidden><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Trying every value of a number to see where the answer moves is a <b>parameter sweep</b></span><span data-l="zh">逐一嘗試一個數字的不同數值，看答案如何改變，稱為<b>參數掃描</b>（parameter sweep）</span></span>
+    <button class="btn next-btn" data-next="10" hidden><span data-l="en">See your Lab Card ↓</span><span data-l="zh">查看你的實驗卡 ↓</span></button>
   </div>
 </section>
 
 <!-- ================= LAB CARD ================= -->
 <section class="labcard step locked" id="step-10" data-step="10" style="padding:0">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Submit a design to unlock</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Finish step 9 to unlock</span><span data-l="zh">完成第 9 步後解鎖</span></span>
   <div class="lc-head">
-    <div style="display:grid;gap:6px"><span class="eyebrow">Lab Card · HKU iGEM</span><h2>Our patch design</h2></div>
-    <button class="ghost" id="lcPrint" style="background:transparent;color:var(--ground);border-color:color-mix(in oklab,var(--ground) 40%,transparent)">Print card</button>
+    <div style="display:grid;gap:6px"><span class="eyebrow"><span data-l="en">Lab Card · HKU iGEM</span><span data-l="zh">實驗卡 · HKU iGEM</span></span><h2><span data-l="en">Our patch design</span><span data-l="zh">我們的貼片設計</span></h2></div>
+    <button class="ghost" id="lcPrint" style="background:transparent;color:var(--ground);border-color:color-mix(in oklab,var(--ground) 40%,transparent)"><span data-l="en">Print card</span><span data-l="zh">列印卡片</span></button>
   </div>
   <div class="lc-body step-body">
     <div class="lc-grid">
-      <div class="lc-field rv"><span class="label">Patch thickness</span><span class="v" id="lcLayers">—</span></div>
-      <div class="lc-field rv"><span class="label">Bacteria strength</span><span class="v" id="lcBact">—</span></div>
-      <div class="lc-field rv"><span class="label">Reaching the wound</span><span class="v" id="lcReach">—</span></div>
+      <div class="lc-field rv"><span class="label"><span data-l="en">Patch thickness</span><span data-l="zh">貼片厚度</span></span><span class="v" id="lcLayers">—</span></div>
+      <div class="lc-field rv"><span class="label"><span data-l="en">Bacteria strength</span><span data-l="zh">細菌強度</span></span><span class="v" id="lcBact">—</span></div>
+      <div class="lc-field rv"><span class="label"><span data-l="en">Reaching the wound</span><span data-l="zh">到達傷口</span></span><span class="v" id="lcReach">—</span></div>
     </div>
-    <div class="rv"><p class="label">Things we pretended were true</p><ul class="lc-list" id="lcAssume" style="margin-top:8px"></ul></div>
-    <div class="rv"><p class="label">Rules we built</p><ul class="lc-list num" id="lcRules" style="margin-top:8px;font-size:15px"></ul></div>
-    <div class="rv panel"><p class="label">Next experiment</p><p style="margin-top:6px"><b>Build patches of 2, 3 and 4 layers</b> and measure the medicine at the wound-facing surface. Does 3 layers really win?</p></div>
-    <div class="rv row"><button class="btn gel" id="openLabBtn">Open Lab: change every setting ↓</button></div>
+    <div class="rv"><p class="label"><span data-l="en">Things we pretended were true</span><span data-l="zh">我們假設為真的事</span></p><ul class="lc-list" id="lcAssume" style="margin-top:8px"></ul></div>
+    <div class="rv"><p class="label"><span data-l="en">Rules we built</span><span data-l="zh">我們建立的規則</span></p><ul class="lc-list num" id="lcRules" style="margin-top:8px;font-size:15px"></ul></div>
+    <div class="rv panel"><p class="label"><span data-l="en">Next experiment</span><span data-l="zh">下一個實驗</span></p><p style="margin-top:6px"><span data-l="en"><b>Build patches of 2, 3 and 4 layers</b> and measure the medicine at the wound-facing surface. Does 3 layers really win?</span><span data-l="zh"><b>製作 2 層、3 層和 4 層的貼片</b>，並測量貼片面向傷口那一面的藥物量。3 層真的是最好的嗎？</span></p></div>
+    <div class="rv row"><button class="btn gel" id="openLabBtn"><span data-l="en">Open Lab: change every setting ↓</span><span data-l="zh">開放實驗室：自由調整所有設定 ↓</span></button></div>
   </div>
 </section>
 
 <!-- ================= OPEN LAB ================= -->
 <section class="step locked" id="step-11" data-step="11">
-  <span class="lock-veil"><svg><use href="#i-lock"/></svg>Unlocks after the Lab Card</span>
+  <span class="lock-veil"><svg><use href="#i-lock"/></svg><span data-l="en">Unlocks after the Lab Card</span><span data-l="zh">看完實驗卡後解鎖</span></span>
   <header class="step-head">
-    <span class="step-no">Open Lab <span class="t">· bonus</span></span>
-    <h2>Every setting, unlocked</h2>
-    <p class="lede">Change anything. The chart shows how much medicine reaches the wound for every thickness.</p>
+    <span class="step-no"><span data-l="en">Open Lab</span><span data-l="zh">開放實驗室</span> <span class="t">· <span data-l="en">bonus</span><span data-l="zh">附加</span></span></span>
+    <h2><span data-l="en">Every setting, unlocked</span><span data-l="zh">所有設定，全部解鎖</span></h2>
+    <p class="lede"><span data-l="en">Change anything. The chart shows how much medicine reaches the wound for every thickness.</span><span data-l="zh">隨意調整任何設定。圖表會顯示每種厚度下有多少藥物到達傷口。</span></p>
   </header>
   <div class="step-body">
     <div class="ol-grid">
       <div class="step-body" style="gap:12px" id="olSliders"></div>
       <div class="step-body" style="gap:12px">
-        <div class="canvas-box" style="height:300px"><canvas id="olcanvas" aria-label="Medicine reaching the wound for each thickness"></canvas></div>
+        <div class="canvas-box" style="height:300px"><canvas id="olcanvas" aria-label="Medicine reaching the wound for each thickness" data-aria-zh="每種厚度下到達傷口的藥物量"></canvas></div>
         <div id="olsay" aria-live="polite"></div>
-        <div class="row"><button class="ghost" id="olReset">Reset to our numbers</button></div>
+        <div class="row"><button class="ghost" id="olReset"><span data-l="en">Reset to our numbers</span><span data-l="zh">重設為我們的數值</span></button></div>
       </div>
     </div>
   </div>
@@ -882,28 +954,28 @@ dialog::backdrop{background:rgba(8,16,14,.45)}
 
 </main>
 
-<aside class="notebook" id="notebook" aria-label="Lab notebook">
-  <div class="nb-head"><h3>Lab notebook</h3><span class="nb-count" id="nbCount">0 entries</span><button class="ghost nb-close" id="nbClose" aria-label="Close notebook">Close</button></div>
-  <div class="nb-sec"><span class="label">Things we pretend are true</span><ul id="nbAssume"><li class="empty">Sort the cards in step 1</li></ul></div>
-  <div class="nb-sec"><span class="label">Values found</span><ul id="nbValues"><li class="empty">Nothing measured yet</li></ul></div>
-  <div class="nb-sec"><span class="label">Words scientists use</span><div class="nb-badges" id="nbBadges"><span class="kbd-hint">Collect them as you go</span></div></div>
+<aside class="notebook" id="notebook" aria-label="Lab notebook" data-aria-zh="實驗筆記簿">
+  <div class="nb-head"><h3><span data-l="en">Lab notebook</span><span data-l="zh">實驗筆記簿</span></h3><span class="nb-count" id="nbCount"><span data-l="en">0 entries</span><span data-l="zh">0 項記錄</span></span><button class="ghost nb-close" id="nbClose" aria-label="Close notebook" data-aria-zh="關閉筆記簿"><span data-l="en">Close</span><span data-l="zh">關閉</span></button></div>
+  <div class="nb-sec"><span class="label"><span data-l="en">Things we pretend are true</span><span data-l="zh">我們假設為真的事</span></span><ul id="nbAssume"><li class="empty"><span data-l="en">Sort the cards in step 1</span><span data-l="zh">在第 1 步把卡片分類</span></li></ul></div>
+  <div class="nb-sec"><span class="label"><span data-l="en">Values found</span><span data-l="zh">找到的數值</span></span><ul id="nbValues"><li class="empty"><span data-l="en">Nothing measured yet</span><span data-l="zh">暫時未有測量結果</span></li></ul></div>
+  <div class="nb-sec"><span class="label"><span data-l="en">Words scientists use</span><span data-l="zh">科學家用語</span></span><div class="nb-badges" id="nbBadges"><span class="kbd-hint"><span data-l="en">Collect them as you go</span><span data-l="zh">邊做邊收集</span></span></div></div>
 </aside>
 </div>
 
 <dialog id="hintDlg">
   <form method="dialog" class="dlg">
-    <h3 id="hintTitle">Hint</h3>
+    <h3 id="hintTitle"><span data-l="en">Hint</span><span data-l="zh">提示</span></h3>
     <p id="hintText"></p>
     <details>
-      <summary class="kbd-hint">Helper code</summary>
+      <summary class="kbd-hint"><span data-l="en">Helper code</span><span data-l="zh">助教密碼</span></summary>
       <div class="row" style="margin-top:10px">
-        <label class="sr" for="helperCode">Helper code</label>
+        <label class="sr" for="helperCode"><span data-l="en">Helper code</span><span data-l="zh">助教密碼</span></label>
         <input id="helperCode" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="····">
-        <button class="btn soft" type="button" id="helperGo">Unlock</button>
+        <button class="btn soft" type="button" id="helperGo"><span data-l="en">Unlock</span><span data-l="zh">解鎖</span></button>
       </div>
-      <p class="kbd-hint" id="helperMsg" style="margin-top:6px">For workshop helpers: unlocks and completes this step.</p>
+      <p class="kbd-hint" id="helperMsg" style="margin-top:6px"><span data-l="en">For workshop helpers: unlocks and completes this step.</span><span data-l="zh">供工作坊助教使用：解鎖並完成這一步。</span></p>
     </details>
-    <div class="row" style="justify-content:flex-end"><button class="btn">Got it</button></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn"><span data-l="en">Got it</span><span data-l="zh">明白了</span></button></div>
   </form>
 </dialog>
 <div class="toast" id="toast" role="status"></div>
@@ -915,6 +987,42 @@ const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const HELPER_CODE = "2026";
 const STORE_KEY = "woundPatchLab.v2";
+
+/* ---------------- language (EN / 中文) ----------------
+   Every text exists in both languages side by side, <span data-l="en">…</span><span data-l="zh">…</span>,
+   and CSS shows one of them. B(en, zh) builds that pair for text made in JS, so a switch never
+   re-renders anything and no progress on the page is lost. L(en, zh) picks one string, for the
+   few places that can't hold markup: canvas labels, toasts, attributes. */
+const LANG_KEY = "woundPatchLab.lang";
+let LANG = document.documentElement.getAttribute("data-lang") === "zh" ? "zh" : "en";
+const B = (en, zh) => `<span data-l="en">${en}</span><span data-l="zh">${zh ?? en}</span>`;
+const L = (en, zh) => (LANG === "zh" && zh != null ? zh : en);
+const langHooks = [];                                  // extra work on a switch (the Python editor)
+function applyAttrs() {
+  $$("[data-aria-zh]").forEach(el => {
+    if (el.dataset.ariaEn == null) el.dataset.ariaEn = el.getAttribute("aria-label") || "";
+    el.setAttribute("aria-label", LANG === "zh" ? el.dataset.ariaZh : el.dataset.ariaEn);
+  });
+  $$("[data-title-zh]").forEach(el => {
+    if (el.dataset.titleEn == null) el.dataset.titleEn = el.getAttribute("title") || "";
+    el.setAttribute("title", LANG === "zh" ? el.dataset.titleZh : el.dataset.titleEn);
+  });
+}
+function setLang(l, remember = true) {
+  LANG = l === "zh" ? "zh" : "en";
+  const h = document.documentElement;
+  h.setAttribute("data-lang", LANG);
+  h.lang = LANG === "zh" ? "zh-Hant-HK" : "en";
+  document.title = L("Wound Patch Lab", "傷口貼片實驗室");
+  $$("[data-setlang]").forEach(b => b.setAttribute("aria-pressed", b.dataset.setlang === LANG ? "true" : "false"));
+  applyAttrs();
+  readTokens();                                        // canvas fonts pick up the CJK fallbacks
+  langHooks.forEach(f => f());
+  if (!remember) return;
+  try { localStorage.setItem(LANG_KEY, LANG); } catch (e) { /* storage unavailable */ }
+  try { const u = new URL(location.href); if (u.searchParams.has("lang")) { u.searchParams.set("lang", LANG); history.replaceState(null, "", u); } } catch (e) { }
+}
+$$("[data-setlang]").forEach(b => b.addEventListener("click", () => { if (b.dataset.setlang !== LANG) setLang(b.dataset.setlang); }));
 
 /* ---------------- model ---------------- */
 const Model = {
@@ -935,7 +1043,7 @@ const fmt = (v, d = 1) => {
 };
 
 /* ---------------- state ---------------- */
-const blank = () => ({ v: 1, done: {}, assume: [], values: {}, badges: [], data: {} });
+const blank = () => ({ v: 1, done: {}, assume: [], values: {}, badges: [], data: {}, quiz: {} });
 let S = blank();
 function load() {
   try { const raw = localStorage.getItem(STORE_KEY); if (raw) { const o = JSON.parse(raw); if (o && o.v === 1) S = Object.assign(blank(), o); } } catch (e) { /* storage unavailable */ }
@@ -964,13 +1072,14 @@ new MutationObserver(readTokens).observe(document.documentElement, { attributes:
 
 /* ---------------- ui helpers ---------------- */
 const ICON = { good: "✓", warn: "?", bad: "!", info: "i" };
-function say(el, kind, html) {
+function say(el, kind, html, zh) {                      // say(el, kind, "English", "中文")
   if (typeof el === "string") el = $(el);
+  if (zh !== undefined) html = B(html, zh);
   el.innerHTML = `<div class="say ${kind}"><span class="ic" aria-hidden="true">${ICON[kind] || "i"}</span><span>${html}</span></div>`;
 }
 let toastT;
-function toast(msg) {
-  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+function toast(msg, zh) {
+  const t = $("#toast"); t.innerHTML = B(msg, zh); t.classList.add("show");
   clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2600);
 }
 function press(group, btn) { $$("button", group).forEach(b => b.setAttribute("aria-pressed", b === btn ? "true" : "false")); }
@@ -982,14 +1091,39 @@ const wait = ms => new Promise(r => setTimeout(r, REDUCED ? Math.min(ms, 60) : m
 function note(text) { if (!S.assume.includes(text)) { S.assume.push(text); save(); renderNotebook(text); } }
 function value(key, label, val) { S.values[key] = { label, val }; save(); renderNotebook(key); }
 function badge(word) { if (!S.badges.includes(word)) { S.badges.push(word); save(); renderNotebook(word); } }
+/* notebook entries are saved in English (so older saves still load); these give each its Chinese.
+   A value can also be saved as an [English, 中文] pair when it is built from numbers. */
+const ZH_NB = {
+  "Only three things change the medicine: it's made, it breaks down, it seeps out": "只有三件事會改變藥物量：製造、分解、滲出",
+  "Colour and shape of the patch don't matter": "貼片的顏色和形狀沒有影響",
+  "Change each minute = made − lost": "每分鐘的變化 = 製造 − 流失",
+  "Every layer holds the same number of bacteria": "每一層的細菌數目相同",
+  "The bacteria keep working at a steady rate": "細菌以穩定的速率持續工作",
+  "Every layer behaves the same": "每一層的表現都一樣",
+  "Healing is a simple on/off line at 18": "癒合只看一條簡單的界線：18",
+  "Share lost / min": "每分鐘流失比例", "20% (guess)": "20%（猜測）", "20% (matches data)": "20%（與數據吻合）",
+  "Made by 3 layers": "3 層的製造量", "12 / min": "12 / 分鐘",
+  "Patch level": "貼片內水平", "made ÷ 0.2": "製造 ÷ 0.2", "3-layer patch level": "3 層貼片的水平",
+  "Reaching wound (3 layers)": "到達傷口（3 層）", "Our design": "我們的設計", "Best thickness (code)": "最佳厚度（程式）",
+};
+const ZH_WORD = {                                       // Chinese term, then the English one students will meet later
+  "chronic wound": "慢性傷口 <i>chronic wound</i>", "nitric oxide (NO)": "一氧化氮 (NO) <i>nitric oxide</i>",
+  "therapeutic peptide (TAP2)": "治療性多肽 (TAP2) <i>therapeutic peptide</i>", "assumption": "假設 <i>assumption</i>",
+  "production": "生成 <i>production</i>", "degradation": "降解 <i>degradation</i>", "decay rate": "衰減率 <i>decay rate</i>",
+  "parameter": "參數 <i>parameter</i>", "steady state": "穩態 <i>steady state</i>", "diffusion": "擴散 <i>diffusion</i>",
+  "penetration depth": "穿透深度 <i>penetration depth</i>", "therapeutic threshold": "治療閾值 <i>therapeutic threshold</i>",
+  "Curious": "好奇心", "Simulation": "模擬 <i>simulation</i>", "Parameter sweep": "參數掃描 <i>parameter sweep</i>",
+};
+const layersZh = s => String(s).replace(/(\d+) layers?\b/g, "$1 層");
+const nbText = x => Array.isArray(x) ? B(x[0], x[1]) : B(x, ZH_NB[x] ?? layersZh(x));
 function renderNotebook(fresh) {
   const ua = $("#nbAssume"), uv = $("#nbValues"), ub = $("#nbBadges");
-  ua.innerHTML = S.assume.length ? S.assume.map(a => `<li class="${a === fresh ? "fresh" : ""}">${a}</li>`).join("") : `<li class="empty">Sort the cards in step 1</li>`;
+  ua.innerHTML = S.assume.length ? S.assume.map(a => `<li class="${a === fresh ? "fresh" : ""}">${nbText(a)}</li>`).join("") : `<li class="empty">${B("Sort the cards in step 1", "在第 1 步把卡片分類")}</li>`;
   const vals = Object.entries(S.values);
-  uv.innerHTML = vals.length ? vals.map(([k, o]) => `<li class="nb-val ${k === fresh ? "fresh" : ""}"><span>${o.label}</span><b>${o.val}</b></li>`).join("") : `<li class="empty">Nothing measured yet</li>`;
-  ub.innerHTML = S.badges.length ? S.badges.map(b => `<span class="nb-badge">${b}</span>`).join("") : `<span class="kbd-hint">Collect them as you go</span>`;
+  uv.innerHTML = vals.length ? vals.map(([k, o]) => `<li class="nb-val ${k === fresh ? "fresh" : ""}"><span>${nbText(o.label)}</span><b>${nbText(o.val)}</b></li>`).join("") : `<li class="empty">${B("Nothing measured yet", "暫時未有測量結果")}</li>`;
+  ub.innerHTML = S.badges.length ? S.badges.map(b => `<span class="nb-badge">${B(b, ZH_WORD[b] ?? b)}</span>`).join("") : `<span class="kbd-hint">${B("Collect them as you go", "邊做邊收集")}</span>`;
   const n = S.assume.length + vals.length + S.badges.length;
-  $("#nbCount").textContent = n + (n === 1 ? " entry" : " entries");
+  $("#nbCount").innerHTML = B(n + (n === 1 ? " entry" : " entries"), n + " 項記錄");
   $("#nbToggleCount").textContent = n;
   if (fresh && innerWidth <= 1060) { const b = $("#nbToggle"); b.animate?.([{ transform: "scale(1)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }], { duration: 450 }); }
 }
@@ -999,17 +1133,20 @@ $("#nbClose").addEventListener("click", () => { $("#notebook").classList.remove(
 /* ---------------- steps + progress ---------------- */
 const Steps = {};              // n -> { init(), restore() }
 const LABELS = ["Go", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Card", "Lab"];
+const LABELS_ZH = ["開始", "1", "2", "3", "4", "5", "6", "7", "8", "9", "實驗卡", "實驗室"];
 const NAMES = ["Mission", "Sort", "Sandbox", "Broken model", "Step by step", "Patch level", "Match data", "Down to wound", "Design", "Run the code", "Lab Card", "Open Lab"];
+const NAMES_ZH = ["任務", "分類", "沙盒", "有問題的模型", "逐步計算", "貼片內水平", "配合數據", "到達傷口", "設計", "執行程式碼", "實驗卡", "開放實驗室"];
+const chipLabel = n => LABELS[n] === LABELS_ZH[n] ? LABELS[n] : B(LABELS[n], LABELS_ZH[n]);
 const section = n => document.querySelector(`[data-step="${n}"]`);
 const unlocked = n => n === 0 || !!S.done[n - 1];
 
 function buildProgress() {
   const nav = $("#progress");
-  nav.innerHTML = LABELS.map((l, i) => `<button class="pchip" data-go="${i}" aria-label="${NAMES[i]}">${l}</button>`).join("");
+  nav.innerHTML = LABELS.map((l, i) => `<button class="pchip" data-go="${i}" aria-label="${NAMES[i]}" data-aria-zh="${NAMES_ZH[i]}">${chipLabel(i)}</button>`).join("");
   nav.addEventListener("click", e => {
     const b = e.target.closest(".pchip"); if (!b) return;
     const n = +b.dataset.go;
-    if (!unlocked(n)) { toast(`Finish ${NAMES[n - 1]} first`); return; }
+    if (!unlocked(n)) { toast(`Finish ${NAMES[n - 1]} first`, `請先完成「${NAMES_ZH[n - 1]}」`); return; }
     goTo(n);
   });
 }
@@ -1021,10 +1158,11 @@ function applyLocks() {
     sec.classList.toggle("done", !!S.done[n]);
     $$(":scope > .step-body, :scope > .step-foot, :scope > .step-head .hint-btn", sec).forEach(el => { el.inert = lock; });
     const nb = $(":scope .next-btn", sec); if (nb) nb.hidden = !S.done[n];
+    const qb = $(":scope .quiz-btn", sec); if (qb) qb.hidden = !S.done[n];     // the quiz comes after the step
     const chip = $(`.pchip[data-go="${n}"]`);
     chip.classList.toggle("done", !!S.done[n]);
     chip.setAttribute("aria-disabled", lock ? "true" : "false");
-    chip.innerHTML = lock ? `<svg aria-hidden="true"><use href="#i-lock"/></svg>${LABELS[n]}` : S.done[n] && n > 0 && n < 10 ? `<svg aria-hidden="true"><use href="#i-check"/></svg>${LABELS[n]}` : LABELS[n];
+    chip.innerHTML = lock ? `<svg aria-hidden="true"><use href="#i-lock"/></svg>${chipLabel(n)}` : S.done[n] && n > 0 && n < 10 ? `<svg aria-hidden="true"><use href="#i-check"/></svg>${chipLabel(n)}` : chipLabel(n);
   }
 }
 function complete(n) {
@@ -1033,7 +1171,8 @@ function complete(n) {
   const nx = section(n + 1);
   if (nx) {
     nx.classList.remove("unlocking"); void nx.offsetWidth; nx.classList.add("unlocking");
-    if (n > 0) toast(n === 9 ? "Lab Card unlocked" : n === 10 ? "Open Lab unlocked" : `Step ${n + 1} unlocked`);
+    if (n > 0) toast(n === 9 ? "Lab Card unlocked" : n === 10 ? "Open Lab unlocked" : `Step ${n + 1} unlocked`,
+      n === 9 ? "實驗卡已解鎖" : n === 10 ? "開放實驗室已解鎖" : `第 ${n + 1} 步已解鎖`);
     Steps[n + 1]?.onUnlock?.();
   }
 }
@@ -1093,26 +1232,37 @@ const HINTS = {
   8: "Try every thickness from 1 to 5 and watch the 'Reaching wound' number. The biggest isn't at the end.",
   9: "You do not have to write anything. Press Run the code. Then change only the number after pass_frac and press Run again.",
 };
+const HINTS_ZH = {
+  1: "想想有甚麼會令藥物量上升或下降。貼紙的顏色會改變裡面有多少藥物嗎？",
+  2: "比較這兩個數字：每分鐘製造 5，流失 2。哪個比較大？預測之後按運行，然後再試試「流失 5」和「流失 7」。",
+  3: "兩條規則都運行一次。仔細看規則 A 的最後一個數字。貼片裡的藥物真的可以少過零嗎？",
+  4: "第 1 分鐘：舊 = 0，所以新 = 0 + 12 − 0 = 12。第 2 分鐘：舊 = 12，所以新 = 12 + 12 − 2.4。如果卡住了，可以按「= 幫助」。",
+  5: "當流失等於製造時，曲線就會變平。流失是水平的 20%，所以水平為 20 時每分鐘流失 4。那麼製造應該是多少？",
+  6: "先把滑桿放在較遠的位置，然後慢慢移動，留意曲線如何向圓點靠攏。吻合度達到 85% 時，量表會變成綠色。",
+  7: "每按一下，藥物只剩下 70%：60 × 0.7 = 42。藥物沒有去其他地方，而是逐漸消失了。",
+  8: "逐一試試 1 至 5 層，留意「到達傷口」的數字。最大值並不在最後。",
+  9: "你不需要自己寫程式。先按「執行程式碼」，然後只改 pass_frac 後面的數字，再按一次執行。",
+};
 let hintStep = 1;
 document.addEventListener("click", e => {
   const b = e.target.closest(".hint-btn"); if (!b) return;
   hintStep = +b.dataset.hint;
-  $("#hintTitle").textContent = `Hint · Step ${hintStep}`;
-  $("#hintText").textContent = HINTS[hintStep];
-  $("#helperCode").value = ""; $("#helperMsg").textContent = "For workshop helpers: unlocks and completes this step.";
+  $("#hintTitle").innerHTML = B(`Hint · Step ${hintStep}`, `提示 · 第 ${hintStep} 步`);
+  $("#hintText").innerHTML = B(HINTS[hintStep], HINTS_ZH[hintStep]);
+  $("#helperCode").value = ""; $("#helperMsg").innerHTML = B("For workshop helpers: unlocks and completes this step.", "供工作坊助教使用：解鎖並完成這一步。");
   const d = $("#hintDlg"); d.showModal ? d.showModal() : d.setAttribute("open", "");
 });
 $("#helperGo").addEventListener("click", () => {
-  if ($("#helperCode").value.trim() !== HELPER_CODE) { $("#helperMsg").textContent = "That code didn't work. Check with the workshop leader."; return; }
+  if ($("#helperCode").value.trim() !== HELPER_CODE) { $("#helperMsg").innerHTML = B("That code didn't work. Check with the workshop leader.", "密碼不正確，請向工作坊導師查詢。"); return; }
   for (let n = 0; n <= hintStep; n++) if (!S.done[n]) { Steps[n]?.restore?.(); complete(n); }
   $("#hintDlg").close?.();
-  toast(`Step ${hintStep} completed by a helper`);
+  toast(`Step ${hintStep} completed by a helper`, `第 ${hintStep} 步已由助教完成`);
 });
 
 let restartArmed = 0;
 $("#restart").addEventListener("click", () => {
   const b = $("#restart");
-  if (Date.now() - restartArmed > 3000) { restartArmed = Date.now(); b.textContent = "Tap again to clear"; setTimeout(() => b.textContent = "Start over", 3000); return; }
+  if (Date.now() - restartArmed > 3000) { restartArmed = Date.now(); b.innerHTML = B("Tap again to clear", "再按一次以清除"); setTimeout(() => b.innerHTML = B("Start over", "重新開始"), 3000); return; }
   try { localStorage.removeItem(STORE_KEY); } catch (e) { }
   scrollTo(0, 0); location.reload();
 });
@@ -1262,7 +1412,7 @@ function drawPatch(ctx, w, h, o) {
   };
   if (C.dark) { crater(1.12, .05); crater(1.05, .08); crater(1, .4); }
   else { crater(1.14, .11); crater(1.06, .16); crater(1, .58); }
-  if (o.woundLabel !== false) { ctx.fillStyle = C.ink; ctx.globalAlpha = .8; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.fillText(heal > .5 ? "HEALING TISSUE" : "WOUND", 12, h - 12); ctx.globalAlpha = 1; }
+  if (o.woundLabel !== false) { ctx.fillStyle = C.ink; ctx.globalAlpha = .8; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.fillText(heal > .5 ? L("HEALING TISSUE", "癒合中的組織") : L("WOUND", "傷口"), 12, h - 12); ctx.globalAlpha = 1; }
 
   // ---- ghost of the thickest device, so the empty headroom becomes the comparison ----
   const ghostTop = gelBottom - maxL * lh - backH;
@@ -1273,9 +1423,9 @@ function drawPatch(ctx, w, h, o) {
     ctx.beginPath();
     for (let i = layers + 1; i < maxL; i++) { const y = gelBottom - i * lh; ctx.moveTo(left + 4, y); ctx.lineTo(right - 4, y); }
     ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
-    ctx.font = `700 9px ${C.mono}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = `700 ${LANG === "zh" ? 10 : 9}px ${C.mono}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillStyle = C["ink-2"]; ctx.globalAlpha = .6;
-    ctx.fillText(maxL + " layers would reach here", cx, ghostTop + 13); ctx.globalAlpha = 1;
+    ctx.fillText(L(maxL + " layers would reach here", maxL + " 層會到這裡"), cx, ghostTop + 13); ctx.globalAlpha = 1;
   }
 
   // ---- hydrogel matrix (the part whose thickness varies) ----
@@ -1423,17 +1573,17 @@ function drawPatch(ctx, w, h, o) {
   // ---- labels in the right gutter ----
   if (o.labels !== false) {
     const lx = right + 15;
-    ctx.font = `700 9.5px ${C.mono}`; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    ctx.font = `700 ${LANG === "zh" ? 10.5 : 9.5}px ${C.mono}`; ctx.textAlign = "left"; ctx.textBaseline = "middle";
     const tags = [], add = (y, s, at, col, sw) => tags.push({ at: at ?? y, y, s, col: col || "ink-2", sw: sw || null });
-    add(top + backH / 2, "backing");
+    add(top + backH / 2, L("backing", "背襯"));
     const liveTop = dead ? reachY : gelTop, liveMid = (liveTop + gelBottom) / 2;
-    add(liveMid, "hydrogel");
-    add(liveMid + 11, "+ E. coli");
+    add(liveMid, L("hydrogel", "水凝膠"));
+    add(liveMid + 11, L("+ E. coli", "+ 大腸桿菌"));
     if (dead) {                                   // sits wholly inside the zone it names
-      if (dh > 30) { add(reachY - 18, "no NO", reachY, "gas", 1); add(reachY - 6.5, "cells off", reachY, "gas"); }
-      else add(reachY - 7, "no NO", reachY, "gas", 1);
+      if (dh > 30) { add(reachY - 18, L("no NO", "沒有 NO"), reachY, "gas", 1); add(reachY - 6.5, L("cells off", "細胞未啟動"), reachY, "gas"); }
+      else add(reachY - 7, L("no NO", "沒有 NO"), reachY, "gas", 1);
     }
-    add(gelBottom + ch / 2, "cellulose");
+    add(gelBottom + ch / 2, L("cellulose", "纖維素"));
     const GAP = 11.5;
     tags.sort((a, b) => a.y - b.y);
     let prev = -1e9; for (const g2 of tags) { g2.y = Math.max(g2.y, prev + GAP); prev = g2.y; }
@@ -1456,16 +1606,17 @@ function drawPatch(ctx, w, h, o) {
       ctx.fillStyle = C["ink-2"]; ctx.fillText(g2.s, sx, g2.y);
     }
     // key, bottom right
-    const ky = h - 15, w1 = ctx.measureText("NO ↑").width, w2 = ctx.measureText("peptide ↓").width;
+    const kPep = L("peptide ↓", "多肽 ↓");
+    const ky = h - 15, w1 = ctx.measureText("NO ↑").width, w2 = ctx.measureText(kPep).width;
     ctx.textAlign = "right";
-    ctx.fillStyle = C["ink-2"]; ctx.fillText("peptide ↓", w - 10, ky);
+    ctx.fillStyle = C["ink-2"]; ctx.fillText(kPep, w - 10, ky);
     ctx.fillStyle = C.gel; ctx.beginPath(); ctx.arc(w - 14 - w2, ky, 3.2, 0, 6.283); ctx.fill();
     ctx.fillStyle = C["ink-2"]; ctx.fillText("NO ↑", w - 26 - w2, ky);
     ctx.fillStyle = C.gas; ctx.beginPath(); ctx.arc(w - 30 - w2 - w1, ky, 3.2, 0, 6.283); ctx.fill();
     // verdict: pinned to one y for every layer count, so it reads as a readout, not a caption
     if (noAmt > .6 && o.verdict !== false) {
       const d1 = Math.min(layers, Math.ceil((gelBottom - reachY) / lh) + 1);
-      const msg = dead ? (d1 >= layers ? `L${layers} gets no NO` : `L${d1}–L${layers} get no NO`) : "NO reaches every cell";
+      const msg = dead ? (d1 >= layers ? L(`L${layers} gets no NO`, `L${layers} 沒有 NO`) : L(`L${d1}–L${layers} get no NO`, `L${d1}–L${layers} 沒有 NO`)) : L("NO reaches every cell", "NO 到達每一個細胞");
       ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "center";
       const half = ctx.measureText(msg).width / 2, minX = o.verdictMinX ?? 0;
       ctx.fillStyle = C["ink-2"];
@@ -1547,6 +1698,7 @@ Steps[0] = {
     let beat = 0, glow = 0, gas = 0, gT = 0, mT = 0;
     const dots = new Dots(60);
     const caps = ["Cross-section · wound that won't heal", "Warning gas rising", "Bacteria switching on", "Medicine travelling down", "1 layer? 5 layers?"];
+    const capsZh = ["剖面圖 · 無法癒合的傷口", "警告氣體上升", "細菌啟動", "藥物向下移動", "1 層？5 層？"];
     new Scene($("#missionCanvas"), (ctx, w, h, dt, t) => {
       glow += ((beat >= 2 ? 1 : 0) - glow) * Math.min(1, dt * 3);
       gas += ((beat >= 1 ? 1 : 0) - gas) * Math.min(1, dt * 3);
@@ -1579,7 +1731,7 @@ Steps[0] = {
       if (!en.isIntersecting) return;
       beat = +en.target.dataset.beat;
       $$(".beat").forEach(b => b.classList.toggle("on", b === en.target));
-      $("#missionCap").textContent = caps[beat];
+      $("#missionCap").innerHTML = B(caps[beat], capsZh[beat]);
     }), { rootMargin: "-42% 0px -42% 0px" });
     $$(".beat").forEach(b => io.observe(b));
     $("#startBtn").addEventListener("click", () => {
@@ -1592,13 +1744,14 @@ Steps[0] = {
 /* ================= STEP 1 · SORT ================= */
 Steps[1] = (() => {
   const CARDS = [
-    { id: "make", t: "The bacteria make medicine", bin: "add", why: "Making medicine puts more into the patch." },
-    { id: "colour", t: "The colour of the patch", bin: "none", why: "A blue or pink patch holds the same medicine." },
-    { id: "break", t: "The medicine breaks down in the gel", bin: "remove", why: "Broken-down medicine is gone from the patch." },
-    { id: "shape", t: "The shape of the sticker", bin: "none", why: "Round or square, the medicine inside doesn't change." },
-    { id: "seep", t: "Some seeps out into the wound", bin: "remove", why: "Medicine that leaves the patch isn't in it any more." },
+    { id: "make", t: "The bacteria make medicine", zt: "細菌製造藥物", bin: "add", why: "Making medicine puts more into the patch.", zwhy: "製造藥物會令貼片內的藥物增加。" },
+    { id: "colour", t: "The colour of the patch", zt: "貼片的顏色", bin: "none", why: "A blue or pink patch holds the same medicine.", zwhy: "藍色或粉紅色的貼片，裝著的藥物一樣多。" },
+    { id: "break", t: "The medicine breaks down in the gel", zt: "藥物在凝膠中分解", bin: "remove", why: "Broken-down medicine is gone from the patch.", zwhy: "分解了的藥物就從貼片中消失了。" },
+    { id: "shape", t: "The shape of the sticker", zt: "貼紙的形狀", bin: "none", why: "Round or square, the medicine inside doesn't change.", zwhy: "無論是圓形還是方形，裡面的藥物都不會改變。" },
+    { id: "seep", t: "Some seeps out into the wound", zt: "部分藥物滲進傷口", bin: "remove", why: "Medicine that leaves the patch isn't in it any more.", zwhy: "離開了貼片的藥物，就不再在貼片裡了。" },
   ];
   const NAME = { add: "Adds medicine", remove: "Removes medicine", none: "Doesn't matter" };
+  const NAME_ZH = { add: "增加藥物", remove: "減少藥物", none: "沒有影響" };
   let selected = null, placed = 0;
   const deck = () => $("#deck");
 
@@ -1613,14 +1766,15 @@ Steps[1] = (() => {
     if (selected) selected.setAttribute("aria-pressed", "false"); selected = null; arm(false);
     if (c.bin !== binName) {
       btn.classList.remove("bounce"); void btn.offsetWidth; btn.classList.add("bounce");
-      say("#s1say", "warn", `Watch what happens: <b>${c.t.toLowerCase()}</b> bounced back out of "${NAME[binName]}". Hint: ${c.bin === "none" ? "would this change how much medicine is inside?" : "does it put medicine in, or take it away?"}`);
+      say("#s1say", "warn", `Watch what happens: <b>${c.t.toLowerCase()}</b> bounced back out of "${NAME[binName]}". Hint: ${c.bin === "none" ? "would this change how much medicine is inside?" : "does it put medicine in, or take it away?"}`,
+        `留意發生了甚麼：「<b>${c.zt}</b>」從「${NAME_ZH[binName]}」彈了出來。提示：${c.bin === "none" ? "這會改變裡面有多少藥物嗎？" : "它是把藥物放進去，還是拿走？"}`);
       btn.focus(); return;
     }
     const span = document.createElement("span");
-    span.className = "card placed"; span.textContent = c.t;
+    span.className = "card placed"; span.innerHTML = B(c.t, c.zt);
     $(`#step-1 .bin[data-bin="${binName}"] .slot`).appendChild(span);
     btn.remove(); placed++;
-    if (!quiet) say("#s1say", "good", `${c.why} <span class="num">(${placed}/5)</span>`);
+    if (!quiet) say("#s1say", "good", `${B(c.why, c.zwhy)} <span class="num">(${placed}/5)</span>`);
     if (placed === CARDS.length && !quiet) finish();
   }
   function finish() {
@@ -1628,11 +1782,11 @@ Steps[1] = (() => {
     note("Colour and shape of the patch don't matter");
     badge("assumption");
     $("#s1disc").hidden = false;
-    say("#s1say", "good", "All sorted. You just built the first piece of a model: a list of what matters.");
+    say("#s1say", "good", "All sorted. You just built the first piece of a model: a list of what matters.", "全部分類完成！你剛剛建立了模型的第一部分：一份列出哪些因素重要的清單。");
     complete(1);
   }
   function init() {
-    deck().innerHTML = CARDS.map(c => `<button class="card" data-id="${c.id}" aria-pressed="false"><span class="grip" aria-hidden="true"></span>${c.t}</button>`).join("");
+    deck().innerHTML = CARDS.map(c => `<button class="card" data-id="${c.id}" aria-pressed="false"><span class="grip" aria-hidden="true"></span>${B(c.t, c.zt)}</button>`).join("");
     let drag = null, suppress = false;
     deck().addEventListener("click", e => {
       const b = e.target.closest(".card"); if (!b) return;
@@ -1641,7 +1795,7 @@ Steps[1] = (() => {
     });
     $$("#step-1 .bin").forEach(bin => bin.addEventListener("click", () => {
       if (selected) place(selected, bin.dataset.bin);
-      else say("#s1say", "info", "Pick a card first, then choose a box.");
+      else say("#s1say", "info", "Pick a card first, then choose a box.", "先選一張卡片，再選一個格子。");
     }));
     deck().addEventListener("pointerdown", e => {
       const b = e.target.closest(".card"); if (!b || e.button > 0) return;
@@ -1695,7 +1849,7 @@ Steps[2] = (() => {
         if ((mT += dt) > 0.9 / 5) { mT = 0; if (geo) dots.add({ x: geo.tx + 26, y: 28, vy: 160, color: "bact", r: 3.5, life: (geo.fillTop - 28) / 160 }); }
         if ((lT += dt) > 0.9 / Math.max(1, lost)) { lT = 0; if (geo) dots.add({ x: geo.tx + geo.tw - 10, y: geo.zeroY + 2, vy: 70, color: "wound", r: 3.5, life: .5 }); }
       }
-      geo = drawTank(ctx, w, h, shown, 40, dots, { dt, t, madeLabel: "+5 MADE", lostLabel: `−${lost} LOST` });
+      geo = drawTank(ctx, w, h, shown, 40, dots, { dt, t, madeLabel: L("+5 MADE", "+5 製造"), lostLabel: L(`−${lost} LOST`, `−${lost} 流失`) });
     });
     $("#s2pred").addEventListener("click", e => {
       const b = e.target.closest(".choice"); if (!b || running) return;
@@ -1703,9 +1857,9 @@ Steps[2] = (() => {
     });
     $("#s2lost").addEventListener("click", e => {
       const b = e.target.closest(".choice"); if (!b || b.disabled || running) return;
-      lost = +b.dataset.v; press($("#s2lost"), b); $("#s2lostTxt").textContent = lost;
+      lost = +b.dataset.v; press($("#s2lost"), b); $$(".s2lostTxt").forEach(e => e.textContent = lost);
       level = 20; shown = 20; $("#s2seq").innerHTML = ""; pred = null; press($("#s2pred"), null); $("#s2run").disabled = true;
-      say("#s2say", "info", `Lost is now <b class="num">${lost}</b>. Predict again before you run.`);
+      say("#s2say", "info", `Lost is now <b class="num">${lost}</b>. Predict again before you run.`, `流失現在是 <b class="num">${lost}</b>。運行之前，請再預測一次。`);
     });
     $("#s2run").addEventListener("click", run);
   }
@@ -1722,11 +1876,14 @@ Steps[2] = (() => {
     await wait(500); flowing = false;
     const actual = lost < 5 ? "up" : lost === 5 ? "same" : "down";
     const word = { up: "went up", same: "stayed the same", down: "went down" }[actual];
+    const wordZh = { up: "上升了", same: "保持不變", down: "下降了" }[actual];
     const why = lost < 5 ? `5 made is more than ${lost} lost, so it gains ${5 - lost} a minute.` : lost === 5 ? "5 made and 5 lost cancel out, so nothing changes." : `7 lost is more than 5 made, so it drops 2 a minute.`;
-    if (pred === actual) say("#s2say", "good", `You predicted it and it ${word}. ${why}`);
-    else say("#s2say", "warn", `Watch what happens: it ${word}. ${why}`);
+    const whyZh = lost < 5 ? `製造 5 多於流失 ${lost}，所以每分鐘增加 ${5 - lost}。` : lost === 5 ? "製造 5 和流失 5 互相抵消，所以沒有變化。" : "流失 7 多於製造 5，所以每分鐘減少 2。";
+    const more = lost === 2 ? [" <b>Now try Lost 5 and Lost 7.</b>", "<b>現在試試「流失 5」和「流失 7」。</b>"] : ["", ""];
+    if (pred === actual) say("#s2say", "good", `You predicted it and it ${word}. ${why}${more[0]}`, `你預測對了，它${wordZh}。${whyZh}${more[1]}`);
+    else say("#s2say", "warn", `Watch what happens: it ${word}. ${why}${more[0]}`, `留意發生了甚麼：它${wordZh}。${whyZh}${more[1]}`);
     tried.add(lost);
-    if (lost === 2) { $$("#s2lost .choice").forEach(b => b.disabled = false); $("#s2say .say span:last-child").insertAdjacentHTML("beforeend", " <b>Now try Lost 5 and Lost 7.</b>"); }
+    if (lost === 2) $$("#s2lost .choice").forEach(b => b.disabled = false);
     pred = null; press($("#s2pred"), null);
     running = false;
     if (tried.has(5) && tried.has(7)) reveal();
@@ -1748,7 +1905,7 @@ Steps[3] = (() => {
   function init() {
     new Scene($("#s3canvas"), (ctx, w, h, dt, t) => {
       shown += (level - shown) * Math.min(1, dt * 5);
-      geo = drawTank(ctx, w, h, shown, 20, dots, { dt, t, allowNeg: true, madeLabel: "BACTERIA OFF", lostLabel: lostNow ? `−${fmt(lostNow)} LOST` : "" });
+      geo = drawTank(ctx, w, h, shown, 20, dots, { dt, t, allowNeg: true, madeLabel: L("BACTERIA OFF", "細菌關閉"), lostLabel: lostNow ? L(`−${fmt(lostNow)} LOST`, `−${fmt(lostNow)} 流失`) : "" });
     });
     const runRule = async (rule) => {
       if (running) return; running = true;
@@ -1767,10 +1924,10 @@ Steps[3] = (() => {
       if (rule === "A") {
         ranA = true;
         $("#s3box").classList.remove("flash"); void $("#s3box").offsetWidth; $("#s3box").classList.add("flash");
-        say("#s3say", "bad", "<b>Something went wrong.</b> The model says −5. Can a patch hold less than no medicine?");
+        say("#s3say", "bad", "<b>Something went wrong.</b> The model says −5. Can a patch hold less than no medicine?", "<b>出錯了。</b>模型顯示 −5。貼片裡的藥物可以少過零嗎？");
       } else {
         ranB = true;
-        say("#s3say", "good", "Rule B never goes below zero. It loses 4, then 3.2, then 2.6… smaller bites each time.");
+        say("#s3say", "good", "Rule B never goes below zero. It loses 4, then 3.2, then 2.6… smaller bites each time.", "規則 B 永遠不會跌到零以下。它先流失 4，然後 3.2，再來 2.6……每次流失的量都越來越少。");
       }
       running = false; $("#s3a").disabled = $("#s3b").disabled = false;
       if (ranA && ranB) $("#s3explain").hidden = false;
@@ -1781,7 +1938,7 @@ Steps[3] = (() => {
       const b = e.target.closest(".choice"); if (!b) return;
       press($("#s3opts"), b);
       if (b.dataset.v === "share") { b.classList.add("good"); finish(); }
-      else { b.classList.add("meh"); say("#s3say", "warn", "Watch what happens when you press <b>Why? Show me</b>. Look at how much is lost from a full patch compared with an almost empty one."); }
+      else { b.classList.add("meh"); say("#s3say", "warn", "Watch what happens when you press <b>Why? Show me</b>. Look at how much is lost from a full patch compared with an almost empty one.", "按<b>為甚麼？給我看看</b>，留意發生了甚麼。比較一下滿滿的貼片和幾乎空了的貼片，各自流失多少。"); }
     });
     $("#s3why").addEventListener("click", () => {
       $("#s3whyBox").hidden = false;
@@ -1795,16 +1952,16 @@ Steps[3] = (() => {
           ctx.fillStyle = C.wound; ctx.globalAlpha = .45 + .45 * pulse; ctx.fillRect(x, base - hh, bw, lh); ctx.globalAlpha = 1;
           ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.strokeRect(x, base - full, bw, full);
           ctx.font = `700 12px ${C.mono}`; ctx.textAlign = "center"; ctx.fillStyle = C.ink;
-          ctx.fillText(`${v} in patch`, x + bw / 2, h - 8);
+          ctx.fillText(L(`${v} in patch`, `貼片內 ${v}`), x + bw / 2, h - 8);
           ctx.fillStyle = C.wound; ctx.fillText(`−${fmt(v * .2)}`, x + bw + 20, base - hh + 10);
         });
       });
-      $("#s3whyBox").insertAdjacentHTML("afterend", `<p class="kbd-hint" style="margin-top:6px">20% of a full patch is a big bite. 20% of an almost-empty patch is tiny. So it can never go below zero.</p>`);
+      $("#s3whyBox").insertAdjacentHTML("afterend", `<p class="kbd-hint" style="margin-top:6px">${B("20% of a full patch is a big bite. 20% of an almost-empty patch is tiny. So it can never go below zero.", "滿滿的貼片，20% 是很大的一口；幾乎空了的貼片，20% 只是很小的一口。所以它永遠不會跌到零以下。")}</p>`);
     });
   }
   function finish() {
     $("#s3disc").hidden = false;
-    say("#s3say", "good", "Yes. More medicine means more is lost each minute; less medicine means less is lost.");
+    say("#s3say", "good", "Yes. More medicine means more is lost each minute; less medicine means less is lost.", "對。藥物越多，每分鐘流失得越多；藥物越少，流失得越少。");
     badge("decay rate");
     value("loss", "Share lost / min", "20% (guess)");
     complete(3);
@@ -1836,8 +1993,8 @@ Steps[4] = (() => {
       tb.insertAdjacentHTML("beforeend", `<tr>
         <td>${i + 1}</td><td>${fmt(old)}</td><td style="color:var(--bact)">+12</td>
         <td style="color:var(--wound)" id="s4lost${i}">${done ? "−" + fmt(old * .2, 2) : "0.2 × " + fmt(old)}</td>
-        <td><label class="sr" for="s4in${i}">New medicine at minute ${i + 1}</label><input id="s4in${i}" class="${done ? "ok" : ""}" inputmode="decimal" autocomplete="off" ${done ? `value="${fmt(ANS[i], 2)}" disabled` : ""}></td>
-        <td>${done ? `<svg width="16" height="16" style="color:var(--gel)"><use href="#i-check"/></svg>` : `<button class="ghost" data-work="${i}">= Help</button>`}</td></tr>`);
+        <td><label class="sr" for="s4in${i}">${B(`New medicine at minute ${i + 1}`, `第 ${i + 1} 分鐘的新藥物量`)}</label><input id="s4in${i}" class="${done ? "ok" : ""}" inputmode="decimal" autocomplete="off" ${done ? `value="${fmt(ANS[i], 2)}" disabled` : ""}></td>
+        <td>${done ? `<svg width="16" height="16" style="color:var(--gel)"><use href="#i-check"/></svg>` : `<button class="ghost" data-work="${i}">${B("= Help", "= 幫助")}</button>`}</td></tr>`);
     }
     const inp = $(`#s4in${row}`);
     if (inp && row < 3) {
@@ -1847,12 +2004,13 @@ Steps[4] = (() => {
         const v = parseFloat(inp.value.replace(",", "."));
         if (isNaN(v)) return;
         if (Math.abs(v - ANS[row]) <= 0.3) {
-          row++; say("#s4say", "good", row < 3 ? `Right: ${fmt(ANS[row - 1], 2)}. That becomes the <b>old</b> value for minute ${row + 1}.` : "Three minutes done by hand. Now let the computer do the next 47.");
+          row++; say("#s4say", "good", row < 3 ? `Right: ${fmt(ANS[row - 1], 2)}. That becomes the <b>old</b> value for minute ${row + 1}.` : "Three minutes done by hand. Now let the computer do the next 47.",
+            row < 3 ? `答對了：${fmt(ANS[row - 1], 2)}。這就是第 ${row + 1} 分鐘的<b>舊</b>數值。` : "你已經用手算完三分鐘了。接下來的 47 分鐘，就交給電腦吧。");
           renderRows(); if (row === 3) { $("#s4predWrap").hidden = false; } else $(`#s4in${row}`)?.focus();
         } else if (strict) {
           inp.classList.add("try");
           const old = row === 0 ? 0 : ANS[row - 1];
-          say("#s4say", "warn", `Not quite. Try: <span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)}</span>`);
+          say("#s4say", "warn", `Not quite. Try: <span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)}</span>`, `差一點。試試：<span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)}</span>`);
         }
       };
       inp.addEventListener("input", () => { inp.classList.remove("try"); check(false); });
@@ -1866,24 +2024,24 @@ Steps[4] = (() => {
       const b = e.target.closest("[data-work]"); if (!b) return;
       const i = +b.dataset.work, old = i === 0 ? 0 : ANS[i - 1];
       $(`#s4lost${i}`).textContent = "−" + fmt(old * .2, 2);
-      say("#s4say", "info", `Calculator: <span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)} = ?</span> Type your answer in the box.`);
+      say("#s4say", "info", `Calculator: <span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)} = ?</span> Type your answer in the box.`, `計算：<span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)} = ?</span> 把答案輸入格子裡。`);
       $(`#s4in${i}`)?.focus();
     });
     $("#s4pred").addEventListener("click", e => { const b = e.target.closest(".choice"); if (!b || ran) return; pred = b.dataset.v; press($("#s4pred"), b); $("#s4run").disabled = false; });
     $("#s4run").addEventListener("click", run);
     new Scene($("#s4canvas"), (ctx, w, h, dt) => {
-      const a = axes(ctx, w, h, { xMax: 50, yMax: 100, xTicks: [0, 10, 20, 30, 40, 50], yTicks: [0, 20, 40, 60, 80, 100], xLabel: "minutes", yLabel: "medicine in patch" });
+      const a = axes(ctx, w, h, { xMax: 50, yMax: 100, xTicks: [0, 10, 20, 30, 40, 50], yTicks: [0, 20, 40, 60, 80, 100], xLabel: L("minutes", "分鐘"), yLabel: L("medicine in patch", "貼片內的藥物") });
       if (animMin < 0) return;
       const pts = series(made).filter(p => p[0] <= animMin);
       const st = made / .2;
-      if (animMin >= 50) { ctx.setLineDash([5, 5]); ctx.strokeStyle = C["ink-2"]; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.X(0), a.Y(st)); ctx.lineTo(a.X(50), a.Y(st)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = C["ink-2"]; ctx.textAlign = "right"; ctx.font = `700 11px ${C.mono}`; ctx.fillText(`flat at ${fmt(st)}`, a.X(50), a.Y(st) - 6); }
+      if (animMin >= 50) { ctx.setLineDash([5, 5]); ctx.strokeStyle = C["ink-2"]; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.X(0), a.Y(st)); ctx.lineTo(a.X(50), a.Y(st)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = C["ink-2"]; ctx.textAlign = "right"; ctx.font = `700 11px ${C.mono}`; ctx.fillText(L(`flat at ${fmt(st)}`, `穩定在 ${fmt(st)}`), a.X(50), a.Y(st) - 6); }
       polyline(ctx, pts, a.X, a.Y, "gel", 3);
       const lp = pts[pts.length - 1]; if (lp) { ctx.fillStyle = C.gel; ctx.beginPath(); ctx.arc(a.X(lp[0]), a.Y(lp[1]), 5, 0, 6.283); ctx.fill(); }
     });
     $("#s4layers").addEventListener("input", e => {
       const n = +e.target.value; made = 4 * n; $("#s4layersOut").textContent = n;
       const st = made / .2; $("#s4level").textContent = fmt(st); bars(st, "#s4made", "#s4lost", "#s4madeV", "#s4lostV", made);
-      say("#s4micro", "info", `${n} layer${n > 1 ? "s" : ""} make ${made} a minute, so the patch settles at <b class="num">${fmt(st)}</b>.`);
+      say("#s4micro", "info", `${n} layer${n > 1 ? "s" : ""} make ${made} a minute, so the patch settles at <b class="num">${fmt(st)}</b>.`, `${n} 層每分鐘製造 ${made}，所以貼片會穩定在 <b class="num">${fmt(st)}</b>。`);
     });
   }
   async function run() {
@@ -1903,9 +2061,12 @@ Steps[4] = (() => {
       requestAnimationFrame(f);
     }), wait(T + 1500)]);
     animMin = 50;
-    if (pred === "flat") say("#s4micro", "good", "You predicted it: it levels off at <b class='num'>60</b>.");
-    else if (pred === "rise") $("#s4micro").innerHTML = `<div class="microscope"><span class="label">Mistake microscope</span><span>Look at the bars. <b>Made</b> stays at 12, but <b>lost</b> grows as the patch fills up. At 60, lost is 12 too, so nothing changes any more. It can't keep rising.</span></div>`;
-    else $("#s4micro").innerHTML = `<div class="microscope"><span class="label">Mistake microscope</span><span>The bacteria are switched <b>on</b> this time, so 12 keeps arriving every minute. The level can only drop to zero if nothing is made.</span></div>`;
+    const scope = (en, zh) => `<div class="microscope"><span class="label">${B("Mistake microscope", "錯誤顯微鏡")}</span><span>${B(en, zh)}</span></div>`;
+    if (pred === "flat") say("#s4micro", "good", "You predicted it: it levels off at <b class='num'>60</b>.", "你預測對了：它會穩定在 <b class='num'>60</b>。");
+    else if (pred === "rise") $("#s4micro").innerHTML = scope("Look at the bars. <b>Made</b> stays at 12, but <b>lost</b> grows as the patch fills up. At 60, lost is 12 too, so nothing changes any more. It can't keep rising.",
+      "看看那兩條橫棒。<b>製造</b>一直是 12，但隨著貼片漸漸填滿，<b>流失</b>會越來越多。到了 60，流失也是 12，所以不再有任何變化。它不可能一直上升。");
+    else $("#s4micro").innerHTML = scope("The bacteria are switched <b>on</b> this time, so 12 keeps arriving every minute. The level can only drop to zero if nothing is made.",
+      "這次細菌是<b>啟動</b>的，所以每分鐘都有 12 份新藥物。只有在完全沒有製造的情況下，水平才會跌到零。");
     finish();
   }
   function finish() {
@@ -1929,10 +2090,10 @@ Steps[5] = (() => {
   const series = (m) => { const p = [[0, 0]]; let l = 0; for (let i = 1; i <= 50; i++) { l = Model.next(l, m); p.push([i, l]); } return p; };
   function init() {
     new Scene($("#s5canvas"), (ctx, w, h) => {
-      const a = axes(ctx, w, h, { xMax: 50, yMax: 100, xTicks: [0, 10, 20, 30, 40, 50], yTicks: [0, 20, 40, 60, 80, 100], xLabel: "minutes", yLabel: "medicine in patch" });
+      const a = axes(ctx, w, h, { xMax: 50, yMax: 100, xTicks: [0, 10, 20, 30, 40, 50], yTicks: [0, 20, 40, 60, 80, 100], xLabel: L("minutes", "分鐘"), yLabel: L("medicine in patch", "貼片內的藥物") });
       if (challenge) {
         ctx.setLineDash([6, 5]); ctx.strokeStyle = C.gas; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(a.X(0), a.Y(20)); ctx.lineTo(a.X(50), a.Y(20)); ctx.stroke(); ctx.setLineDash([]);
-        ctx.fillStyle = C.gas; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right"; ctx.fillText("target: flat at 20", a.X(50), a.Y(20) - 6);
+        ctx.fillStyle = C.gas; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right"; ctx.fillText(L("target: flat at 20", "目標：穩定在 20"), a.X(50), a.Y(20) - 6);
       }
       if (anim < 0) return;
       polyline(ctx, series(made).filter(p => p[0] <= anim), a.X, a.Y, solved ? "gel" : "ink", 3);
@@ -1969,12 +2130,13 @@ Steps[5] = (() => {
   function check() {
     const st = made / .2;
     if (made === 4) finish();
-    else say("#s5say", "info", `Made ${made} settles at <b class="num">${fmt(st)}</b>. That's ${st > 20 ? "too high" : "too low"}. ${st > 20 ? "Make less." : "Make more."}`);
+    else say("#s5say", "info", `Made ${made} settles at <b class="num">${fmt(st)}</b>. That's ${st > 20 ? "too high" : "too low"}. ${st > 20 ? "Make less." : "Make more."}`,
+      `製造 ${made} 會穩定在 <b class="num">${fmt(st)}</b>，${st > 20 ? "太高了。要少製造一點。" : "太低了。要多製造一點。"}`);
   }
   function finish() {
     solved = true; made = 4; anim = 50; challenge = true;
     $("#s5made-in").value = 4; $("#s5madeOut").textContent = 4; setRangeFill($("#s5made-in")); updBars(20);
-    say("#s5say", "good", "Flat at 20! It makes <b class='num'>4</b> a minute. That's exactly <b>one layer</b> of bacteria.");
+    say("#s5say", "good", "Flat at 20! It makes <b class='num'>4</b> a minute. That's exactly <b>one layer</b> of bacteria.", "穩定在 20！它每分鐘製造 <b class='num'>4</b> 份藥物，剛好是<b>一層</b>細菌的產量。");
     $("#s5disc").hidden = false;
     badge("steady state");
     note("Every layer holds the same number of bacteria");
@@ -1995,7 +2157,7 @@ Steps[6] = (() => {
   function init() {
     new Scene($("#s6canvas"), (ctx, w, h, dt, t) => {
       shownLoss += (loss - shownLoss) * Math.min(1, dt * 10);
-      const a = axes(ctx, w, h, { xMax: 7, yMax: 70, xTicks: [0, 1, 2, 3, 4, 5, 6, 7], yTicks: [0, 20, 40, 60], xLabel: "minutes after switching off", yLabel: "medicine" });
+      const a = axes(ctx, w, h, { xMax: 7, yMax: 70, xTicks: [0, 1, 2, 3, 4, 5, 6, 7], yTicks: [0, 20, 40, 60], xLabel: L("minutes after switching off", "關閉細菌後的分鐘數"), yLabel: L("medicine", "藥物") });
       const pts = []; for (let x = 0; x <= 7.001; x += 0.1) pts.push([x, 60 * Math.pow(1 - shownLoss, x)]);
       polyline(ctx, pts, a.X, a.Y, passed ? "gel" : "ink", 3);
       DATA.forEach(([x, y], i) => {
@@ -2003,8 +2165,8 @@ Steps[6] = (() => {
         ctx.fillStyle = C.gas; ctx.beginPath(); ctx.arc(a.X(x), a.Y(y), r, 0, 6.283); ctx.fill();
         ctx.strokeStyle = C.surface; ctx.lineWidth = 2; ctx.stroke();
       });
-      ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right"; ctx.fillStyle = C.gas; ctx.fillText("● lab measurements", w - 16, 26);
-      ctx.fillStyle = passed ? C.gel : C.ink; ctx.fillText("— your model", w - 16, 42);
+      ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right"; ctx.fillStyle = C.gas; ctx.fillText(L("● lab measurements", "● 實驗室測量值"), w - 16, 26);
+      ctx.fillStyle = passed ? C.gel : C.ink; ctx.fillText(L("— your model", "— 你的模型"), w - 16, 42);
     });
     const inp = $("#s6loss"); setRangeFill(inp); update();
     inp.addEventListener("input", () => { if (passed) return; loss = inp.value / 100; update(); });
@@ -2016,13 +2178,14 @@ Steps[6] = (() => {
     $("#s6fitOut").textContent = Math.round(f) + "%";
     $("#s6fit").style.width = f + "%";
     $("#s6meter").classList.toggle("pass", f >= 85);
-    if (f >= 85) say("#s6say", "good", "That's a match. Let go of the slider to lock it in.");
-    else if (f > 60) say("#s6say", "info", "Getting close. Keep going slowly.");
-    else say("#s6say", "info", loss > .2 ? "The curve drops too fast. The model is losing too much." : "The curve drops too slowly. The model is losing too little.");
+    if (f >= 85) say("#s6say", "good", "That's a match. Let go of the slider to lock it in.", "吻合了！放開滑桿，把數值鎖定。");
+    else if (f > 60) say("#s6say", "info", "Getting close. Keep going slowly.", "越來越接近了，繼續慢慢移動。");
+    else say("#s6say", "info", loss > .2 ? "The curve drops too fast. The model is losing too much." : "The curve drops too slowly. The model is losing too little.",
+      loss > .2 ? "曲線下降得太快，模型流失得太多。" : "曲線下降得太慢，模型流失得太少。");
   }
   function finish() {
     passed = true; loss = 0.2; const inp = $("#s6loss"); inp.value = 20; inp.disabled = true; setRangeFill(inp); update();
-    say("#s6say", "good", "Locked at <b class='num'>20%</b>. Your guess from step 3 was right, and now the data backs it up.");
+    say("#s6say", "good", "Locked at <b class='num'>20%</b>. Your guess from step 3 was right, and now the data backs it up.", "已鎖定在 <b class='num'>20%</b>。你在第 3 步的猜測是正確的，現在還有數據支持。");
     $("#s6disc").hidden = false;
     value("loss", "Share lost / min", "20% (matches data)");
     note("The bacteria keep working at a steady rate");
@@ -2086,18 +2249,18 @@ Steps[7] = (() => {
       press($("#s7opts"), b);
       if (b.dataset.v === "broke") {
         answered = true; b.classList.add("good");
-        say("#s7say", "good", "Yes. Some breaks down inside each layer, so only 70% makes it to the next one.");
+        say("#s7say", "good", "Yes. Some breaks down inside each layer, so only 70% makes it to the next one.", "對。每一層裡都有部分藥物分解，所以只有 70% 能到達下一層。");
         $("#s7disc").hidden = false; badge("diffusion");
         $("#s7whatif").hidden = false; setRangeFill($("#s7n"));
-        say("#s7say2", "info", "Now drag the slider to the right. How many layers until almost nothing arrives?");
+        say("#s7say2", "info", "Now drag the slider to the right. How many layers until almost nothing arrives?", "現在把滑桿拖向右邊。要穿過多少層，才會幾乎沒有藥物到達？");
       } else {
         b.classList.add("meh");
-        say("#s7say", "warn", "Watch what happens: press <b>Replay</b> and follow one dot that disappears. It fades out <i>inside</i> the gel. It doesn't go anywhere else.");
+        say("#s7say", "warn", "Watch what happens: press <b>Replay</b> and follow one dot that disappears. It fades out <i>inside</i> the gel. It doesn't go anywhere else.", "留意發生了甚麼：按<b>重播</b>，跟著一粒消失的圓點看。它是在凝膠<i>裡面</i>逐漸消失的，並沒有去其他地方。");
       }
     });
     new Scene($("#s7bars"), (ctx, w, h) => {
       const n = +$("#s7n").value;
-      const a = axes(ctx, w, h, { xMin: -.5, xMax: 12.5, yMax: 60, xTicks: [0, 2, 4, 6, 8, 10, 12], yTicks: [0, 20, 40, 60], xLabel: "layers crossed", pad: { b: 30 } });
+      const a = axes(ctx, w, h, { xMin: -.5, xMax: 12.5, yMax: 60, xTicks: [0, 2, 4, 6, 8, 10, 12], yTicks: [0, 20, 40, 60], xLabel: L("layers crossed", "穿過的層數"), pad: { b: 30 } });
       const bw = (a.X(1) - a.X(0)) * .62;
       for (let k = 0; k <= 12; k++) {
         const v = 60 * Math.pow(.7, k);
@@ -2109,15 +2272,15 @@ Steps[7] = (() => {
     $("#s7n").addEventListener("input", e => {
       const n = +e.target.value, v = 60 * Math.pow(.7, n); $("#s7nOut").textContent = n;
       if (n >= 8) {
-        say("#s7say2", "good", `After ${n} layers only <b class="num">${fmt(v)}</b> arrives. The medicine can only get so far.`);
+        say("#s7say2", "good", `After ${n} layers only <b class="num">${fmt(v)}</b> arrives. The medicine can only get so far.`, `穿過 ${n} 層後，只有 <b class="num">${fmt(v)}</b> 到達。藥物只能走這麼遠。`);
         if (!deep) { deep = true; $("#s7pen").hidden = false; badge("penetration depth"); note("Every layer behaves the same"); }
         maybeFinish();
-      } else say("#s7say2", "info", `After ${n} layer${n > 1 ? "s" : ""}: <b class="num">${fmt(v)}</b> arrives. Keep going.`);
+      } else say("#s7say2", "info", `After ${n} layer${n > 1 ? "s" : ""}: <b class="num">${fmt(v)}</b> arrives. Keep going.`, `穿過 ${n} 層後：有 <b class="num">${fmt(v)}</b> 到達。繼續拖。`);
     });
   }
   async function step() {
     if (busy) return;
-    if (cross >= 3) { cross = 0; seed(); $("#s7seq").innerHTML = "<span>60</span>"; upd(); $("#s7next").textContent = "Next layer ↓"; return; }
+    if (cross >= 3) { cross = 0; seed(); $("#s7seq").innerHTML = "<span>60</span>"; upd(); $("#s7next").innerHTML = B("Next layer ↓", "下一層 ↓"); return; }
     busy = true; cross++;
     const keep = Math.round(60 * Math.pow(.7, cross));
     const live = dots.a.filter(d => !d.dying);
@@ -2127,8 +2290,8 @@ Steps[7] = (() => {
     $("#s7seq").insertAdjacentHTML("beforeend", `<i>→</i><span>${fmt(60 * Math.pow(.7, cross))}</span>`);
     upd();
     if (cross === 3) {
-      $("#s7next").textContent = "Replay ↺";
-      say("#s7say", "info", "<b class='num'>20.6</b> reached the wound. We started with 60.");
+      $("#s7next").innerHTML = B("Replay ↺", "重播 ↺");
+      say("#s7say", "info", "<b class='num'>20.6</b> reached the wound. We started with 60.", "<b class='num'>20.6</b> 到達了傷口。我們一開始有 60。");
       $("#s7ask").hidden = false;
     }
     busy = false;
@@ -2148,25 +2311,25 @@ Steps[8] = (() => {
   let layers = 3, bact = "medium", heal = 0, healTarget = 0, submitted = false, mT = 0;
   const dots = new Dots(60);
   function init() {
-    $("#s8layers").innerHTML = [1, 2, 3, 4, 5].map(k => `<button class="lp-btn" data-k="${k}" aria-label="${k} layer${k > 1 ? "s" : ""}">${k} layer${k > 1 ? "s" : ""}</button>`).join("");
+    $("#s8layers").innerHTML = [1, 2, 3, 4, 5].map(k => `<button class="lp-btn" data-k="${k}" aria-label="${k} layer${k > 1 ? "s" : ""}" data-aria-zh="${k} 層">${B(`${k} layer${k > 1 ? "s" : ""}`, `${k} 層`)}</button>`).join("");
     $("#s8pred").addEventListener("click", e => {
       const b = e.target.closest(".choice"); if (!b) return;
       press($("#s8pred"), b); S.data.pred8 = b.dataset.v; save();
       const first = $("#s8lab").hidden;
       $("#s8lab").hidden = false; update();
-      if (first) { say("#s8say", "info", "Let's test it. Tap each thickness from 1 to 5 and watch <b>Reaching wound</b>."); $("#s8lab").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" }); }
+      if (first) { say("#s8say", "info", "Let's test it. Tap each thickness from 1 to 5 and watch <b>Reaching wound</b>.", "我們來測試一下。逐一按 1 至 5 層的厚度，留意<b>到達傷口</b>的數字。"); $("#s8lab").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" }); }
     });
     $("#s8layers").addEventListener("click", e => { const b = e.target.closest(".lp-btn"); if (!b) return; layers = +b.dataset.k; healTarget = 0; update(true); });
     $("#s8bact").addEventListener("click", e => {
       const b = e.target.closest(".choice"); if (!b) return;
-      if (b.dataset.v === "high") { say("#s8say", "warn", "High is locked. Bacteria pushed that hard <b>burn out</b> and stop making medicine."); return; }
+      if (b.dataset.v === "high") { say("#s8say", "warn", "High is locked. Bacteria pushed that hard <b>burn out</b> and stop making medicine.", "「高」已鎖定。細菌被逼得太緊會<b>過勞衰竭</b>，然後停止製造藥物。"); return; }
       bact = b.dataset.v; press($("#s8bact"), b); healTarget = 0; update(true);
     });
     $("#s8submit").addEventListener("click", submit);
     $("#s8bonus").addEventListener("click", e => {
       const b = e.target.closest(".choice"); if (!b) return; press($("#s8bonus"), b);
-      if (b.dataset.v === "no") { b.classList.add("good"); say("#s8bonusSay", "good", "Right. With Low bacteria the best is about <b class='num'>10.3</b> at 3 layers, never 18. A model can show a design is impossible before anyone builds it."); }
-      else { b.classList.add("meh"); say("#s8bonusSay", "warn", "Watch what happens: switch to <b>Low</b> and try every thickness. Does the healing bar ever reach the line?"); }
+      if (b.dataset.v === "no") { b.classList.add("good"); say("#s8bonusSay", "good", "Right. With Low bacteria the best is about <b class='num'>10.3</b> at 3 layers, never 18. A model can show a design is impossible before anyone builds it.", "對。細菌強度「低」時，最好的結果是 3 層、約 <b class='num'>10.3</b>，永遠達不到 18。模型可以在任何人動手製作之前，就證明某個設計不可能成功。"); }
+      else { b.classList.add("meh"); say("#s8bonusSay", "warn", "Watch what happens: switch to <b>Low</b> and try every thickness. Does the healing bar ever reach the line?", "留意發生了甚麼：切換到<b>低</b>，然後試遍每一種厚度。癒合量表有到達那條線嗎？"); }
     });
     new Scene($("#s8canvas"), (ctx, w, h, dt, t) => {
       heal += (healTarget - heal) * Math.min(1, dt * 1.2);
@@ -2187,7 +2350,7 @@ Steps[8] = (() => {
       dots.draw(ctx);
     });
     new Scene($("#s8peak"), (ctx, w, h) => {
-      const a = axes(ctx, w, h, { xMin: .4, xMax: 5.6, yMax: 25, xTicks: [1, 2, 3, 4, 5], yTicks: [0, 10, 18, 25], xLabel: "layers", yLabel: "reaching the wound", pad: { b: 30 } });
+      const a = axes(ctx, w, h, { xMin: .4, xMax: 5.6, yMax: 25, xTicks: [1, 2, 3, 4, 5], yTicks: [0, 10, 18, 25], xLabel: L("layers", "層數"), yLabel: L("reaching the wound", "到達傷口的藥物"), pad: { b: 30 } });
       ctx.setLineDash([6, 4]); ctx.strokeStyle = C.wound; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(a.X(.4), a.Y(18)); ctx.lineTo(a.X(5.6), a.Y(18)); ctx.stroke(); ctx.setLineDash([]);
       const bw = (a.X(2) - a.X(1)) * .5;
       for (let k = 1; k <= 5; k++) {
@@ -2197,7 +2360,7 @@ Steps[8] = (() => {
         ctx.fillStyle = C.ink; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "center"; ctx.fillText(fmt(v), a.X(k), a.Y(v) - 6);
       }
       polyline(ctx, [1, 2, 3, 4, 5].map(k => [k, Model.design(k, "low").reach]), a.X, a.Y, "ink-2", 2, [3, 4]);
-      ctx.fillStyle = C["ink-2"]; ctx.textAlign = "left"; ctx.fillText("low bacteria", a.X(3.6), a.Y(Model.design(4, "low").reach) - 8);
+      ctx.fillStyle = C["ink-2"]; ctx.textAlign = "left"; ctx.fillText(L("low bacteria", "細菌強度低"), a.X(3.6), a.Y(Model.design(4, "low").reach) - 8);
     });
   }
   function update(interact) {
@@ -2207,20 +2370,22 @@ Steps[8] = (() => {
     $("#s8heal").style.width = Math.min(100, r.reach / 25 * 100) + "%"; $("#s8mark").style.left = (18 / 25 * 100) + "%";
     $("#s8meter").classList.toggle("pass", r.heals);
     if (!interact) return;
-    let msg, kind = "info";
-    if (bact === "low") msg = `Only <b class="num">${fmt(r.reach)}</b> arrives. ${r.heals ? "" : "Low bacteria can't make enough."}`;
-    else if (r.heals) { kind = "good"; msg = `<b class="num">${fmt(r.reach)}</b> reaches the wound. That's enough to heal.${layers === 3 ? " Is this the most you can get?" : ""}`; }
-    else if (layers <= 1) msg = `<b class="num">${fmt(r.reach)}</b> arrives. <b>Too little medicine made</b> in one layer.`;
-    else msg = `<b class="num">${fmt(r.reach)}</b> arrives. <b>Too far to travel</b>: it breaks down on the way.`;
-    say("#s8say", kind, msg);
+    let msg, zh, kind = "info";
+    const v = `<b class="num">${fmt(r.reach)}</b>`;
+    if (bact === "low") { msg = `Only ${v} arrives. ${r.heals ? "" : "Low bacteria can't make enough."}`; zh = `只有 ${v} 到達。${r.heals ? "" : "細菌強度「低」製造不到足夠的藥物。"}`; }
+    else if (r.heals) { kind = "good"; msg = `${v} reaches the wound. That's enough to heal.${layers === 3 ? " Is this the most you can get?" : ""}`; zh = `${v} 到達傷口，足以令傷口癒合。${layers === 3 ? "這是你能得到的最多嗎？" : ""}`; }
+    else if (layers <= 1) { msg = `${v} arrives. <b>Too little medicine made</b> in one layer.`; zh = `${v} 到達。一層細菌<b>製造的藥物太少</b>。`; }
+    else { msg = `${v} arrives. <b>Too far to travel</b>: it breaks down on the way.`; zh = `${v} 到達。<b>路程太遠</b>：藥物在途中分解了。`; }
+    say("#s8say", kind, msg, zh);
   }
   function submit() {
     const r = Model.design(layers, bact);
-    if (!r.heals) { say("#s8say", "warn", `Watch what happens: only <b class="num">${fmt(r.reach)}</b> reaches the wound, below the <b>18</b> needed. The wound stays red. Try another design.`); return; }
+    if (!r.heals) { say("#s8say", "warn", `Watch what happens: only <b class="num">${fmt(r.reach)}</b> reaches the wound, below the <b>18</b> needed. The wound stays red. Try another design.`, `留意發生了甚麼：只有 <b class="num">${fmt(r.reach)}</b> 到達傷口，低於需要的 <b>18</b>。傷口仍然紅腫。試試另一個設計。`); return; }
     const best = layers === 3 && bact === "medium";
     S.data.design = { layers, bact, reach: Math.round(r.reach * 10) / 10 }; save();
     submitted = true; healTarget = 1;
-    say("#s8say", "good", best ? "<b>The wound is healing.</b> 3 layers gets 20.6 through, the most of any design." : `<b>The wound is healing.</b> ${fmt(r.reach)} gets through. Can you find a design that gets even more?`);
+    say("#s8say", "good", best ? "<b>The wound is healing.</b> 3 layers gets 20.6 through, the most of any design." : `<b>The wound is healing.</b> ${fmt(r.reach)} gets through. Can you find a design that gets even more?`,
+      best ? "<b>傷口正在癒合。</b>3 層能讓 20.6 通過，是所有設計中最多的。" : `<b>傷口正在癒合。</b>有 ${fmt(r.reach)} 通過。你能找到讓更多藥物通過的設計嗎？`);
     const wasDone = !!S.done[8];
     after();
     if (!wasDone) { confetti(); setTimeout(() => $("#s8after").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" }), 900); }
@@ -2229,7 +2394,7 @@ Steps[8] = (() => {
     $("#s8after").hidden = false; $("#s8sci").hidden = false;
     badge("therapeutic threshold");
     note("Healing is a simple on/off line at 18");
-    const d = S.data.design; value("design", "Our design", `${d.layers} layer${d.layers > 1 ? "s" : ""} · ${fmt(d.reach)}`);
+    const d = S.data.design; value("design", "Our design", [`${d.layers} layer${d.layers > 1 ? "s" : ""} · ${fmt(d.reach)}`, `${d.layers} 層 · ${fmt(d.reach)}`]);
     Steps[10].fill();
     complete(8);
   }
@@ -2295,24 +2460,68 @@ const MATHS = {
   }
 };
 
+/* the same panels in Chinese; eq is only given where the equation itself has words in it */
+const MATHS_ZH = {
+  1: {
+    bridge: "你的三個格子，正是唯一能改變某處物質數量的三件事：有東西製造它、有東西移除它，而它會從多的地方擴散到少的地方。生物學中每一個物質傳輸模型，都是由這三項加起來組成的。",
+    key: [["∂P/∂t", "數量改變的速度"], ["D ∂²P/∂x²", "向外擴散"], ["kP", "流失"], ["S", "製造"]]
+  },
+  2: {
+    bridge: "如果你只關心貼片內總共有多少藥物，而不理會藥物在貼片的哪個位置，擴散那一項就可以刪去。剩下的，就是生物學中最簡單而又有用的模型——而你只用兩個數字就把它建立出來了。",
+    key: [["S", "每分鐘製造的量"], ["k", "每分鐘流失的比例"], ["P", "貼片內現有的藥物量"]]
+  },
+  3: {
+    bridge: "每次流失一個比例，而不是固定的量，正是真實分子的表現，這也是為甚麼按比例流失的規則永遠不會跌到零以下。化學家通常用半衰期來描述它——即現有物質減少一半所需的時間——而衰減率可以直接由半衰期計算出來。",
+    key: [["t½", "半衰期"], ["例子", "半衰期為 4 秒的分子，k ≈ 每秒 0.17"]]
+  },
+  4: {
+    bridge: "一分鐘一分鐘地填寫那個表格，這個方法有個名字：前向歐拉法（forward Euler）。電腦遇到代數解不開的方程時，正是用這個方法求解。唯一的分別是步長——電腦每一步只走千分之一秒，所以它的「樓梯」看起來就像一條平滑的曲線。",
+    key: [["Δt", "每一步的大小"], ["你的", "你用的是 Δt = 1 分鐘"]]
+  },
+  5: {
+    bridge: "你把變化設為零，然後求出水平。這一步叫做穩態近似，是整個領域中最常用的捷徑：當系統中某一部分比周圍其他部分快得多達到穩定時，你就不必再追蹤它隨時間的變化，只需直接求出它最終停在哪裡。",
+    key: [["P<sub>ss</sub>", "最終穩定的水平"], ["你的數字", "12 ÷ 0.2 = 60"]]
+  },
+  6: {
+    bridge: "拖動滑桿直到曲線貼合圓點，這叫做參數估計。電腦不用眼睛也能做同樣的事：它把曲線與每個測量值之間差距的平方加起來，然後尋找能令這個總和變得最小的數值。",
+    eq: `<span class="st">min<sub>k</sub> <span class="big">Σ</span><sub>i</sub> ( P<sub>模型</sub>(t<sub>i</sub>) ${OP("−")} P<sub>測量</sub>(t<sub>i</sub>) )²</span>`,
+    key: [["Σ", "把每一個測量值的差距加起來"], ["平方", "這樣無論曲線高了還是低了，差距都會計算在內"], ["吻合度量表", "就是把這個總和換算成百分比"]]
+  },
+  7: {
+    bridge: "每層傳下 70%，其實是一個平滑過程的「樓梯」版本。濃度實際上會隨深度連續下降，而濃度下降到大約三分之一所需的距離，有個名字——穿透深度。這一個數字，就說明了分子在衰減之前能走多遠。",
+    key: [["D", "擴散得多快"], ["k", "衰減得多快"], ["你的 0.7", "就是一層厚度的 e<sup>−Δx/L<sub>d</sub></sup>"], ["密封頂部", "如果頂部有密封背襯，準確的形狀是一條 cosh 曲線，但它同樣會逐漸減弱"]]
+  },
+  8: {
+    bridge: "你試了五種厚度，找出了最佳的一種。其實也可以直接把答案求出來：把到達傷口的藥物量寫成一條以厚度為變量的公式，對它微分，再令結果等於零。你用手找到的最高點，就會變成一條簡單的算式。",
+    key: [["p", "能穿過一層的比例"], ["當 p = 0.7", "L* = 2.80——所以 3 層勝出"], ["重點", "最佳厚度只取決於藥物傳遞得有多好"]]
+  },
+  9: {
+    bridge: "你執行的迴圈，正是求解程式所做的事，只是每次處理一個維度：在參數的整個範圍內計算模型，然後觀察答案的形狀，而不是只看單一數字。即使模型是偏微分方程，道理也一樣——把空間和時間切成細小的片段，然後一步一步向前推進。",
+    key: [["argmax", "令 R 最大的 L 值"], ["掃描 p", "並重新找出 L*，就是敏感度分析——它告訴你哪個測量值最重要"]]
+  }
+};
+
 function buildMaths() {
   Object.keys(MATHS).forEach(k => {
-    const n = +k, m = MATHS[k];
+    const n = +k, m = MATHS[k], z = MATHS_ZH[k];
     const foot = $(`[data-step="${n}"] .step-foot`); if (!foot) return;
     const id = "maths-" + n;
     const btn = document.createElement("button");
     btn.className = "ghost maths-btn"; btn.type = "button";
     btn.setAttribute("aria-expanded", "false"); btn.setAttribute("aria-controls", id);
-    btn.innerHTML = `<span class="mi" aria-hidden="true">ƒ</span>The maths behind this`;
+    btn.innerHTML = `<span class="mi" aria-hidden="true">ƒ</span>${B("The maths behind this", "背後的數學")}`;
     const panel = document.createElement("div");
     panel.className = "maths-panel"; panel.id = id; panel.hidden = true;
     panel.innerHTML =
-      `<p>${m.bridge}</p>` +
-      `<button class="ghost maths-more" type="button" aria-expanded="false">Show the equation</button>` +
-      `<div class="maths-eq" hidden><div class="eq">${m.eq}</div>` +
-      `<div class="eq-key">${m.key.map(([a, b]) => `<div><b>${a}</b> &nbsp;${b}</div>`).join("")}</div></div>`;
+      `<p>${B(m.bridge, z.bridge)}</p>` +
+      `<button class="ghost maths-more" type="button" aria-expanded="false">${B("Show the equation", "顯示方程式")}</button>` +
+      `<div class="maths-eq" hidden><div class="eq">${z.eq ? B(m.eq, z.eq) : m.eq}</div>` +
+      `<div class="eq-key">${m.key.map(([a, b], i) => `<div>${B(`<b>${a}</b> &nbsp;${b}`, `<b>${z.key[i][0]}</b> &nbsp;${z.key[i][1]}`)}</div>`).join("")}</div></div>`;
+    /* the maths button and the quiz button share one row; their panels open underneath */
+    const extras = document.createElement("div");
+    extras.className = "extras"; extras.appendChild(btn);
     const next = $(":scope > .next-btn", foot);
-    foot.insertBefore(btn, next); foot.insertBefore(panel, next);
+    foot.insertBefore(extras, next); foot.insertBefore(panel, next);
     btn.addEventListener("click", () => {
       const open = panel.hidden;
       panel.hidden = !open; btn.setAttribute("aria-expanded", open);
@@ -2322,21 +2531,199 @@ function buildMaths() {
     more.addEventListener("click", () => {
       const open = eq.hidden;
       eq.hidden = !open; more.setAttribute("aria-expanded", open);
-      more.textContent = open ? "Hide the equation" : "Show the equation";
+      more.innerHTML = open ? B("Hide the equation", "隱藏方程式") : B("Show the equation", "顯示方程式");
     });
   });
+}
+
+/* ---------------- optional: one quick question after each step ----------------
+   The button sits beside "The maths behind this" and appears once the step is done.
+   A wrong answer says why and stays greyed out, so students can try again.
+   Each option is [English, 中文]; fb is the feedback for a wrong pick, a is the right one. */
+const QUIZ = {
+  1: {
+    q: ["A new card turns up: <b>“Some medicine leaks out of the edge of the patch.”</b> Which box does it go in?", "新卡片出現了：<b>「有些藥物從貼片邊緣漏了出去。」</b>它應該放進哪個格子？"],
+    opts: [
+      { t: ["Adds medicine", "增加藥物"], fb: ["Leaking takes medicine <i>out</i> of the patch. Does it put any in?", "漏出去是把藥物從貼片<i>帶走</i>。它有加入藥物嗎？"] },
+      { t: ["Removes medicine", "減少藥物"] },
+      { t: ["Doesn't matter", "沒有影響"], fb: ["It changes how much medicine is inside, so it matters. Colour and shape are the things that don't.", "它改變了貼片內的藥物量，所以是有影響的。顏色和形狀這類東西才沒有影響。"] },
+    ], a: 1,
+    why: ["Anything that takes medicine out of the patch goes in <b>Removes medicine</b>, just like medicine seeping into the wound.", "任何把藥物帶離貼片的東西，都應該放進<b>減少藥物</b>——就像藥物滲進傷口一樣。"]
+  },
+  2: {
+    q: ["A patch has <b>30</b> medicine. Bacteria make <b>4</b> a minute and <b>6</b> is lost a minute. How much is left after <b>2 minutes</b>?", "貼片裡有 <b>30</b> 份藥物。細菌每分鐘製造 <b>4</b>，每分鐘流失 <b>6</b>。<b>2 分鐘</b>後還剩多少？"],
+    opts: [
+      { t: ["28", "28"], fb: ["That's after 1 minute. Keep going for one more.", "這是 1 分鐘後的數量，再多計一分鐘。"] },
+      { t: ["26", "26"] },
+      { t: ["34", "34"], fb: ["Check the direction: more is lost (6) than made (4), so it goes down, not up.", "留意方向：流失（6）多於製造（4），所以是下降，不是上升。"] },
+      { t: ["18", "18"], fb: ["You took away the 6 lost each minute but forgot to add the 4 made.", "你減去了每分鐘流失的 6，但忘了加上每分鐘製造的 4。"] },
+    ], a: 1,
+    why: ["change = made − lost = 4 − 6 = −2 each minute. 30 → 28 → <b>26</b>.", "變化 = 製造 − 流失 = 4 − 6 = 每分鐘 −2。30 → 28 → <b>26</b>。"]
+  },
+  3: {
+    q: ["The bacteria are off. A patch has <b>50</b> medicine and loses <b>20%</b> every minute. How much is left after <b>2 minutes</b>?", "細菌關閉了。貼片裡有 <b>50</b> 份藥物，每分鐘流失 <b>20%</b>。<b>2 分鐘</b>後還剩多少？"],
+    opts: [
+      { t: ["30", "30"], fb: ["That's Rule A thinking: taking 10 away twice. But minute 2 starts from 40, and 20% of 40 is only 8.", "這是規則 A 的想法：兩次都減 10。但第 2 分鐘由 40 開始，而 40 的 20% 只是 8。"] },
+      { t: ["40", "40"], fb: ["That's after 1 minute. Minute 2 loses 20% of 40.", "這是 1 分鐘後的數量。第 2 分鐘還要流失 40 的 20%。"] },
+      { t: ["32", "32"] },
+      { t: ["10", "10"], fb: ["That treats 20% as 20 medicine a minute. 20% means one fifth of whatever is there.", "這樣是把 20% 當成每分鐘流失 20 份。20% 的意思是現有藥物的五分之一。"] },
+    ], a: 2,
+    why: ["Minute 1: 20% of 50 is 10, leaving 40. Minute 2: 20% of 40 is only 8, leaving <b>32</b>. Each bite is smaller: that's a <b>decay rate</b>.", "第 1 分鐘：50 的 20% 是 10，剩下 40。第 2 分鐘：40 的 20% 只是 8，剩下 <b>32</b>。每次流失的量越來越少：這就是<b>衰減率</b>。"]
+  },
+  4: {
+    q: ["Use the rule <b>new = old + 12 − 0.2 × old</b>. If <b>old = 40</b>, what is <b>new</b>?", "用這條規則：<b>新 = 舊 + 12 − 0.2 × 舊</b>。如果<b>舊 = 40</b>，<b>新</b>是多少？"],
+    opts: [
+      { t: ["52", "52"], fb: ["You added the 12 made but forgot what is lost: 0.2 × 40 = 8.", "你加上了製造的 12，但忘了減去流失的量：0.2 × 40 = 8。"] },
+      { t: ["32", "32"], fb: ["You took away the 8 lost but forgot to add the 12 made.", "你減去了流失的 8，但忘了加上製造的 12。"] },
+      { t: ["44", "44"] },
+      { t: ["60", "60"], fb: ["60 is where it levels off in the end. One minute from 40 only gets part of the way there.", "60 是最終穩定的水平。由 40 開始只過一分鐘，還未到那裡。"] },
+    ], a: 2,
+    why: ["0.2 × 40 = 8 is lost, so 40 + 12 − 8 = <b>44</b>. Still rising, but by less each minute, on its way to 60.", "流失 0.2 × 40 = 8，所以 40 + 12 − 8 = <b>44</b>。仍在上升，但每分鐘升得越來越少，正逐步接近 60。"]
+  },
+  5: {
+    q: ["A 2-layer patch makes <b>8</b> medicine a minute and loses <b>20%</b> a minute. Where does it level off?", "一塊 2 層的貼片每分鐘製造 <b>8</b> 份藥物，每分鐘流失 <b>20%</b>。它最後會穩定在哪裡？"],
+    opts: [
+      { t: ["40", "40"] },
+      { t: ["1.6", "1.6"], fb: ["That's 20% of 8: you multiplied. The level is made <b>÷</b> share lost.", "這是 8 的 20%：你用了乘法。水平應該是製造 <b>÷</b> 流失比例。"] },
+      { t: ["8", "8"], fb: ["At 8, only 1.6 is lost a minute while 8 is made, so it would keep rising.", "在 8 的時候，每分鐘只流失 1.6，卻製造 8，所以還會繼續上升。"] },
+      { t: ["60", "60"], fb: ["60 is the 3-layer patch, which makes 12 a minute. This one makes 8.", "60 是 3 層貼片（每分鐘製造 12）的水平。這塊貼片只製造 8。"] },
+    ], a: 0,
+    why: ["It stops changing when lost = made, and 20% of 40 is 8. Level = made ÷ share lost = 8 ÷ 0.2 = <b>40</b>.", "當流失 = 製造時就不再改變，而 40 的 20% 正是 8。水平 = 製造 ÷ 流失比例 = 8 ÷ 0.2 = <b>40</b>。"]
+  },
+  6: {
+    q: ["The lab tests a new gel. Now the dots fade <b>faster</b> than your model's curve. What should you do with the <b>share lost</b> slider?", "實驗室測試了一種新的凝膠。現在圓點下降得比模型的曲線<b>更快</b>。你應該怎樣調整<b>流失比例</b>滑桿？"],
+    opts: [
+      { t: ["Move it up: more is lost each minute", "調高：每分鐘流失更多"] },
+      { t: ["Move it down: less is lost each minute", "調低：每分鐘流失更少"], fb: ["Less loss would make the curve fall even more slowly, further from the dots.", "流失更少會令曲線下降得更慢，離圓點更遠。"] },
+      { t: ["Leave it: the model was right before", "不用改：模型之前是對的"], fb: ["A model is only as good as its match to the data. When the data change, the numbers in the model have to change too.", "模型好不好，要看它能否配合數據。數據改變了，模型中的數字也要跟著改。"] },
+    ], a: 0,
+    why: ["If the real medicine fades faster, the real loss rate is bigger. We change the model to fit the data, never the data to fit the model.", "如果真實的藥物消失得更快，真實的流失率就更大。我們要修改模型去配合數據，而不是修改數據去配合模型。"]
+  },
+  7: {
+    q: ["Medicine starts at <b>100</b>. Each layer passes on <b>70%</b>. How much gets through <b>2 layers</b>?", "藥物由 <b>100</b> 出發，每一層傳下 <b>70%</b>。穿過 <b>2 層</b>後剩下多少？"],
+    opts: [
+      { t: ["40", "40"], fb: ["That takes 30 away twice. But the second layer only receives 70, and 30% of 70 is 21.", "這樣是兩次都減 30。但第二層只收到 70，而 70 的 30% 是 21。"] },
+      { t: ["70", "70"], fb: ["That's after 1 layer. It still has to cross the second one.", "這是穿過 1 層後的數量，還要再穿過一層。"] },
+      { t: ["140", "140"], fb: ["Each layer keeps only 70%, so the amount shrinks at every layer. It can't grow.", "每一層只保留 70%，所以數量每過一層都會減少，不可能增加。"] },
+      { t: ["49", "49"] },
+    ], a: 3,
+    why: ["Layer 1: 100 × 0.7 = 70. Layer 2: 70 × 0.7 = <b>49</b>. It's the share rule from step 3, with layers instead of minutes.", "第 1 層：100 × 0.7 = 70。第 2 層：70 × 0.7 = <b>49</b>。這是第 3 步那條按比例流失的規則，只是把「分鐘」換成了「層」。"]
+  },
+  8: {
+    q: ["Why does a <b>5-layer</b> patch get <b>less</b> medicine to the wound than a 3-layer one?", "為甚麼 <b>5 層</b>的貼片送到傷口的藥物，反而比 3 層的<b>少</b>？"],
+    opts: [
+      { t: ["A thicker patch has fewer bacteria", "較厚的貼片細菌較少"], fb: ["It's the other way round: every extra layer adds bacteria. Having them isn't the problem, where they sit is.", "剛好相反：每多一層就多一些細菌。問題不在於細菌的數量，而在於它們的位置。"] },
+      { t: ["The top layers never switch on, and medicine made high up has further to travel", "頂部的層永遠不會啟動，而在高處製造的藥物要走的路更長"] },
+      { t: ["The wound can only take in 18 medicine", "傷口最多只能吸收 18 份藥物"], fb: ["18 is the least needed to heal, not a limit. More than 18 is fine.", "18 是癒合所需的最少量，而不是上限。多於 18 也沒有問題。"] },
+    ], a: 1,
+    why: ["Extra layers add bacteria, but the warning gas fades before it reaches the top ones, and medicine made high up breaks down on its long trip. The best design balances the two.", "多加的層數帶來更多細菌，但警告氣體還未到達頂部便已消散，而在高處製造的藥物在漫長的路程中會分解。最佳設計要在兩者之間取得平衡。"]
+  },
+  9: {
+    q: ["You change <b>pass_frac</b> from 0.7 to <b>0.6</b>, so medicine gets through each layer <i>worse</i>. What happens to the best thickness?", "你把 <b>pass_frac</b> 由 0.7 改為 <b>0.6</b>，即是藥物穿過每一層的能力變<i>差</i>了。最佳厚度會怎樣？"],
+    opts: [
+      { t: ["It gets thicker", "變厚"], fb: ["Thicker means more layers to cross, and every layer now costs more medicine than before.", "變厚代表要穿過更多層，而現在每一層的損耗都比以前大。"] },
+      { t: ["It stays at 3 layers", "維持 3 層"], fb: ["The best thickness depends on pass_frac. That's why the wet lab needs to measure it.", "最佳厚度取決於 pass_frac，所以濕實驗室需要量度這個數字。"] },
+      { t: ["It gets thinner", "變薄"] },
+    ], a: 2,
+    why: ["When every layer costs more medicine, fewer layers win. With pass_frac = 0.6 the best is <b>2 layers</b>. Try it in the code!", "當每一層都損耗更多藥物時，層數少的設計就會勝出。pass_frac = 0.6 時，最佳是 <b>2 層</b>。在程式碼中試試看！"]
+  }
+};
+
+function buildQuiz() {
+  Object.keys(QUIZ).forEach(k => {
+    const n = +k, q = QUIZ[k];
+    const foot = $(`[data-step="${n}"] .step-foot`), row = foot && $(":scope > .extras", foot);
+    if (!row) return;
+    const id = "quiz-" + n;
+    const btn = document.createElement("button");
+    btn.className = "ghost quiz-btn"; btn.type = "button"; btn.dataset.quiz = n; btn.hidden = true;
+    btn.setAttribute("aria-expanded", "false"); btn.setAttribute("aria-controls", id);
+    btn.innerHTML = `<span class="qi" aria-hidden="true">?</span>${B("Quick quiz", "小測驗")}`;
+    row.appendChild(btn);
+    const panel = document.createElement("div");
+    panel.className = "quiz-panel"; panel.id = id; panel.hidden = true;
+    panel.innerHTML =
+      `<p class="label">${B(`Quick quiz · step ${n} · optional`, `小測驗 · 第 ${n} 步 · 自選`)}</p>` +
+      `<p class="qq">${B(q.q[0], q.q[1])}</p>` +
+      `<div class="quiz-opts">${q.opts.map((o, i) => `<button class="choice" type="button" data-i="${i}"><span class="qk" aria-hidden="true">${"ABCD"[i]}</span><span>${B(o.t[0], o.t[1])}</span></button>`).join("")}</div>` +
+      `<div class="quiz-say" aria-live="polite"></div>`;
+    foot.insertBefore(panel, $(":scope > .next-btn", foot));
+    btn.addEventListener("click", () => {
+      const open = panel.hidden;
+      panel.hidden = !open; btn.setAttribute("aria-expanded", open);
+    });
+    $(".quiz-opts", panel).addEventListener("click", e => {
+      const b = e.target.closest(".choice"); if (!b || b.disabled) return;
+      const st = S.quiz[n] || (S.quiz[n] = { tries: [], ok: false });
+      if (st.ok) return;
+      const i = +b.dataset.i;
+      if (!st.tries.includes(i)) st.tries.push(i);
+      st.ok = i === q.a; save();
+      renderQuiz(n, i);
+    });
+    renderQuiz(n);
+  });
+}
+function renderQuiz(n, last) {
+  const q = QUIZ[n], st = S.quiz[n], panel = $("#quiz-" + n), btn = $(`.quiz-btn[data-quiz="${n}"]`);
+  if (!panel) return;
+  const tries = st ? st.tries : [], ok = !!(st && st.ok);
+  $$(".quiz-opts .choice", panel).forEach(b => {
+    const i = +b.dataset.i, wrong = tries.includes(i) && i !== q.a;
+    b.classList.toggle("good", ok && i === q.a);
+    b.classList.toggle("bad", wrong);
+    b.disabled = ok || wrong;
+  });
+  panel.classList.toggle("solved", ok);
+  if (btn) {
+    btn.classList.toggle("solved", ok);
+    $(".qi", btn).innerHTML = ok ? `<svg><use href="#i-check"/></svg>` : "?";
+  }
+  const out = $(".quiz-say", panel);
+  if (ok) {
+    const first = tries.length === 1;
+    say(out, "good", `<b>${first ? "First try!" : "Got it."}</b> ${q.why[0]}`, `<b>${first ? "一次就答對！" : "答對了。"}</b>${q.why[1]}`);
+  } else if (last != null && q.opts[last].fb) {
+    say(out, "warn", `${q.opts[last].fb[0]} <b>Try another answer.</b>`, `${q.opts[last].fb[1]}<b>再試另一個答案。</b>`);
+  } else out.innerHTML = "";
 }
 
 /* ---------------- step 9: run the model as code ---------------- */
 Steps[9] = (() => {
   const CDN = "https://cdn.jsdelivr.net/pyodide/v0.29.5/full/";
-  const START = `# The rule you built in steps 5 and 7, as code.
+  /* the starting code, in either language; v holds the four numbers exactly as typed */
+  const PARAMS = ["made_per_layer", "loss", "pass_frac", "threshold"];
+  const DEFAULTS = { made_per_layer: "4", loss: "0.2", pass_frac: "0.7", threshold: "18" };
+  const startCode = (lang, v = DEFAULTS) => {
+    const p = k => (v[k] + " ").padEnd(6);
+    return lang === "zh" ? `# 你在第 5 步和第 7 步建立的規則，寫成程式碼。
+# 改一個數字，按「執行」，看看圖表的變化。
+
+made_per_layer = ${p("made_per_layer")}# 每層每分鐘製造的藥物
+loss           = ${p("loss")}# 每分鐘流失的比例
+pass_frac      = ${p("pass_frac")}# 能穿過一層的比例
+threshold      = ${p("threshold")}# 開始癒合所需的量
+
+def reaching_wound(layers):
+    made  = made_per_layer * layers
+    level = made / loss                 # 第 5 步
+    return level * pass_frac ** layers  # 第 7 步
+
+for layers in range(1, 11):
+    amount = reaching_wound(layers)
+    ok = "可癒合" if amount >= threshold else ""
+    print(layers, "層 ->", round(amount, 1), ok)
+
+best = max(range(1, 11), key=reaching_wound)
+print()
+print("最佳厚度：", best, "層")
+` : `# The rule you built in steps 5 and 7, as code.
 # Change a number, press Run, watch the graph.
 
-made_per_layer = 4     # one layer makes this per minute
-loss           = 0.2   # share lost each minute
-pass_frac      = 0.7   # share getting through one layer
-threshold      = 18    # enough to start healing
+made_per_layer = ${p("made_per_layer")}# one layer makes this per minute
+loss           = ${p("loss")}# share lost each minute
+pass_frac      = ${p("pass_frac")}# share getting through one layer
+threshold      = ${p("threshold")}# enough to start healing
 
 def reaching_wound(layers):
     made  = made_per_layer * layers
@@ -2352,27 +2739,48 @@ best = max(range(1, 11), key=reaching_wound)
 print()
 print("Best thickness:", best, "layers")
 `;
+  };
+  /* on a language switch, code that is still the starting code (numbers may be changed)
+     is re-written in the new language with the same numbers; real edits are left alone */
+  function relangCode() {
+    const ta = $("#pyCode"); if (!ta) return;
+    const code = ta.value, v = {};
+    for (const k of PARAMS) {
+      const m = code.match(new RegExp("^\\s*" + k + "\\s*=\\s*(-?[0-9.]+)", "m"));
+      if (!m) return; v[k] = m[1];
+    }
+    const norm = s => s.replace(/[ \t]+/g, " ").replace(/ ?\n ?/g, "\n").trim();
+    const now = norm(code);
+    if (now !== norm(startCode("en", v)) && now !== norm(startCode("zh", v))) return;
+    ta.value = startCode(LANG, v);
+    /* the printout came from that same code, so it can be re-worded too */
+    const out = $("#pyOut");
+    if (!out || out.querySelector(".err") || !/(layers|層) ->/.test(out.textContent)) return;
+    out.textContent = LANG === "zh"
+      ? out.textContent.replace(/(\d+) layers ->/g, "$1 層 ->").replace(/ heals\b/g, " 可癒合").replace(/Best thickness: (\d+) layers/, "最佳厚度： $1 層")
+      : out.textContent.replace(/(\d+) 層 ->/g, "$1 layers ->").replace(/ 可癒合/g, " heals").replace(/最佳厚度：\s*(\d+) 層/, "Best thickness: $1 layers");
+  }
   const TAIL = "\n_curve = [float(reaching_wound(L)) for L in range(1, 11)]\n_pass = float(pass_frac)\n_thr = float(threshold)\n";
 
   let py = null, booting = null, runs = [], scene = null, sweptOnce = false;
 
   const statusEl = () => $("#pyStatus");
-  function status(txt, on) { const e = statusEl(); if (!e) return; e.textContent = txt; e.classList.toggle("on", !!on); }
+  function status(txt, zh, on) { const e = statusEl(); if (!e) return; e.innerHTML = B(txt, zh); e.classList.toggle("on", !!on); }
 
   /* load pyodide once, quietly, in the background */
   function ensure() {
     if (booting) return booting;
     booting = (async () => {
-      status("starting Python…");
+      status("starting Python…", "正在啟動 Python…");
       const s = document.createElement("script");
       s.src = CDN + "pyodide.js";
       const loaded = new Promise((ok, no) => { s.onload = ok; s.onerror = () => no(new Error("cdn")); });
       document.head.appendChild(s);
       await loaded;
       const p = await loadPyodide({ indexURL: CDN });
-      py = p; status("Python ready", true);
+      py = p; status("Python ready", "Python 已準備好", true);
       return p;
-    })().catch(() => { py = null; status("offline mode", false); return null; });
+    })().catch(() => { py = null; status("offline mode", "離線模式", false); return null; });
     return booting;
   }
 
@@ -2386,15 +2794,16 @@ print("Best thickness:", best, "layers")
     const f = L => (per * L) / loss * Math.pow(pf, L);
     const curve = Array.from({ length: 10 }, (_, i) => f(i + 1));
     let best = 1; curve.forEach((v, i) => { if (v > curve[best - 1]) best = i + 1; });
-    const lines = curve.map((v, i) => `${i + 1} layers -> ${Math.round(v * 10) / 10}${v >= thr ? " heals" : ""}`);
-    lines.push("", `Best thickness: ${best} layers`);
+    const zh = LANG === "zh";
+    const lines = curve.map((v, i) => `${i + 1} ${zh ? "層" : "layers"} -> ${Math.round(v * 10) / 10}${v >= thr ? (zh ? " 可癒合" : " heals") : ""}`);
+    lines.push("", zh ? `最佳厚度： ${best} 層` : `Best thickness: ${best} layers`);
     return { text: lines.join("\n"), curve, pass: pf, thr, error: false };
   }
 
   async function runCode() {
     const ta = $("#pyCode"), out = $("#pyOut");
     const code = ta.value;
-    out.textContent = "running…";
+    out.textContent = L("running…", "執行中…");
     await ensure();
     let res;
     if (py) {
@@ -2415,11 +2824,12 @@ print("Best thickness:", best, "layers")
 
     if (res.error) {
       out.innerHTML = `<span class="err">${res.text.replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</span>`;
-      say("#pysay", "bad", "Python stopped on that line. Read the last line of the message — it usually names the word it did not understand. Press <b>Reset</b> to get the working code back.");
+      say("#pysay", "bad", "Python stopped on that line. Read the last line of the message — it usually names the word it did not understand. Press <b>Reset</b> to get the working code back.",
+        "Python 在那一行停了下來。看看錯誤訊息的最後一行——它通常會指出它看不懂的字。按<b>重設</b>可以取回原本能運行的程式碼。");
       return;
     }
 
-    out.textContent = res.text || "(the code printed nothing)";
+    out.textContent = res.text || L("(the code printed nothing)", "（程式沒有輸出任何內容）");
     addRun(res);
   }
 
@@ -2431,10 +2841,11 @@ print("Best thickness:", best, "layers")
 
     const best = bestOf(res.curve);
     const top = Math.round(res.curve[best - 1] * 10) / 10;
-    value("codeBest", "Best thickness (code)", best + " layers");
+    value("codeBest", "Best thickness (code)", [best + " layers", best + " 層"]);
 
     if (!S.done[9]) {
-      say("#pysay", "good", `The computer tested <b class="num">10</b> thicknesses and got the same shape you found by hand: the best is <b class="num">${best}</b> layers, with <b class="num">${top}</b> reaching the wound.`);
+      say("#pysay", "good", `The computer tested <b class="num">10</b> thicknesses and got the same shape you found by hand: the best is <b class="num">${best}</b> layers, with <b class="num">${top}</b> reaching the wound.`,
+        `電腦測試了 <b class="num">10</b> 種厚度，得出的形狀和你用手找到的一樣：最佳是 <b class="num">${best}</b> 層，有 <b class="num">${top}</b> 到達傷口。`);
       $("#pyChallenge").hidden = false;
       $("#pysci").hidden = false;
       badge("Simulation");
@@ -2445,10 +2856,11 @@ print("Best thickness:", best, "layers")
       sweptOnce = true;
       const was = bestOf(prev.curve);
       say("#pysay", best === was ? "info" : "good",
-        `Medicine passing <b class="num">${fmt(res.pass, 2)}</b> per layer moves the best thickness from <b class="num">${was}</b> to <b class="num">${best}</b> layers. The patch the wet lab should build depends on a number nobody has measured yet.`);
+        `Medicine passing <b class="num">${fmt(res.pass, 2)}</b> per layer moves the best thickness from <b class="num">${was}</b> to <b class="num">${best}</b> layers. The patch the wet lab should build depends on a number nobody has measured yet.`,
+        `當每層的通過率是 <b class="num">${fmt(res.pass, 2)}</b> 時，最佳厚度由 <b class="num">${was}</b> 層變成 <b class="num">${best}</b> 層。濕實驗室應該製作哪一種貼片，取決於一個還沒有人量度過的數字。`);
       badge("Parameter sweep");
     } else {
-      say("#pysay", "info", `Best is <b class="num">${best}</b> layers, <b class="num">${top}</b> reaching the wound.`);
+      say("#pysay", "info", `Best is <b class="num">${best}</b> layers, <b class="num">${top}</b> reaching the wound.`, `最佳是 <b class="num">${best}</b> 層，有 <b class="num">${top}</b> 到達傷口。`);
     }
   }
 
@@ -2465,18 +2877,18 @@ print("Best thickness:", best, "layers")
       const a = axes(ctx, w, h, {
         xMin: .4, xMax: 10.6, yMax: top,
         xTicks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], yTicks: yT,
-        xLabel: "layers", yLabel: "reaching the wound", pad: { b: 30 }
+        xLabel: L("layers", "層數"), yLabel: L("reaching the wound", "到達傷口的藥物"), pad: { b: 30 }
       });
 
       /* healing threshold */
       ctx.setLineDash([6, 4]); ctx.strokeStyle = C.wound; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(a.X(.4), a.Y(thr)); ctx.lineTo(a.X(10.6), a.Y(thr)); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = C.wound; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right";
-      ctx.fillText(`heals at ${fmt(thr)}`, a.X(10.4), a.Y(thr) - 6);
+      ctx.fillText(L(`heals at ${fmt(thr)}`, `癒合線 ${fmt(thr)}`), a.X(10.4), a.Y(thr) - 6);
 
       if (!runs.length) {
         ctx.fillStyle = C["ink-2"]; ctx.font = `500 13px ${C.mono}`; ctx.textAlign = "center";
-        ctx.fillText("Run the code to draw this", w / 2, h / 2);
+        ctx.fillText(L("Run the code to draw this", "執行程式碼來畫出這個圖"), w / 2, h / 2);
         return;
       }
 
@@ -2495,7 +2907,7 @@ print("Best thickness:", best, "layers")
         ctx.fillStyle = newest ? C.ink : C["ink-2"];
         ctx.font = `700 11px ${C.mono}`; ctx.textAlign = a.X(b) > w * .7 ? "right" : "left";
         const ly = Math.max(a.Y(bv) - 12, a.pad.t + 12);
-        ctx.fillText(`pass ${fmt(r.pass, 2)} · best ${b}`, a.X(b) + (a.X(b) > w * .7 ? -10 : 10), ly);
+        ctx.fillText(L(`pass ${fmt(r.pass, 2)} · best ${b}`, `通過率 ${fmt(r.pass, 2)} · 最佳 ${b}`), a.X(b) + (a.X(b) > w * .7 ? -10 : 10), ly);
         ctx.globalAlpha = 1;
       });
     });
@@ -2504,9 +2916,10 @@ print("Best thickness:", best, "layers")
   return {
     init() {
       const ta = $("#pyCode"); if (!ta) return;
-      ta.value = START;
+      ta.value = startCode(LANG);
+      langHooks.push(relangCode);
       $("#pyRun").addEventListener("click", runCode);
-      $("#pyReset").addEventListener("click", () => { ta.value = START; say("#pysay", "info", "Original code restored."); });
+      $("#pyReset").addEventListener("click", () => { ta.value = startCode(LANG); say("#pysay", "info", "Original code restored.", "已還原原本的程式碼。"); });
       ta.addEventListener("keydown", e => {
         if (e.key === "Tab") { e.preventDefault(); const s = ta.selectionStart; ta.setRangeText("    ", s, ta.selectionEnd, "end"); }
         if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); runCode(); }
@@ -2523,15 +2936,16 @@ print("Best thickness:", best, "layers")
 Steps[10] = {
   init() {
     $("#openLabBtn").addEventListener("click", () => { complete(10); goTo(11); });
-    $("#lcPrint").addEventListener("click", () => { try { print(); } catch (e) { toast("Printing isn't available here. Take a screenshot instead."); } });
+    $("#lcPrint").addEventListener("click", () => { try { print(); } catch (e) { toast("Printing isn't available here. Take a screenshot instead.", "這裡無法列印，請改為截圖。"); } });
   },
   fill() {
     const d = S.data.design || { layers: 3, bact: "medium", reach: 20.6 };
-    $("#lcLayers").textContent = `${d.layers} layer${d.layers > 1 ? "s" : ""}`;
-    $("#lcBact").textContent = d.bact[0].toUpperCase() + d.bact.slice(1);
-    $("#lcReach").innerHTML = `${fmt(d.reach)} <small class="kbd-hint" style="font-family:var(--body)">above the 18 needed</small>`;
-    $("#lcAssume").innerHTML = S.assume.map(a => `<li>${a}</li>`).join("");
-    $("#lcRules").innerHTML = ["change = made − lost", "lost = 20% × medicine now", "level in the patch = made ÷ 0.2", "each layer passes on 70%", "heals if at least 18 reaches the wound"].map(r => `<li>${r}</li>`).join("");
+    $("#lcLayers").innerHTML = B(`${d.layers} layer${d.layers > 1 ? "s" : ""}`, `${d.layers} 層`);
+    $("#lcBact").innerHTML = B(d.bact[0].toUpperCase() + d.bact.slice(1), { low: "低", medium: "中", high: "高" }[d.bact]);
+    $("#lcReach").innerHTML = `${fmt(d.reach)} <small class="kbd-hint" style="font-family:var(--body)">${B("above the 18 needed", "高於需要的 18")}</small>`;
+    $("#lcAssume").innerHTML = S.assume.map(a => `<li>${nbText(a)}</li>`).join("");
+    const rules = [["change = made − lost", "變化 = 製造 − 流失"], ["lost = 20% × medicine now", "流失 = 20% × 現有藥物"], ["level in the patch = made ÷ 0.2", "貼片內的藥物水平 = 製造 ÷ 0.2"], ["each layer passes on 70%", "每一層傳下 70%"], ["heals if at least 18 reaches the wound", "至少有 18 到達傷口便會癒合"]];
+    $("#lcRules").innerHTML = rules.map(([en, zh]) => `<li>${B(en, zh)}</li>`).join("");
   },
   restore() { complete(10); }
 };
@@ -2540,25 +2954,25 @@ Steps[10] = {
 Steps[11] = (() => {
   const DEF = { per: 4, loss: 20, pass: 70, thr: 18, sel: 3 };
   const P = { ...DEF };
-  const SL = [
-    ["per", "Medicine made per layer", 1, 12, 1, v => v + " / min"],
-    ["loss", "Share lost each minute", 5, 50, 1, v => v + "%"],
-    ["pass", "Share passed per layer", 40, 95, 1, v => v + "%"],
-    ["thr", "Healing level", 5, 40, 1, v => v],
-    ["sel", "Your thickness", 1, 10, 1, v => v + " layers"],
+  const SL = [   // key, label, 中文, min, max, step, how the value reads
+    ["per", "Medicine made per layer", "每層製造的藥物", 1, 12, 1, v => B(v + " / min", v + " / 分鐘")],
+    ["loss", "Share lost each minute", "每分鐘流失的比例", 5, 50, 1, v => v + "%"],
+    ["pass", "Share passed per layer", "每層通過的比例", 40, 95, 1, v => v + "%"],
+    ["thr", "Healing level", "癒合所需水平", 5, 40, 1, v => v],
+    ["sel", "Your thickness", "你的厚度", 1, 10, 1, v => B(v + " layers", v + " 層")],
   ];
   const calc = k => Model.design(k, null, { per: P.per, loss: P.loss / 100, pass: P.pass / 100, threshold: P.thr });
   function init() {
-    $("#olSliders").innerHTML = SL.map(([k, l, mn, mx, st, f]) => `<div class="slider"><div class="top"><label for="ol-${k}">${l}</label><output class="num" id="ol-${k}-o">${f(P[k])}</output></div><input type="range" id="ol-${k}" min="${mn}" max="${mx}" step="${st}" value="${P[k]}"></div>`).join("");
-    SL.forEach(([k, , , , , f]) => $(`#ol-${k}`).addEventListener("input", e => { P[k] = +e.target.value; $(`#ol-${k}-o`).textContent = f(P[k]); report(); }));
-    $("#olReset").addEventListener("click", () => { Object.assign(P, DEF); SL.forEach(([k, , , , , f]) => { const i = $(`#ol-${k}`); i.value = P[k]; setRangeFill(i); $(`#ol-${k}-o`).textContent = f(P[k]); }); report(); });
+    $("#olSliders").innerHTML = SL.map(([k, l, zl, mn, mx, st, f]) => `<div class="slider"><div class="top"><label for="ol-${k}">${B(l, zl)}</label><output class="num" id="ol-${k}-o">${f(P[k])}</output></div><input type="range" id="ol-${k}" min="${mn}" max="${mx}" step="${st}" value="${P[k]}"></div>`).join("");
+    SL.forEach(([k, , , , , , f]) => $(`#ol-${k}`).addEventListener("input", e => { P[k] = +e.target.value; $(`#ol-${k}-o`).innerHTML = f(P[k]); report(); }));
+    $("#olReset").addEventListener("click", () => { Object.assign(P, DEF); SL.forEach(([k, , , , , , f]) => { const i = $(`#ol-${k}`); i.value = P[k]; setRangeFill(i); $(`#ol-${k}-o`).innerHTML = f(P[k]); }); report(); });
     new Scene($("#olcanvas"), (ctx, w, h) => {
       const vals = Array.from({ length: 10 }, (_, i) => calc(i + 1).reach);
       const top = Math.max(P.thr * 1.25, ...vals) * 1.1, step = top > 100 ? 50 : top > 40 ? 20 : top > 20 ? 10 : 5;
       const yT = []; for (let v = 0; v <= top; v += step) yT.push(v);
-      const a = axes(ctx, w, h, { xMin: .4, xMax: 10.6, yMax: top, xTicks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], yTicks: yT, xLabel: "layers", yLabel: "reaching the wound", pad: { b: 30 } });
+      const a = axes(ctx, w, h, { xMin: .4, xMax: 10.6, yMax: top, xTicks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], yTicks: yT, xLabel: L("layers", "層數"), yLabel: L("reaching the wound", "到達傷口的藥物"), pad: { b: 30 } });
       ctx.setLineDash([6, 4]); ctx.strokeStyle = C.wound; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(a.X(.4), a.Y(P.thr)); ctx.lineTo(a.X(10.6), a.Y(P.thr)); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = C.wound; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right"; ctx.fillText(`heals at ${P.thr}`, a.X(10.5), a.Y(P.thr) - 6);
+      ctx.fillStyle = C.wound; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "right"; ctx.fillText(L(`heals at ${P.thr}`, `癒合線 ${P.thr}`), a.X(10.5), a.Y(P.thr) - 6);
       const bw = (a.X(2) - a.X(1)) * .55;
       vals.forEach((v, i) => {
         const k = i + 1, ok = v >= P.thr - 1e-9;
@@ -2573,7 +2987,8 @@ Steps[11] = (() => {
     const vals = Array.from({ length: 10 }, (_, i) => calc(i + 1));
     let best = 0; vals.forEach((v, i) => { if (v.reach > vals[best].reach) best = i; });
     const s = vals[P.sel - 1];
-    say("#olsay", s.heals ? "good" : "warn", `${P.sel} layers: <b class="num">${fmt(s.reach)}</b> reaches the wound (${s.heals ? "heals" : "doesn't heal"}). Best thickness with these settings: <b class="num">${best + 1} layer${best ? "s" : ""}</b> → ${fmt(vals[best].reach)}.`);
+    say("#olsay", s.heals ? "good" : "warn", `${P.sel} layers: <b class="num">${fmt(s.reach)}</b> reaches the wound (${s.heals ? "heals" : "doesn't heal"}). Best thickness with these settings: <b class="num">${best + 1} layer${best ? "s" : ""}</b> → ${fmt(vals[best].reach)}.`,
+      `${P.sel} 層：有 <b class="num">${fmt(s.reach)}</b> 到達傷口（${s.heals ? "可癒合" : "不能癒合"}）。在這些設定下，最佳厚度是 <b class="num">${best + 1} 層</b> → ${fmt(vals[best].reach)}。`);
   }
   return { init, restore() { } };
 })();
@@ -2584,14 +2999,16 @@ Steps[11] = (() => {
   buildProgress();
   for (let n = 0; n <= 11; n++) Steps[n]?.init?.();
   buildMaths();
+  buildQuiz();
   for (let n = 1; n <= 10; n++) if (S.done[n]) Steps[n]?.restore?.();
   applyLocks();
   renderNotebook();
+  setLang(LANG, false);
   $$('input[type="range"]').forEach(setRangeFill);
   initScrollFx();
   last = performance.now(); rafId = requestAnimationFrame(loop);
   const next = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].find(n => S.done[0] && !S.done[n]);
-  if (next) { toast(`Welcome back. Continuing at ${NAMES[next]}.`); setTimeout(() => goTo(next), 500); }
+  if (next) { toast(`Welcome back. Continuing at ${NAMES[next]}.`, `歡迎回來！從「${NAMES_ZH[next]}」繼續。`); setTimeout(() => goTo(next), 500); }
 })();
 </script>
 </body>
