@@ -1337,76 +1337,39 @@ class Dots {
   get live() { return this.a.filter(d => !d.dying).length; }
 }
 
-/* seeded random for stable bacteria positions */
+/* seeded random for stable dot positions */
 function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
 
 function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
 
-/* the patch-on-wound cross-section, shared by mission, step 7 and step 8
+/* the patch-on-wound cross-section, shared by mission, step 7 and step 8.
    thickness axis x runs upward from the wound surface (x = 0):
-     tissue  |  bacterial cellulose (fixed)  |  hydrogel + E. coli (varies)  |  sealed backing
-   NO diffuses UP from the wound and decays; peptide diffuses DOWN from switched-on cells.
-   One threshold governs everything: reachY. Below it NO exists and cells are on;
-   above it there is no NO, no tint, no tracer, and every cell is drawn hollow.
-   o.neutral suppresses activation SIGNALLING only (halos, threshold, hatch, arrows,
-   verdict) -- never a layer's material fill; every region keeps its identity. */
-const NO_LAMBDA = 1.45;   // NO decay length, in layer-thicknesses
-const NO_ON = 0.2;        // concentration a cell needs before it switches on
-
-/* blue-noise point sets on a torus, so drifting tracers never line up into bead-chains.
-   u = position across the device, v = phase; the x axis is weighted so vertical
-   near-collinear runs are rejected harder than horizontal ones. Built once. */
-function poissonTorus(n, axw, minD, seed) {
-  const R = rng(seed), pts = [];
-  for (let i = 0; i < n; i++) {
-    let best = null, bestD = -1;
-    for (let a = 0; a < 40; a++) {
-      const u = R(), v = R();
-      let near = 1e9;
-      for (const q of pts) {
-        let du = Math.abs(q.u - u); if (du > .5) du = 1 - du;
-        let dv = Math.abs(q.v - v); if (dv > .5) dv = 1 - dv;
-        const d2 = du * du * axw * axw + dv * dv;
-        if (d2 < near) near = d2;
-      }
-      if (near > bestD) { bestD = near; best = { u, v }; }
-      if (near > minD * minD) break;
-    }
-    pts.push(best);
-  }
-  return pts;
-}
-const NO_PTS = poissonTorus(18, 4.6, .34, 7717);
-const PEP_PTS = poissonTorus(12, 4.6, .38, 3391);
+     tissue  |  hydrogel loaded with v14 + FGF2 (varies)  |  sealed backing
+   v14 and FGF2 diffuse DOWN into the wound. v14 binds LPS and calms inflammation, so the
+   NO readout (drawn in the tissue) fades as o.heal rises; FGF2 wakes fibroblasts, which
+   proliferate and close the wound (the crater shrinks). o.pep (0..1) is how much medicine
+   is visibly flowing; o.heal (0..1) drives the readout fading, fibroblasts and closing. */
 
 function drawPatch(ctx, w, h, o) {
   const layers = o.layers ?? 3, maxL = o.maxLayers ?? 5, heal = o.heal ?? 0, t = o.t ?? 0;
-  const neutral = o.neutral === true;
-  const glow = neutral ? 0 : (o.glow ?? 0);
-  const noAmt = neutral ? 0 : (o.no ?? 1), pepAmt = o.pep ?? glow;
+  const flow = o.pep ?? o.glow ?? 0;                         // medicine visibly flowing (0..1)
+  const inflam = 1 - heal;                                   // inflammation readout (1 = inflamed, 0 = calm)
   const tissueTop = h * (o.tissueAt ?? 0.7);
   // geometry: a label gutter on the right, the patch stack on the left
   const gut = Math.min(106, Math.max(80, w * 0.23));
   const left = Math.max(12, w * 0.07), right = Math.max(left + 90, w - gut);
-  const ch = 13, backH = 9;                                   // cellulose + backing are FIXED
-  const lh = Math.max(13, Math.min(64, (tissueTop - 34 - ch - backH) / maxL));
-  const gelBottom = tissueTop - ch;                           // x = L_cellulose
-  const gelTop = gelBottom - layers * lh;                     // x = L_total
-  const top = gelTop - backH;                                 // outer face of the backing
-  const lam = NO_LAMBDA * lh;                                 // NO decay length in px
-  const conc = y => Math.exp(-Math.max(0, tissueTop - y) / lam);
-  const reachY = tissueTop - lam * Math.log(1 / NO_ON);        // conc(reachY) === NO_ON exactly
-  const dead = noAmt > 0.6 && reachY > gelTop + 6;             // is there an inert upper zone?
-  const noTopY = Math.max(gelTop, dead ? reachY : gelTop);     // NO never drawn above this
+  const backH = 9;                                           // sealed backing is FIXED
+  const lh = Math.max(13, Math.min(64, (tissueTop - 26 - backH) / maxL));
+  const gelBottom = tissueTop;                               // gel sits directly on the tissue
+  const gelTop = gelBottom - layers * lh;
+  const top = gelTop - backH;                                // outer face of the backing
   const pw = right - left, cx = (left + right) / 2;
-  // the two flux lanes: fixed before the cells are placed, so no cell sits under one
-  const tickR = left + 20;                                    // right edge of the L1..Ln tick column
-  const keep0 = Math.max(11, Math.min(19, pw / 26)), cellL = tickR + 10, cellR = right - 12;
-  let ax1 = cx - pw * 0.31, ax2 = cx + pw * 0.31;
-  if (ax1 - keep0 - cellL < 24) ax1 = cellL + keep0;
-  if (cellR - (ax2 + keep0) < 24) ax2 = cellR - keep0;
-  const noArrow = noAmt > 0.3, pepArrow = pepAmt > 0.3;
-  const lanes = []; if (noArrow) lanes.push(ax1); if (pepArrow) lanes.push(ax2);
+  // two downward flux lanes (v14 and FGF2), kept clear of the tick column
+  const tickR = left + 20;
+  const cellL = tickR + 10, cellR = right - 12;
+  let ax1 = cx - pw * 0.31, ax2 = cx + pw * 0.31;            // v14 (gel), FGF2 (bact)
+  if (ax1 < cellL + 14) ax1 = cellL + 14;
+  if (ax2 > cellR - 14) ax2 = cellR - 14;
 
   // ---- tissue ----
   ctx.fillStyle = C.tissue; ctx.fillRect(0, tissueTop, w, h - tissueTop);
@@ -1443,38 +1406,45 @@ function drawPatch(ctx, w, h, o) {
 
   // ---- hydrogel matrix (the part whose thickness varies) ----
   ctx.fillStyle = C["gel-soft"]; rr(ctx, left, gelTop, pw, gelBottom - gelTop, [4, 4, 0, 0]); ctx.fill();
-  // ---- bacterial cellulose membrane: its own material colour, independent of any flux ----
-  ctx.fillStyle = C["gas-soft"]; ctx.fillRect(left, gelBottom, pw, ch);
-  // ---- NO field: rises from the wound, decays, stops dead at the threshold ----
-  if (noAmt > 0.01) {
-    ctx.fillStyle = C.gas;
-    for (let y = tissueTop - 5; y > noTopY; y -= 5) {
-      const a = conc(y) * 0.4 * noAmt;
-      if (a < 0.012) break;
-      ctx.globalAlpha = a; ctx.fillRect(left, Math.max(noTopY, y), pw, Math.min(5, y - noTopY + 5));
+  // ---- loaded medicine: a static field of v14 + FGF2 dots held in the gel ----
+  {
+    const R = rng(9187);
+    const per = Math.max(6, Math.round(pw / 16)), rows = lh > 44 ? 2 : 1;
+    for (let i = 0; i < layers; i++) for (let r = 0; r < rows; r++) for (let c = 0; c < per; c++) {
+      const x = left + 10 + R() * (pw - 20), y = gelBottom - (i + 1) * lh + (r + 0.3 + R() * 0.4) / rows * lh;
+      const v14 = R() < 0.55;                                  // v14 slightly more abundant than FGF2
+      ctx.globalAlpha = 0.5 + 0.3 * R();
+      ctx.fillStyle = v14 ? C.gel : C.bact;
+      ctx.beginPath(); ctx.arc(x, y, v14 ? 3 : 2.4, 0, 6.283); ctx.fill();
     }
     ctx.globalAlpha = 1;
   }
-  // cellulose fibres, drawn over the tint so the membrane still reads as fibrous
-  ctx.strokeStyle = C["ink-2"]; ctx.lineWidth = 1; ctx.globalAlpha = .4;
-  ctx.beginPath();
-  const RF = rng(613), nf = Math.max(8, Math.round(pw / 11));
-  for (let i = 0; i < nf; i++) { const fx = left + 2 + RF() * (pw - 4), fy = gelBottom + 2 + RF() * (ch - 4), dx = 5 + RF() * 5, dy = (RF() - .5) * 5; ctx.moveTo(fx, fy); ctx.lineTo(Math.min(right - 2, fx + dx), fy + dy); }
-  ctx.stroke(); ctx.globalAlpha = 1;
-  ctx.strokeStyle = C["ink-2"]; ctx.globalAlpha = .55; ctx.lineWidth = 1.2;
-  ctx.beginPath(); ctx.moveTo(left, gelBottom + .6); ctx.lineTo(right, gelBottom + .6);
-  ctx.moveTo(left, tissueTop - .6); ctx.lineTo(right, tissueTop - .6); ctx.stroke(); ctx.globalAlpha = 1;
 
-  // ---- the inert zone: wash + hatch, so it is an object and not an absence ----
-  const dh = reachY - gelTop;
-  if (dead) {
-    ctx.fillStyle = C.ground; ctx.globalAlpha = .34; ctx.fillRect(left, gelTop, pw, dh); ctx.globalAlpha = 1;
-    ctx.save(); ctx.beginPath(); ctx.rect(left, gelTop, pw, dh); ctx.clip();
-    ctx.strokeStyle = C["ink-2"]; ctx.globalAlpha = .14; ctx.lineWidth = 1; ctx.beginPath();
-    for (let x = left - dh; x < right; x += 9) { ctx.moveTo(x, reachY); ctx.lineTo(x + dh, gelTop); }
-    ctx.stroke(); ctx.restore(); ctx.globalAlpha = 1;
-    ctx.strokeStyle = C.gas; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
-    ctx.beginPath(); ctx.moveTo(left, reachY); ctx.lineTo(right, reachY); ctx.stroke(); ctx.setLineDash([]);
+  // ---- inflammation readout: NO dots in the tissue, fading as the wound heals ----
+  if (inflam > 0.02) {
+    const R2 = rng(31);
+    for (let i = 0; i < 12; i++) {
+      const x = left + 8 + R2() * (pw - 16), y = tissueTop + 10 + R2() * (h - tissueTop - 34);
+      ctx.globalAlpha = (0.22 + 0.3 * R2()) * inflam;
+      ctx.fillStyle = C.gas;
+      ctx.beginPath(); ctx.arc(x, y, 2.6 + 1.8 * R2(), 0, 6.283); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- fibroblasts: spindle cells in the tissue, more of them as the wound heals ----
+  {
+    const n = Math.round(2 + heal * 9);
+    const R3 = rng(503);
+    for (let i = 0; i < n; i++) {
+      const x = left + 16 + R3() * (pw - 32), y = tissueTop + 16 + R3() * (h - tissueTop - 44);
+      ctx.save(); ctx.translate(x, y); ctx.rotate(R3() * Math.PI);
+      ctx.globalAlpha = 0.3 + heal * 0.5;
+      ctx.fillStyle = C.bact;
+      rr(ctx, -5, -2, 10, 4, 2); ctx.fill();
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
   }
   // gel outline + internal band marks
   ctx.strokeStyle = C.gel; ctx.globalAlpha = .55; ctx.lineWidth = 1.2;
@@ -1486,97 +1456,27 @@ function drawPatch(ctx, w, h, o) {
   ctx.fillStyle = C["ink-2"]; rr(ctx, left, top, pw, backH, [5, 5, 0, 0]); ctx.fill();
   ctx.strokeStyle = C.line; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(left, top + backH + .6); ctx.lineTo(right, top + backH + .6); ctx.stroke();
 
-  // ---- place the E. coli first: lane keep-out, then relaxation, then freeze ----
-  const bac = [], hot = [];
-  const rows = lh > 44 ? 2 : 1, perRow = Math.max(9, Math.round(pw / 46));
-  const laneKeep = keep0;
-  // the runs of free width left between the flux lanes
-  const edges = [cellL];
-  for (const ln of lanes.slice().sort((a, b) => a - b)) edges.push(ln - laneKeep, ln + laneKeep);
-  edges.push(cellR);
-  const runs = [];
-  for (let i = 0; i + 1 < edges.length; i += 2) if (edges[i + 1] - edges[i] > 12) runs.push([edges[i], edges[i + 1]]);
-  if (!runs.length) runs.push([cellL, cellR]);
-  const runW = runs.reduce((a, r) => a + (r[1] - r[0]), 0), pitch = runW / perRow;
-  const rodL = Math.max(7, Math.min(12, pitch * 0.58)), rodW = rodL * 0.44;
-  const haloR = Math.max(5.5, Math.min(9, pitch * 0.4));
-  const atRun = u => { let d = u * runW; for (const r of runs) { const wd = r[1] - r[0]; if (d <= wd) return r[0] + d; d -= wd; } return runs[runs.length - 1][1]; };
-  for (let i = 0; i < layers; i++) {
-    const y0 = gelBottom - (i + 1) * lh, R = rng(97 + i * 13);
-    for (let r = 0; r < rows; r++) for (let col = 0; col < perRow; col++) {
-      const c = { x: atRun((col + 0.16 + R() * 0.68) / perRow), y: y0 + lh * (r + 0.22 + R() * 0.56) / rows, layer: i, ang: R() * 3 };
-      const cc = conc(c.y), lit = Math.max(0, Math.min(1, (cc - NO_ON) / (NO_ON * 0.9)));
-      c.on = neutral ? 0 : 1 - noAmt * (1 - lit);
-      bac.push(c); if (c.on > .45) hot.push(c);
-    }
-  }
-
-  // ---- flux lanes: identical treatment for both directions. Constant width, so width
-  //      encodes nothing; the decay is carried entirely by an opacity ramp that fades in
-  //      softly at the source and dissolves at the far end. Drawn under everything. ----
-  const flux = (ax, y0, y1, col) => {
-    const dir = y1 > y0 ? 1 : -1, len = Math.abs(y1 - y0);
-    if (len < 26) return;
-    const hw = 5, hl = 13, hh = 9.5, sy = y1 - dir * hl, sl = Math.abs(sy - y0);
-    const segs = Math.max(20, Math.min(48, Math.round(sl / 3)));
+  // ---- medicine diffusing down: two lanes (v14 in gel, FGF2 in bact), each with a
+  //      constant width and an opacity ramp that dissolves at the far end ----
+  const down = (ax, col) => {
+    const y0 = gelTop + lh * 0.6, y1 = tissueTop + (h - tissueTop) * 0.58;
+    const hw = 4.5, hl = 12, hh = 8.5, sl = y1 - y0;
+    const segs = Math.max(16, Math.min(40, Math.round(sl / 3)));
     ctx.fillStyle = C[col];
-    // segment edges snapped to the half-pixel grid so no seam survives at 2x
     let e0 = Math.round(y0 * 2) / 2;
     for (let i = 0; i < segs; i++) {
-      const f = (i + .5) / segs, e1 = Math.round((y0 + dir * sl * (i + 1) / segs) * 2) / 2;
+      const f = (i + .5) / segs, e1 = Math.round((y0 + sl * (i + 1) / segs) * 2) / 2;
       if (e1 !== e0) {
-        ctx.globalAlpha = f < .18 ? .62 * (f / .18) : .62 + (.16 - .62) * ((f - .18) / .82);
+        ctx.globalAlpha = flow * (f < .15 ? .6 * (f / .15) : .6 + (.14 - .6) * ((f - .15) / .85));
         ctx.fillRect(ax - hw, e0, hw * 2, e1 - e0);
       }
       e0 = e1;
     }
-    ctx.globalAlpha = .32;
-    ctx.beginPath(); ctx.moveTo(ax - hh, sy); ctx.lineTo(ax + hh, sy); ctx.lineTo(ax, y1); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = .3 * flow;
+    ctx.beginPath(); ctx.moveTo(ax - hh, y1); ctx.lineTo(ax + hh, y1); ctx.lineTo(ax, y1 - hl); ctx.closePath(); ctx.fill();
     ctx.globalAlpha = 1;
   };
-  if (noArrow) flux(ax1, tissueTop + 10, noTopY + 2, "gas");
-  if (pepArrow) flux(ax2, Math.max(gelTop, noTopY) + 5, tissueTop + 20, "gel");
-
-  // ---- flux tracers, drawn UNDER the cells so a tracer can never punch through a rod,
-  //      and kept clear of the tick column so it can never eat a band label ----
-  const rim = C.dark ? C.ground : C.ink;    // whichever token is the dark one in this theme
-  if (noAmt > 0.01) {
-    const span = tissueTop - noTopY, x0 = tickR + 18, xw = right - 10 - x0;
-    ctx.lineWidth = 1.4; ctx.strokeStyle = rim;
-    for (let i = 0; i < NO_PTS.length; i++) {
-      const p = NO_PTS[i], px = x0 + p.u * xw;
-      const ph = (t * 0.32 + p.v) % 1, py = tissueTop - ph * span;
-      const a = noAmt * Math.min(1, conc(py) * 2.9) * Math.min(1, ph * 9) * Math.min(1, (1 - ph) * 5);
-      if (a < .05) continue;
-      ctx.beginPath(); ctx.arc(px, py, 3.1, 0, 6.283);
-      ctx.globalAlpha = a; ctx.fillStyle = C.gas; ctx.fill();
-      ctx.globalAlpha = a * .95; ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-  }
-  if (pepAmt > 0.01 && hot.length && o.pepDots !== false) {
-    ctx.lineWidth = 1.4; ctx.strokeStyle = rim;
-    for (let i = 0; i < PEP_PTS.length; i++) {
-      const p = PEP_PTS[i], src = hot[Math.min(hot.length - 1, (p.u * hot.length) | 0)], ph = (t * 0.4 + p.v) % 1;
-      const py = src.y + ph * (tissueTop + 6 - src.y), px = Math.max(tickR + 14, src.x + (wx - src.x) * ph * .5);
-      const a = pepAmt * src.on * (1 - ph * .3) * Math.min(1, ph * 9);
-      ctx.beginPath(); ctx.arc(px, py, 3.1, 0, 6.283);
-      ctx.globalAlpha = a; ctx.fillStyle = C.gel; ctx.fill();
-      ctx.globalAlpha = a * .8; ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  // ---- E. coli Nissle: filled + haloed = switched on, hollow outline = present but idle ----
-  for (const c of bac) {
-    const on = c.on;
-    if (glow > 0 && on > .2) { ctx.globalAlpha = glow * on * (0.32 + 0.12 * Math.sin(t * 4 + c.x + c.layer)); ctx.fillStyle = C.bact; ctx.beginPath(); ctx.arc(c.x, c.y, haloR, 0, 6.283); ctx.fill(); }
-    ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.ang);
-    rr(ctx, -rodL / 2, -rodW / 2, rodL, rodW, rodW / 2);
-    if (on > .04) { ctx.globalAlpha = 0.3 + 0.7 * on * (0.45 + 0.55 * glow); ctx.fillStyle = C.bact; ctx.fill(); }
-    ctx.globalAlpha = 0.95 - 0.55 * on; ctx.lineWidth = 1.3; ctx.strokeStyle = on > .4 ? C.bact : C["ink-2"]; ctx.stroke();
-    ctx.restore(); ctx.globalAlpha = 1;
-  }
+  if (flow > 0.05) { down(ax1, "gel"); down(ax2, "bact"); }
   // band ticks last, so nothing can sit on top of one
   if (o.layerLabels !== false) {
     ctx.font = `700 9px ${C.mono}`; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillStyle = C["ink-2"];
@@ -1587,57 +1487,38 @@ function drawPatch(ctx, w, h, o) {
   if (o.labels !== false) {
     const lx = right + 15;
     ctx.font = `700 ${LANG === "zh" ? 10.5 : 9.5}px ${C.mono}`; ctx.textAlign = "left"; ctx.textBaseline = "middle";
-    const tags = [], add = (y, s, at, col, sw) => tags.push({ at: at ?? y, y, s, col: col || "ink-2", sw: sw || null });
+    const tags = [], add = (y, s, at, col) => tags.push({ at: at ?? y, y, s, col: col || "ink-2" });
+    const gelMid = (gelTop + gelBottom) / 2;
+    const tissueMid = tissueTop + (h - tissueTop) * 0.42;
     add(top + backH / 2, L("backing", "背襯"));
-    const liveTop = dead ? reachY : gelTop, liveMid = (liveTop + gelBottom) / 2;
-    add(liveMid, L("hydrogel", "水凝膠"));
-    add(liveMid + 11, L("+ E. coli", "+ 大腸桿菌"));
-    if (dead) {                                   // sits wholly inside the zone it names
-      if (dh > 30) { add(reachY - 18, L("no NO", "沒有 NO"), reachY, "gas", 1); add(reachY - 6.5, L("cells off", "細胞未啟動"), reachY, "gas"); }
-      else add(reachY - 7, L("no NO", "沒有 NO"), reachY, "gas", 1);
-    }
-    add(gelBottom + ch / 2, L("cellulose", "纖維素"));
+    add(gelMid, L("hydrogel", "水凝膠"));
+    add(gelMid + 11, L("v14", "v14"), gelTop + lh * 0.4, "gel");
+    add(gelMid + 22, L("FGF2", "FGF2"), gelBottom - lh * 0.4, "bact");
+    add(tissueMid, L("fibroblasts", "纖維母細胞"), tissueTop + (h - tissueTop) * 0.3, "ink-2");
     const GAP = 11.5;
     tags.sort((a, b) => a.y - b.y);
     let prev = -1e9; for (const g2 of tags) { g2.y = Math.max(g2.y, prev + GAP); prev = g2.y; }
     let next = h - 30; for (let i = tags.length - 1; i >= 0; i--) { tags[i].y = Math.min(tags[i].y, next); next = tags[i].y - GAP; }
     prev = 9; for (const g2 of tags) { g2.y = Math.max(g2.y, prev); prev = g2.y + GAP; }
-    // bracket spanning the inert bands, so the callout names a region
-    if (dead) {
-      ctx.strokeStyle = C["ink-2"]; ctx.globalAlpha = .75; ctx.lineWidth = 1.2;
-      const bx2 = right + 5;
-      ctx.beginPath(); ctx.moveTo(bx2 - 3, gelTop + .5); ctx.lineTo(bx2, gelTop + .5); ctx.lineTo(bx2, reachY - .5); ctx.lineTo(bx2 - 3, reachY - .5); ctx.stroke(); ctx.globalAlpha = 1;
-    }
     for (const g2 of tags) {
-      // a real leader that starts INSIDE the device, so it meets the dashed line
-      // wherever that line's last dash happens to fall
-      const gas = g2.col === "gas";
-      ctx.strokeStyle = C[g2.col]; ctx.lineWidth = 1; ctx.globalAlpha = gas ? .9 : .5;
-      ctx.beginPath(); ctx.moveTo(gas ? right - 10 : right + 1, g2.at); ctx.lineTo(right + 8, g2.at); ctx.lineTo(lx - 3, g2.y); ctx.stroke(); ctx.globalAlpha = 1;
-      let sx = lx;
-      if (g2.sw) { ctx.fillStyle = C.gas; ctx.fillRect(lx, g2.y - 1.5, 7, 3); sx = lx + 10; }
-      ctx.fillStyle = C["ink-2"]; ctx.fillText(g2.s, sx, g2.y);
+      ctx.strokeStyle = C[g2.col]; ctx.lineWidth = 1; ctx.globalAlpha = .5;
+      ctx.beginPath(); ctx.moveTo(right + 1, g2.at); ctx.lineTo(right + 8, g2.at); ctx.lineTo(lx - 3, g2.y); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.fillStyle = C["ink-2"]; ctx.fillText(g2.s, lx, g2.y);
     }
-    // key, bottom right
-    const kPep = L("peptide ↓", "多肽 ↓");
-    const ky = h - 15, w1 = ctx.measureText("NO ↑").width, w2 = ctx.measureText(kPep).width;
+    // key, bottom right: the two medicines that diffuse down, and the NO readout
+    const kv14 = L("v14 ↓", "v14 ↓"), kfgf = L("FGF2 ↓", "FGF2 ↓"), kno = L("NO · inflammation", "NO · 發炎");
+    const ky = h - 15;
+    const wV = ctx.measureText(kv14).width, wF = ctx.measureText(kfgf).width, wN = ctx.measureText(kno).width;
     ctx.textAlign = "right";
-    ctx.fillStyle = C["ink-2"]; ctx.fillText(kPep, w - 10, ky);
-    ctx.fillStyle = C.gel; ctx.beginPath(); ctx.arc(w - 14 - w2, ky, 3.2, 0, 6.283); ctx.fill();
-    ctx.fillStyle = C["ink-2"]; ctx.fillText("NO ↑", w - 26 - w2, ky);
-    ctx.fillStyle = C.gas; ctx.beginPath(); ctx.arc(w - 30 - w2 - w1, ky, 3.2, 0, 6.283); ctx.fill();
-    // verdict: pinned to one y for every layer count, so it reads as a readout, not a caption
-    if (noAmt > .6 && o.verdict !== false) {
-      const d1 = Math.min(layers, Math.ceil((gelBottom - reachY) / lh) + 1);
-      const msg = dead ? (d1 >= layers ? L(`L${layers} gets no NO`, `L${layers} 沒有 NO`) : L(`L${d1}–L${layers} get no NO`, `L${d1}–L${layers} 沒有 NO`)) : L("NO reaches every cell", "NO 到達每一個細胞");
-      ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "center";
-      const half = ctx.measureText(msg).width / 2, minX = o.verdictMinX ?? 0;
-      ctx.fillStyle = C["ink-2"];
-      ctx.fillText(msg, Math.max(cx, minX + half), Math.max(14, ghostTop - 16));
-    }
+    ctx.fillStyle = C["ink-2"]; ctx.fillText(kno, w - 10, ky);
+    ctx.fillStyle = C.gas; ctx.beginPath(); ctx.arc(w - 14 - wN, ky, 3.2, 0, 6.283); ctx.fill();
+    ctx.fillStyle = C["ink-2"]; ctx.fillText(kfgf, w - 26 - wN, ky);
+    ctx.fillStyle = C.bact; ctx.beginPath(); ctx.arc(w - 30 - wN - wF, ky, 3.2, 0, 6.283); ctx.fill();
+    ctx.fillStyle = C["ink-2"]; ctx.fillText(kv14, w - 42 - wN - wF, ky);
+    ctx.fillStyle = C.gel; ctx.beginPath(); ctx.arc(w - 46 - wN - wF - wV, ky, 3.2, 0, 6.283); ctx.fill();
   }
   ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
-  return { tissueTop, top, left, right, lh, wx, wy, ww, bac, gelBottom, gelTop, ch, backH, hot, reachY, conc, dead };
+  return { tissueTop, top, left, right, lh, wx, wy, ww, gelBottom, gelTop, backH };
 }
 
 /* axis chart */
@@ -1714,7 +1595,7 @@ Steps[0] = {
     const capsZh = ["剖面圖 · 無法癒合的傷口", "藥物從凝膠釋放", "v14 令炎症消退", "FGF2 喚醒修復細胞", "1 層？5 層？"];
     new Scene($("#missionCanvas"), (ctx, w, h, dt, t) => {
       const L = beat === 4 ? 1 + Math.round(2 + 2 * Math.sin(t * 0.9)) : 3;
-      const g = drawPatch(ctx, w, h, { layers: L, neutral: true, t, pep: beat >= 2 ? 1 : 0, tissueAt: h > 430 ? .74 : .7, verdictMinX: 255 });
+      const g = drawPatch(ctx, w, h, { layers: L, t, pep: beat >= 2 ? 1 : 0, heal: beat >= 3 ? 0.6 : beat === 2 ? 0.3 : 0, tissueAt: h > 430 ? .74 : .7 });
       if (beat >= 2 && (mT += dt) > 0.11) {
         mT = 0;
         const bx = g.left + Math.random() * (g.right - g.left);
@@ -2206,7 +2087,7 @@ Steps[7] = (() => {
   // depth is an exponential tail measured in band-heights below the top of the dot's band:
   // thinning downward with no floor, so a still frame reads as travel, not accumulation.
   // Stratified ranks make the tail exact rather than lucky: of 60, about 34 stay in the
-  // band, 15 reach the next, 6 the one after, 3 the cellulose and 2 the wound.
+  // band, 15 reach the next, 6 the one after, 3 the lowest gel layer and 2 the wound.
   const DEPTH = u => Math.min(5.4, -Math.log(1 - Math.min(.99, u * .99)) * 1.15);
   const AR = 5;                                     // one band-height is worth ~1/5 of the width
   const lay = (n, kept) => {                        // blue-noise in x, stratified in depth
@@ -2341,8 +2222,11 @@ Steps[8] = (() => {
       const g = drawPatch(ctx, w, h, { layers, glow: 1, heal, t, tissueAt: .74, pep: 1, ghost: true });
       const r = Model.design(layers, bact);
       if ((mT += dt) > 1.6 / r.made) {
-        mT = 0; const src = g.hot.length ? g.hot : g.bac, b = src[Math.random() * src.length | 0];
-        const d = dots.add({ x: Math.max(g.left + 6, Math.min(g.right - 6, b.x + (Math.random() - .5) * 40)), y: b.y, vy: 55 + Math.random() * 20, vx: (g.wx - b.x) * .18, color: "gel", r: 3.4 }); if (d) d.chk = b.layer;
+        mT = 0;
+        const bx = g.left + Math.random() * (g.right - g.left);
+        const by = g.gelTop + Math.random() * (g.gelBottom - g.gelTop);
+        const d = dots.add({ x: bx, y: by, vy: 55 + Math.random() * 20, vx: (g.wx - bx) * .18, color: "gel", r: 3.4 });
+        if (d) d.chk = Math.floor((g.gelBottom - by) / g.lh);
       }
       dots.update(dt);
       for (const d of dots.a) {
