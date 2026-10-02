@@ -421,6 +421,11 @@ html[data-lang="zh"] .nb-badge [data-l="zh"] i{font-weight:400}
 html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style:normal}
 .nb-badge i{font-style:normal;font-weight:400;opacity:.72}
 @media (max-width:560px){.quiz-panel{padding:14px}}
+/* ---------- footer ---------- */
+.site-foot{max-width:1280px;margin:0 auto;padding:20px 20px 44px;display:flex;justify-content:center}
+.gh{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2);text-decoration:none;font-size:14px;font-weight:700}
+.gh:hover,.gh:focus-visible{color:var(--gel)}
+.gh svg{flex:none}
 </style>
 <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
@@ -455,7 +460,7 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <div class="m-top">
     <span class="eyebrow"><span data-l="en">HKU iGEM · Modelling lab</span><span data-l="zh">HKU iGEM · 建模實驗室</span></span>
     <h1 class="m-title"><span data-l="en">How thick should the <em>patch</em> be?</span><span data-l="zh"><em>貼片</em>應該有多厚？</span></h1>
-    <p class="m-lede"><span data-l="en">A wound that won't heal keeps sending out a warning gas. Our patch sits on that wound, and the bacteria inside it sense the gas and start making a healing medicine. The gas fades fast as it rises, so only the bacteria near the wound ever smell it. The medicine they make has to travel back down, and some is lost on the way.</span><span data-l="zh">一個無法癒合的傷口會不斷釋放一種警告氣體。我們的貼片就貼在這個傷口上，貼片內的細菌感應到這種氣體後，便會開始製造療傷藥物。氣體向上升時會迅速消散，所以只有靠近傷口的細菌才「嗅」得到它。細菌製造的藥物要向下走回傷口，途中有一部分會流失。</span></p>
+    <p class="m-lede"><span data-l="en">A wound that won't heal stays inflamed for weeks. Our patch sits on that wound and slowly releases a healing medicine from its gel. The medicine has to travel down into the tissue to do its work, and some is lost on the way.</span><span data-l="zh">一個無法癒合的傷口會一直發炎，又紅又腫。我們的貼片就貼在這個傷口上，慢慢從凝膠中釋放出療傷藥物。藥物要向下走進組織才能發揮作用，途中有一部分會流失。</span></p>
     <div class="m-meta"><span data-l="en"><b>9 steps</b> · about 15 minutes</span><span data-l="zh"><b>9 個步驟</b> · 約 15 分鐘</span><span data-l="en"><b>No chemistry</b> needed</span><span data-l="zh"><b>不需要</b>化學知識</span><span data-l="en">Scroll to see the story</span><span data-l="zh">向下捲動，看看故事</span></div>
   </div>
 
@@ -464,29 +469,30 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
       <div class="beat on" data-beat="0">
         <span class="tag"><span data-l="en">The problem</span><span data-l="zh">問題</span></span>
         <h3><span data-l="en">A wound that won't heal</span><span data-l="zh">一個無法癒合的傷口</span></h3>
-        <p><span data-l="en">It stays red and swollen for weeks. It keeps sending out a warning gas that says "something is wrong here".</span><span data-l="zh">傷口一連幾個星期都又紅又腫，還不斷釋放一種警告氣體，好像在說：「這裡出事了！」</span></p>
-        <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Scientists call these <b>chronic wounds</b> and the gas <b>nitric oxide (NO)</b></span><span data-l="zh">科學家稱這類傷口為<b>慢性傷口</b>（chronic wound），這種氣體是<b>一氧化氮（NO）</b></span></span>
+        <p><span data-l="en">It stays red and swollen for weeks. The redness and swelling are signs that the wound is inflamed.</span><span data-l="zh">傷口一連幾個星期都又紅又腫。紅腫正是傷口正在發炎的跡象。</span></p>
+        <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Scientists call these <b>chronic wounds</b>, and the redness and swelling <b>inflammation</b></span><span data-l="zh">科學家稱這類傷口為<b>慢性傷口</b>（chronic wound），紅腫就是<b>發炎</b>（inflammation）</span></span>
       </div>
       <div class="beat" data-beat="1">
         <span class="tag"><span data-l="en">The patch</span><span data-l="zh">貼片</span></span>
-        <h3><span data-l="en">The gas rises into the patch</span><span data-l="zh">氣體上升，進入貼片</span></h3>
-        <p><span data-l="en">Our patch is a soft gel stacked in layers. Every layer is full of tiny engineered bacteria.</span><span data-l="zh">我們的貼片由一層層軟凝膠疊成，每一層都充滿經過改造的微小細菌。</span></p>
+        <h3><span data-l="en">A gel loaded with medicine</span><span data-l="zh">一塊裝滿藥物的凝膠</span></h3>
+        <p><span data-l="en">Our patch is a soft gel, loaded with a healing medicine. The gel sits on the wound and slowly releases it.</span><span data-l="zh">我們的貼片是一塊軟凝膠，裡面裝滿了療傷藥物。凝膠貼在傷口上，慢慢把藥物釋放出來。</span></p>
       </div>
       <div class="beat" data-beat="2">
-        <span class="tag"><span data-l="en">The switch</span><span data-l="zh">開關</span></span>
-        <h3><span data-l="en">The bacteria sense it and switch on</span><span data-l="zh">細菌感應到氣體，隨即啟動</span></h3>
-        <p><span data-l="en">When the warning gas reaches them, the bacteria start making a healing medicine.</span><span data-l="zh">警告氣體一到，細菌便開始製造療傷藥物。</span></p>
-        <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Scientists call the medicine <b>a therapeutic peptide (TAP2)</b></span><span data-l="zh">科學家稱這種藥物為<b>治療性多肽 TAP2</b>（therapeutic peptide）</span></span>
+        <span class="tag"><span data-l="en">The medicine</span><span data-l="zh">藥物</span></span>
+        <h3><span data-l="en">v14 calms the inflammation</span><span data-l="zh">v14 令炎症消退</span></h3>
+        <p><span data-l="en">Our medicine is a short peptide called <b>v14</b>. It binds the alarm molecule <b>LPS</b>, so the wound stops shouting and the redness settles down.</span><span data-l="zh">我們的藥物是一種短多肽，叫做 <b>v14</b>。它會抓住警報分子 <b>LPS</b>，讓傷口不再發出求救訊號，紅腫也慢慢消退。</span></p>
+        <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Scientists call the medicine <b>a therapeutic peptide (v14)</b></span><span data-l="zh">科學家稱這種藥物為<b>治療性多肽 v14</b>（therapeutic peptide）</span></span>
       </div>
       <div class="beat" data-beat="3">
-        <span class="tag"><span data-l="en">The journey</span><span data-l="zh">旅程</span></span>
-        <h3><span data-l="en">The medicine travels back down</span><span data-l="zh">藥物向下走回傷口</span></h3>
-        <p><span data-l="en">It has to pass through the gel to reach the wound. Some breaks down on the way. Watch the dots fade.</span><span data-l="zh">藥物要穿過凝膠才能到達傷口，途中有一部分會分解。留意那些逐漸消失的圓點。</span></p>
+        <span class="tag"><span data-l="en">The repair</span><span data-l="zh">修復</span></span>
+        <h3><span data-l="en">FGF2 wakes the repair cells</span><span data-l="zh">FGF2 喚醒修復細胞</span></h3>
+        <p><span data-l="en">Our patch also carries a growth factor called <b>FGF2</b>. It tells repair cells to move in, multiply, and close the wound gap.</span><span data-l="zh">我們的貼片還帶着一種生長因子，叫做 <b>FGF2</b>。它會通知修復細胞移動過來、增生，把傷口的缺口填上。</span></p>
+        <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">The repair cells are <b>fibroblasts</b>, and <b>FGF2</b> is a growth factor that speeds them up</span><span data-l="zh">修復細胞是<b>纖維母細胞</b>（fibroblast），而 <b>FGF2</b> 是加快它們工作的<b>生長因子</b>（growth factor）</span></span>
       </div>
       <div class="beat" data-beat="4">
         <span class="tag"><span data-l="en">Your mission</span><span data-l="zh">你的任務</span></span>
-        <h3><span data-l="en">More layers, more bacteria. But a longer journey.</span><span data-l="zh">層數越多，細菌越多，但路程也越長。</span></h3>
-        <p><span data-l="en">A thicker patch holds more bacteria &mdash; but the warning gas fades before it reaches the ones near the top, so those never switch on, and the medicine made high up has further to travel. How thick should we make it so the most medicine reaches the wound? You'll build a model to find out.</span><span data-l="zh">較厚的貼片可以容納更多細菌——但警告氣體還未到達頂部的細菌就已經消散，所以那些細菌永遠不會啟動；而在高處製造的藥物，要走的路也更長。貼片要做多厚，才能讓最多藥物到達傷口？你將會建立一個模型來找出答案。</span></p>
+        <h3><span data-l="en">How much medicine, and how thick?</span><span data-l="zh">要用多少藥物？要做多厚？</span></h3>
+        <p><span data-l="en">The medicine has to travel down through the gel to reach the wound, and some breaks down on the way. Load too little and it won't heal; make it too thick and the medicine has further to travel. How much medicine, and how thick a patch, gets the most to the wound? You'll build a model to find out.</span><span data-l="zh">藥物要穿過凝膠向下走到達傷口，途中有一部分會分解。裝太少，傷口不會癒合；做太厚，藥物要走的路就更長。要裝多少藥物、做多厚，才能讓最多藥物到達傷口？你將會建立一個模型來找出答案。</span></p>
       </div>
     </div>
     <div class="stage-wrap">
@@ -521,8 +527,8 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <div class="step-foot">
     <div class="discover" id="s1disc" hidden>
       <span class="k"><span data-l="en">You just decided</span><span data-l="zh">你剛剛決定了</span></span>
-      <div class="rule" data-l="en"><span class="tile m">made</span><span class="tile o">and</span><span class="tile l">lost</span><span class="tile o">are the only things that matter</span></div>
-      <div class="rule" data-l="zh"><span class="tile o">只有</span><span class="tile m">製造</span><span class="tile o">和</span><span class="tile l">流失</span><span class="tile o">才是重要的</span></div>
+      <div class="rule" data-l="en"><span class="tile m">released</span><span class="tile o">and</span><span class="tile l">lost</span><span class="tile o">are the only things that matter</span></div>
+      <div class="rule" data-l="zh"><span class="tile o">只有</span><span class="tile m">釋放</span><span class="tile o">和</span><span class="tile l">流失</span><span class="tile o">才是重要的</span></div>
       <p><span data-l="en">Ignoring colour and shape is a choice. Every model leaves things out on purpose.</span><span data-l="zh">忽略顏色和形狀是一個選擇。每個模型都會刻意省略一些東西。</span></p>
       <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Scientists call "something we pretend is true" an <b>assumption</b></span><span data-l="zh">科學家把「我們姑且當作是真的事」稱為<b>假設</b>（assumption）</span></span>
     </div>
@@ -536,7 +542,7 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <header class="step-head">
     <span class="step-no"><span data-l="en">Step 2</span><span data-l="zh">第 2 步</span> <span class="t">· 1.5 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
     <h2><span data-l="en">The medicine sandbox</span><span data-l="zh">藥物沙盒</span></h2>
-    <p class="lede"><span data-l="en">The patch starts with <b class="num">20</b> medicine. Bacteria make <b class="num">5</b> every minute. <b class="num s2lostTxt">2</b> is lost every minute. What happens?</span><span data-l="zh">貼片一開始有 <b class="num">20</b> 份藥物。細菌每分鐘製造 <b class="num">5</b> 份，每分鐘流失 <b class="num s2lostTxt">2</b> 份。會發生甚麼事？</span></p>
+    <p class="lede"><span data-l="en">The patch starts with <b class="num">20</b> medicine. The gel releases <b class="num">5</b> every minute. <b class="num s2lostTxt">2</b> is lost every minute. What happens?</span><span data-l="zh">貼片一開始有 <b class="num">20</b> 份藥物。凝膠每分鐘釋放 <b class="num">5</b> 份，每分鐘流失 <b class="num s2lostTxt">2</b> 份。會發生甚麼事？</span></p>
     <button class="ghost hint-btn" data-hint="2"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
@@ -571,10 +577,10 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <div class="step-foot">
     <div class="discover" id="s2disc" hidden>
       <span class="k"><span data-l="en">You just discovered the rule</span><span data-l="zh">你剛剛發現了規律</span></span>
-      <div class="rule" data-l="en"><span class="tile">change</span><span class="tile o">=</span><span class="tile m">made</span><span class="tile o">−</span><span class="tile l">lost</span></div>
-      <div class="rule" data-l="zh"><span class="tile">變化</span><span class="tile o">=</span><span class="tile m">製造</span><span class="tile o">−</span><span class="tile l">流失</span></div>
-      <p><span data-l="en">More made than lost: it rises. Equal: it stays flat. More lost: it falls.</span><span data-l="zh">製造多於流失：上升。兩者相等：保持不變。流失多於製造：下降。</span></p>
-      <div class="row"><span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">"medicine made" is <b>production</b></span><span data-l="zh">「製造藥物」稱為<b>生成</b>（production）</span></span><span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">"broken down" is <b>degradation</b></span><span data-l="zh">「分解」稱為<b>降解</b>（degradation）</span></span></div>
+      <div class="rule" data-l="en"><span class="tile">change</span><span class="tile o">=</span><span class="tile m">released</span><span class="tile o">−</span><span class="tile l">lost</span></div>
+      <div class="rule" data-l="zh"><span class="tile">變化</span><span class="tile o">=</span><span class="tile m">釋放</span><span class="tile o">−</span><span class="tile l">流失</span></div>
+      <p><span data-l="en">More released than lost: it rises. Equal: it stays flat. More lost: it falls.</span><span data-l="zh">釋放多於流失：上升。兩者相等：保持不變。流失多於釋放：下降。</span></p>
+      <div class="row"><span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">"medicine released" is <b>release</b></span><span data-l="zh">「釋放藥物」稱為<b>釋放</b>（release）</span></span><span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">"broken down" is <b>degradation</b></span><span data-l="zh">「分解」稱為<b>降解</b>（degradation）</span></span></div>
     </div>
     <button class="btn next-btn" data-next="3" hidden><span data-l="en">Next: fix the broken model ↓</span><span data-l="zh">下一步：修正有問題的模型 ↓</span></button>
   </div>
@@ -586,12 +592,12 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <header class="step-head">
     <span class="step-no"><span data-l="en">Step 3</span><span data-l="zh">第 3 步</span> <span class="t">· 1.5 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
     <h2><span data-l="en">Fix the broken model</span><span data-l="zh">修正有問題的模型</span></h2>
-    <p class="lede"><span data-l="en">The bacteria switch off. The patch has <b class="num">20</b> medicine left. How does it disappear? Try both rules.</span><span data-l="zh">細菌關閉了，貼片內剩下 <b class="num">20</b> 份藥物。藥物會怎樣消失？兩條規則都試試看。</span></p>
+    <p class="lede"><span data-l="en">The patch stops releasing. It has <b class="num">20</b> medicine left. How does it disappear? Try both rules.</span><span data-l="zh">貼片停止釋放，剩下 <b class="num">20</b> 份藥物。藥物會怎樣消失？兩條規則都試試看。</span></p>
     <button class="ghost hint-btn" data-hint="3"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
     <div class="tank-grid">
-      <div class="canvas-box" id="s3box" style="height:300px"><canvas id="s3canvas" aria-label="Medicine tank with bacteria off" data-aria-zh="細菌關閉時的藥物容器"></canvas></div>
+      <div class="canvas-box" id="s3box" style="height:300px"><canvas id="s3canvas" aria-label="Medicine tank with release off" data-aria-zh="停止釋放時的藥物容器"></canvas></div>
       <div class="step-body">
         <div class="panel" style="display:grid;gap:8px">
           <div class="row" style="justify-content:space-between"><b><span data-l="en">Rule A · lose 5 every minute</span><span data-l="zh">規則 A · 每分鐘流失 5</span></b><button class="btn soft" id="s3a"><span data-l="en">Run A ▶</span><span data-l="zh">運行 A ▶</span></button></div>
@@ -633,14 +639,14 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <header class="step-head">
     <span class="step-no"><span data-l="en">Step 4</span><span data-l="zh">第 4 步</span> <span class="t">· 1.5 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
     <h2><span data-l="en">Build it step by step</span><span data-l="zh">一步一步計算</span></h2>
-    <p class="lede"><span data-l="en">A 3-layer patch makes <b class="num">12</b> medicine a minute and loses <b class="num">20%</b>. It starts empty. Fill in the first three minutes.</span><span data-l="zh">一塊 3 層的貼片每分鐘製造 <b class="num">12</b> 份藥物，同時流失 <b class="num">20%</b>。貼片一開始是空的。請填寫頭三分鐘的數值。</span></p>
+    <p class="lede"><span data-l="en">A 3-layer patch starts loaded with <b class="num">20</b>, releases <b class="num">12</b> a minute and loses <b class="num">20%</b>. Fill in the first three minutes.</span><span data-l="zh">一塊 3 層的貼片一開始已裝載 <b class="num">20</b> 份藥物，每分鐘釋放 <b class="num">12</b> 份，同時流失 <b class="num">20%</b>。請填寫頭三分鐘的數值。</span></p>
     <button class="ghost hint-btn" data-hint="4"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
     <div class="panel num" style="font-size:16px"><span data-l="en">new = old + <b style="color:var(--bact)">12</b> − <b style="color:var(--wound)">0.2 × old</b></span><span data-l="zh">新 = 舊 + <b style="color:var(--bact)">12</b> − <b style="color:var(--wound)">0.2 × 舊</b></span></div>
     <div class="table-scroll">
       <table class="calc-table" id="s4table">
-        <thead><tr><th><span data-l="en">Minute</span><span data-l="zh">分鐘</span></th><th><span data-l="en">Old</span><span data-l="zh">舊</span></th><th><span data-l="en">+ made</span><span data-l="zh">+ 製造</span></th><th><span data-l="en">− lost</span><span data-l="zh">− 流失</span></th><th><span data-l="en">New</span><span data-l="zh">新</span></th><th></th></tr></thead>
+        <thead><tr><th><span data-l="en">Minute</span><span data-l="zh">分鐘</span></th><th><span data-l="en">Old</span><span data-l="zh">舊</span></th><th><span data-l="en">+ released</span><span data-l="zh">+ 釋放</span></th><th><span data-l="en">− lost</span><span data-l="zh">− 流失</span></th><th><span data-l="en">New</span><span data-l="zh">新</span></th><th></th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -658,13 +664,13 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
       <div class="canvas-box" style="height:260px"><canvas id="s4canvas" aria-label="Medicine over 50 minutes" data-aria-zh="50 分鐘內的藥物量"></canvas></div>
       <div class="step-body">
         <div class="bars">
-          <div class="bar m"><span><span data-l="en">Made</span><span data-l="zh">製造</span></span><div class="track"><div class="fill" id="s4made"></div></div><span class="num" id="s4madeV">0</span></div>
+          <div class="bar m"><span><span data-l="en">Released</span><span data-l="zh">釋放</span></span><div class="track"><div class="fill" id="s4made"></div></div><span class="num" id="s4madeV">0</span></div>
           <div class="bar l"><span><span data-l="en">Lost</span><span data-l="zh">流失</span></span><div class="track"><div class="fill" id="s4lost"></div></div><span class="num" id="s4lostV">0</span></div>
         </div>
         <div class="readout"><div class="stat g"><div class="v" id="s4level">0</div><div class="l"><span data-l="en">In the patch</span><span data-l="zh">貼片內</span></div></div><div class="stat"><div class="v" id="s4min">0</div><div class="l"><span data-l="en">Minute</span><span data-l="zh">分鐘</span></div></div></div>
         <div id="s4micro"></div>
         <div class="slider" id="s4whatif" hidden>
-          <div class="top"><label for="s4layers"><span data-l="en">What if? Layers of bacteria</span><span data-l="zh">如果改變細菌層數？</span></label><output class="num" id="s4layersOut">3</output></div>
+          <div class="top"><label for="s4layers"><span data-l="en">What if? Layers of gel</span><span data-l="zh">如果改變凝膠層數？</span></label><output class="num" id="s4layersOut">3</output></div>
           <input type="range" id="s4layers" min="1" max="5" step="1" value="3">
           <span class="sci" style="margin-top:4px"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">A setting you can change is a <b>parameter</b></span><span data-l="zh">可以調整的設定稱為<b>參數</b>（parameter）</span></span>
         </div>
@@ -690,20 +696,20 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
       <div class="canvas-box" style="height:260px"><canvas id="s5canvas" aria-label="Medicine settling to a flat level" data-aria-zh="藥物量逐漸穩定下來"></canvas></div>
       <div class="step-body">
         <div class="bars">
-          <div class="bar m"><span><span data-l="en">Made</span><span data-l="zh">製造</span></span><div class="track"><div class="fill" id="s5made"></div></div><span class="num" id="s5madeV">0</span></div>
+          <div class="bar m"><span><span data-l="en">Released</span><span data-l="zh">釋放</span></span><div class="track"><div class="fill" id="s5made"></div></div><span class="num" id="s5madeV">0</span></div>
           <div class="bar l"><span><span data-l="en">Lost</span><span data-l="zh">流失</span></span><div class="track"><div class="fill" id="s5lost"></div></div><span class="num" id="s5lostV">0</span></div>
         </div>
         <div class="row"><button class="btn soft" id="s5watch"><span data-l="en">Watch it settle ▶</span><span data-l="zh">看它如何穩定下來 ▶</span></button></div>
         <div id="s5why" class="why" hidden>
-          <div class="say good"><span class="ic">!</span><span><span data-l="en">It stops rising when <b>lost catches up with made</b>. 20% of 60 is 12, exactly what is made.</span><span data-l="zh">當<b>流失追上製造</b>時，它便不再上升。60 的 20% 是 12，剛好等於製造的量。</span></span></div>
+          <div class="say good"><span class="ic">!</span><span><span data-l="en">It stops rising when <b>lost catches up with released</b>. 20% of 60 is 12, exactly what is released.</span><span data-l="zh">當<b>流失追上釋放</b>時，它便不再上升。60 的 20% 是 12，剛好等於釋放的量。</span></span></div>
         </div>
       </div>
     </div>
     <div class="panel" id="s5challenge" hidden style="display:grid;gap:12px">
       <p class="label"><span data-l="en">Challenge</span><span data-l="zh">挑戰</span></p>
-      <p><span data-l="en"><b>A thinner patch settles at 20.</b> How much medicine is it making each minute? Move the slider until the line goes flat at 20.</span><span data-l="zh"><b>一塊較薄的貼片最後穩定在 20。</b>它每分鐘製造多少藥物？移動滑桿，直到曲線在 20 變平。</span></p>
+      <p><span data-l="en"><b>A thinner patch settles at 20.</b> How much medicine is it releasing each minute? Move the slider until the line goes flat at 20.</span><span data-l="zh"><b>一塊較薄的貼片最後穩定在 20。</b>它每分鐘釋放多少藥物？移動滑桿，直到曲線在 20 變平。</span></p>
       <div class="slider">
-        <div class="top"><label for="s5made-in"><span data-l="en">Medicine made per minute</span><span data-l="zh">每分鐘製造的藥物</span></label><output class="num" id="s5madeOut">12</output></div>
+        <div class="top"><label for="s5made-in"><span data-l="en">Medicine released per minute</span><span data-l="zh">每分鐘釋放的藥物</span></label><output class="num" id="s5madeOut">12</output></div>
         <input type="range" id="s5made-in" min="1" max="20" step="1" value="12">
       </div>
       <div id="s5say" aria-live="polite"></div>
@@ -712,8 +718,8 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <div class="step-foot">
     <div class="discover" id="s5disc" hidden>
       <span class="k"><span data-l="en">You just discovered</span><span data-l="zh">你剛剛發現了</span></span>
-      <div class="rule" data-l="en"><span class="tile">level in the patch</span><span class="tile o">=</span><span class="tile m">made</span><span class="tile o">÷</span><span class="tile l">share lost</span></div>
-      <div class="rule" data-l="zh"><span class="tile">貼片內的藥物水平</span><span class="tile o">=</span><span class="tile m">製造</span><span class="tile o">÷</span><span class="tile l">流失比例</span></div>
+      <div class="rule" data-l="en"><span class="tile">level in the patch</span><span class="tile o">=</span><span class="tile m">released</span><span class="tile o">÷</span><span class="tile l">share lost</span></div>
+      <div class="rule" data-l="zh"><span class="tile">貼片內的藥物水平</span><span class="tile o">=</span><span class="tile m">釋放</span><span class="tile o">÷</span><span class="tile l">流失比例</span></div>
       <p class="num">12 ÷ 0.2 = 60 &nbsp;·&nbsp; 4 ÷ 0.2 = 20</p>
       <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">A level that stops changing is a <b>steady state</b></span><span data-l="zh">不再改變的水平稱為<b>穩態</b>（steady state）</span></span>
     </div>
@@ -727,7 +733,7 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <header class="step-head">
     <span class="step-no"><span data-l="en">Step 6</span><span data-l="zh">第 6 步</span> <span class="t">· 1.5 <span data-l="en">min</span><span data-l="zh">分鐘</span></span> <span class="step-done-pill"><span data-l="en">Done</span><span data-l="zh">完成</span></span></span>
     <h2><span data-l="en">Match the lab data</span><span data-l="zh">配合實驗數據</span></h2>
-    <p class="lede"><span data-l="en">We guessed 20% is lost each minute. The lab switched the bacteria off and measured the medicine fading. Move the slider until your model's curve runs through the dots.</span><span data-l="zh">我們之前猜每分鐘流失 20%。實驗室關閉了細菌，然後測量藥物如何逐漸減少。移動滑桿，直到模型的曲線穿過那些圓點。</span></p>
+    <p class="lede"><span data-l="en">We guessed 20% is lost each minute. The lab stopped the release and measured the medicine fading. Move the slider until your model's curve runs through the dots.</span><span data-l="zh">我們之前猜每分鐘流失 20%。實驗室停止了釋放，然後測量藥物如何逐漸減少。移動滑桿，直到模型的曲線穿過那些圓點。</span></p>
     <button class="ghost hint-btn" data-hint="6"><span data-l="en">Hint</span><span data-l="zh">提示</span></button>
   </header>
   <div class="step-body">
@@ -777,7 +783,7 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
           <div class="choices" id="s7opts" style="margin-top:8px;flex-direction:column;align-items:stretch">
             <button class="choice" data-v="broke"><span data-l="en">It broke down on the way</span><span data-l="zh">在途中分解了</span></button>
             <button class="choice" data-v="up"><span data-l="en">It floated back up</span><span data-l="zh">飄回上面去了</span></button>
-            <button class="choice" data-v="took"><span data-l="en">The bacteria took it back</span><span data-l="zh">被細菌收回了</span></button>
+            <button class="choice" data-v="took"><span data-l="en">The gel soaked it back up</span><span data-l="zh">被凝膠吸了回去</span></button>
           </div>
         </div>
         <div id="s7say" aria-live="polite"></div>
@@ -828,18 +834,18 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
           <p class="kbd-hint" style="margin-top:6px"><span data-l="en">A real patch needs 2+ layers so it doesn't tear. The model lets you try 1.</span><span data-l="zh">真正的貼片至少要有 2 層才不會撕裂，但在模型中你可以試試 1 層。</span></p>
         </div>
         <div>
-          <p class="label"><span data-l="en">Bacteria strength</span><span data-l="zh">細菌強度</span></p>
+          <p class="label"><span data-l="en">Release rate</span><span data-l="zh">釋放速率</span></p>
           <div class="choices" id="s8bact" style="margin-top:8px;flex-direction:column;align-items:stretch">
-            <button class="choice" data-v="low"><span data-l="en">Low</span><span data-l="zh">低</span> <small class="num" style="font-weight:400"><span data-l="en">· 2 per layer</span><span data-l="zh">· 每層 2</span></small></button>
-            <button class="choice" data-v="medium" aria-pressed="true"><span data-l="en">Medium</span><span data-l="zh">中</span> <small class="num" style="font-weight:400"><span data-l="en">· 4 per layer</span><span data-l="zh">· 每層 4</span></small></button>
-            <button class="choice locked-opt" data-v="high" aria-disabled="true"><span style="display:inline-flex;gap:6px;align-items:center"><svg width="12" height="12"><use href="#i-lock"/></svg><span data-l="en">High</span><span data-l="zh">高</span></span><small><span data-l="en">The cells burn out</span><span data-l="zh">細胞會過勞衰竭</span></small></button>
+            <button class="choice" data-v="low"><span data-l="en">Low</span><span data-l="zh">低</span> <small class="num" style="font-weight:400"><span data-l="en">· 2 / min per layer</span><span data-l="zh">· 每層每分鐘 2</span></small></button>
+            <button class="choice" data-v="medium" aria-pressed="true"><span data-l="en">Medium</span><span data-l="zh">中</span> <small class="num" style="font-weight:400"><span data-l="en">· 4 / min per layer</span><span data-l="zh">· 每層每分鐘 4</span></small></button>
+            <button class="choice locked-opt" data-v="high" aria-disabled="true"><span style="display:inline-flex;gap:6px;align-items:center"><svg width="12" height="12"><use href="#i-lock"/></svg><span data-l="en">High</span><span data-l="zh">高</span></span><small><span data-l="en">the gel can't hold that much</span><span data-l="zh">凝膠承載不了那麼多</span></small></button>
           </div>
         </div>
       </div>
       <div class="step-body" style="gap:14px">
         <div class="canvas-box" style="height:300px"><canvas id="s8canvas" aria-label="Your patch on the wound" data-aria-zh="貼在傷口上的貼片"></canvas></div>
         <div class="readout">
-          <div class="stat m"><div class="v" id="s8made">12</div><div class="l"><span data-l="en">Made / min</span><span data-l="zh">製造 / 分鐘</span></div></div>
+          <div class="stat m"><div class="v" id="s8made">12</div><div class="l"><span data-l="en">Released / min</span><span data-l="zh">釋放 / 分鐘</span></div></div>
           <div class="stat"><div class="v" id="s8level">60</div><div class="l"><span data-l="en">Level in patch</span><span data-l="zh">貼片內水平</span></div></div>
           <div class="stat g"><div class="v" id="s8reach">20.6</div><div class="l"><span data-l="en">Reaching wound</span><span data-l="zh">到達傷口</span></div></div>
         </div>
@@ -854,10 +860,10 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
     <div class="split" id="s8after" hidden>
       <div class="canvas-box" style="height:220px"><canvas id="s8peak" aria-label="Medicine reaching the wound for 1 to 5 layers" data-aria-zh="1 至 5 層時到達傷口的藥物量"></canvas></div>
       <div class="step-body">
-        <div class="say good"><span class="ic">!</span><span><span data-l="en"><b>More is not better.</b> Too thin: too few bacteria to make enough medicine. Too thick: the gas never reaches the bacteria at the top, so they sit there switched off &mdash; and the medicine that <i>is</i> made has further to travel. Only a model shows you where the best point is.</span><span data-l="zh"><b>越多不一定越好。</b>太薄：細菌太少，製造不到足夠的藥物。太厚：氣體到不了頂部的細菌，它們只會一直處於關閉狀態——而<i>真正</i>製造出來的藥物，要走的路也更長。只有模型才能告訴你最佳點在哪裡。</span></span></div>
+        <div class="say good"><span class="ic">!</span><span><span data-l="en"><b>More is not better.</b> Too thin: too little medicine loaded. Too thick: the medicine loaded high up has further to travel, and more of it breaks down on the way. Only a model shows you where the best point is.</span><span data-l="zh"><b>越多不一定越好。</b>太薄：裝載的藥物太少。太厚：裝在高處的藥物要走的路更長，途中分解得也更多。只有模型才能告訴你最佳點在哪裡。</span></span></div>
         <div class="panel" style="display:grid;gap:10px">
           <p class="label"><span data-l="en">Bonus question</span><span data-l="zh">附加題</span></p>
-          <p><b><span data-l="en">Can a patch with Low bacteria ever heal the wound?</span><span data-l="zh">細菌強度「低」的貼片，有可能令傷口癒合嗎？</span></b></p>
+          <p><b><span data-l="en">Can a patch with a Low release rate ever heal the wound?</span><span data-l="zh">釋放速率「低」的貼片，有可能令傷口癒合嗎？</span></b></p>
           <div class="choices" id="s8bonus"><button class="choice" data-v="yes"><span data-l="en">Yes, with the right thickness</span><span data-l="zh">可以，只要厚度合適</span></button><button class="choice" data-v="no"><span data-l="en">No, never</span><span data-l="zh">不可能</span></button></div>
           <div id="s8bonusSay" aria-live="polite"></div>
         </div>
@@ -922,7 +928,7 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <div class="lc-body step-body">
     <div class="lc-grid">
       <div class="lc-field rv"><span class="label"><span data-l="en">Patch thickness</span><span data-l="zh">貼片厚度</span></span><span class="v" id="lcLayers">—</span></div>
-      <div class="lc-field rv"><span class="label"><span data-l="en">Bacteria strength</span><span data-l="zh">細菌強度</span></span><span class="v" id="lcBact">—</span></div>
+      <div class="lc-field rv"><span class="label"><span data-l="en">Release rate</span><span data-l="zh">釋放速率</span></span><span class="v" id="lcBact">—</span></div>
       <div class="lc-field rv"><span class="label"><span data-l="en">Reaching the wound</span><span data-l="zh">到達傷口</span></span><span class="v" id="lcReach">—</span></div>
     </div>
     <div class="rv"><p class="label"><span data-l="en">Things we pretended were true</span><span data-l="zh">我們假設為真的事</span></p><ul class="lc-list" id="lcAssume" style="margin-top:8px"></ul></div>
@@ -961,6 +967,13 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <div class="nb-sec"><span class="label"><span data-l="en">Words scientists use</span><span data-l="zh">科學家用語</span></span><div class="nb-badges" id="nbBadges"><span class="kbd-hint"><span data-l="en">Collect them as you go</span><span data-l="zh">邊做邊收集</span></span></div></div>
 </aside>
 </div>
+
+<footer class="site-foot">
+  <a class="gh" href="https://github.com/Vinindu-Siriwardhana/IGEM-Dry-Lab-Workshop-Trial-" target="_blank" rel="noopener noreferrer">
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+    <span data-l="en">View on GitHub</span><span data-l="zh">在 GitHub 上查看</span>
+  </a>
+</footer>
 
 <dialog id="hintDlg">
   <form method="dialog" class="dlg">
@@ -1094,22 +1107,22 @@ function badge(word) { if (!S.badges.includes(word)) { S.badges.push(word); save
 /* notebook entries are saved in English (so older saves still load); these give each its Chinese.
    A value can also be saved as an [English, 中文] pair when it is built from numbers. */
 const ZH_NB = {
-  "Only three things change the medicine: it's made, it breaks down, it seeps out": "只有三件事會改變藥物量：製造、分解、滲出",
+  "Only three things change the medicine: it's released, it breaks down, it seeps out": "只有三件事會改變藥物量：釋放、分解、滲出",
   "Colour and shape of the patch don't matter": "貼片的顏色和形狀沒有影響",
-  "Change each minute = made − lost": "每分鐘的變化 = 製造 − 流失",
-  "Every layer holds the same number of bacteria": "每一層的細菌數目相同",
-  "The bacteria keep working at a steady rate": "細菌以穩定的速率持續工作",
+  "Change each minute = released − lost": "每分鐘的變化 = 釋放 − 流失",
+  "Every layer holds the same amount of medicine": "每一層裝載的藥物量相同",
+  "The patch keeps releasing at a steady rate": "貼片以穩定的速率持續釋放",
   "Every layer behaves the same": "每一層的表現都一樣",
   "Healing is a simple on/off line at 18": "癒合只看一條簡單的界線：18",
   "Share lost / min": "每分鐘流失比例", "20% (guess)": "20%（猜測）", "20% (matches data)": "20%（與數據吻合）",
-  "Made by 3 layers": "3 層的製造量", "12 / min": "12 / 分鐘",
-  "Patch level": "貼片內水平", "made ÷ 0.2": "製造 ÷ 0.2", "3-layer patch level": "3 層貼片的水平",
+  "Released by 3 layers": "3 層的釋放量", "12 / min": "12 / 分鐘",
+  "Patch level": "貼片內水平", "released ÷ 0.2": "釋放 ÷ 0.2", "3-layer patch level": "3 層貼片的水平",
   "Reaching wound (3 layers)": "到達傷口（3 層）", "Our design": "我們的設計", "Best thickness (code)": "最佳厚度（程式）",
 };
 const ZH_WORD = {                                       // Chinese term, then the English one students will meet later
-  "chronic wound": "慢性傷口 <i>chronic wound</i>", "nitric oxide (NO)": "一氧化氮 (NO) <i>nitric oxide</i>",
-  "therapeutic peptide (TAP2)": "治療性多肽 (TAP2) <i>therapeutic peptide</i>", "assumption": "假設 <i>assumption</i>",
-  "production": "生成 <i>production</i>", "degradation": "降解 <i>degradation</i>", "decay rate": "衰減率 <i>decay rate</i>",
+  "chronic wound": "慢性傷口 <i>chronic wound</i>", "inflammation": "發炎 <i>inflammation</i>", "nitric oxide (NO)": "一氧化氮 (NO) <i>nitric oxide</i>",
+  "therapeutic peptide (v14)": "治療性多肽 (v14) <i>therapeutic peptide</i>", "growth factor (FGF2)": "生長因子 (FGF2) <i>growth factor</i>",
+  "assumption": "假設 <i>assumption</i>", "release": "釋放 <i>release</i>", "degradation": "降解 <i>degradation</i>", "decay rate": "衰減率 <i>decay rate</i>",
   "parameter": "參數 <i>parameter</i>", "steady state": "穩態 <i>steady state</i>", "diffusion": "擴散 <i>diffusion</i>",
   "penetration depth": "穿透深度 <i>penetration depth</i>", "therapeutic threshold": "治療閾值 <i>therapeutic threshold</i>",
   "Curious": "好奇心", "Simulation": "模擬 <i>simulation</i>", "Parameter sweep": "參數掃描 <i>parameter sweep</i>",
@@ -1223,10 +1236,10 @@ function initScrollFx() {
 /* ---------------- hint dialog + helper code ---------------- */
 const HINTS = {
   1: "Think about what could make the amount go up or down. Does the colour of a sticker change how much medicine is inside?",
-  2: "Compare the two numbers: 5 made each minute and 2 lost. Which is bigger? After predicting, run it, then try Lost 5 and Lost 7.",
+  2: "Compare the two numbers: 5 released each minute and 2 lost. Which is bigger? After predicting, run it, then try Lost 5 and Lost 7.",
   3: "Run both rules. Look closely at Rule A's last number. Can a patch really hold less than nothing?",
-  4: "Minute 1: old is 0, so new = 0 + 12 − 0 = 12. Minute 2: old is 12, so new = 12 + 12 − 2.4. Use the = button if you get stuck.",
-  5: "The line goes flat when lost equals made. Lost is 20% of the level, so a level of 20 loses 4 a minute. What should made be?",
+  4: "Minute 1: old is 20, so new = 20 + 12 − 4 = 28. Minute 2: old is 28, so new = 28 + 12 − 5.6. Use the = button if you get stuck.",
+  5: "The line goes flat when lost equals released. Lost is 20% of the level, so a level of 20 loses 4 a minute. What should released be?",
   6: "Start the slider far away, then move it slowly. Watch the curve bend toward the dots. The match meter turns green at 85%.",
   7: "Each tap keeps 70% of the medicine: 60 × 0.7 = 42. The medicine doesn't go anywhere else. It fades.",
   8: "Try every thickness from 1 to 5 and watch the 'Reaching wound' number. The biggest isn't at the end.",
@@ -1234,10 +1247,10 @@ const HINTS = {
 };
 const HINTS_ZH = {
   1: "想想有甚麼會令藥物量上升或下降。貼紙的顏色會改變裡面有多少藥物嗎？",
-  2: "比較這兩個數字：每分鐘製造 5，流失 2。哪個比較大？預測之後按運行，然後再試試「流失 5」和「流失 7」。",
+  2: "比較這兩個數字：每分鐘釋放 5，流失 2。哪個比較大？預測之後按運行，然後再試試「流失 5」和「流失 7」。",
   3: "兩條規則都運行一次。仔細看規則 A 的最後一個數字。貼片裡的藥物真的可以少過零嗎？",
-  4: "第 1 分鐘：舊 = 0，所以新 = 0 + 12 − 0 = 12。第 2 分鐘：舊 = 12，所以新 = 12 + 12 − 2.4。如果卡住了，可以按「= 幫助」。",
-  5: "當流失等於製造時，曲線就會變平。流失是水平的 20%，所以水平為 20 時每分鐘流失 4。那麼製造應該是多少？",
+  4: "第 1 分鐘：舊 = 20，所以新 = 20 + 12 − 4 = 28。第 2 分鐘：舊 = 28，所以新 = 28 + 12 − 5.6。如果卡住了，可以按「= 幫助」。",
+  5: "當流失等於釋放時，曲線就會變平。流失是水平的 20%，所以水平為 20 時每分鐘流失 4。那麼釋放應該是多少？",
   6: "先把滑桿放在較遠的位置，然後慢慢移動，留意曲線如何向圓點靠攏。吻合度達到 85% 時，量表會變成綠色。",
   7: "每按一下，藥物只剩下 70%：60 × 0.7 = 42。藥物沒有去其他地方，而是逐漸消失了。",
   8: "逐一試試 1 至 5 層，留意「到達傷口」的數字。最大值並不在最後。",
@@ -1695,32 +1708,24 @@ function confetti() {
 /* ================= MISSION ================= */
 Steps[0] = {
   init() {
-    let beat = 0, glow = 0, gas = 0, gT = 0, mT = 0;
+    let beat = 0, mT = 0;
     const dots = new Dots(60);
-    const caps = ["Cross-section · wound that won't heal", "Warning gas rising", "Bacteria switching on", "Medicine travelling down", "1 layer? 5 layers?"];
-    const capsZh = ["剖面圖 · 無法癒合的傷口", "警告氣體上升", "細菌啟動", "藥物向下移動", "1 層？5 層？"];
+    const caps = ["Cross-section · wound that won't heal", "Medicine releasing from the gel", "v14 calming the inflammation", "FGF2 waking repair cells", "1 layer? 5 layers?"];
+    const capsZh = ["剖面圖 · 無法癒合的傷口", "藥物從凝膠釋放", "v14 令炎症消退", "FGF2 喚醒修復細胞", "1 層？5 層？"];
     new Scene($("#missionCanvas"), (ctx, w, h, dt, t) => {
-      glow += ((beat >= 2 ? 1 : 0) - glow) * Math.min(1, dt * 3);
-      gas += ((beat >= 1 ? 1 : 0) - gas) * Math.min(1, dt * 3);
       const L = beat === 4 ? 1 + Math.round(2 + 2 * Math.sin(t * 0.9)) : 3;
-      const g = drawPatch(ctx, w, h, { layers: L, glow, t, no: gas, pep: beat >= 3 ? glow : 0, tissueAt: h > 430 ? .74 : .7, verdictMinX: 255 });
-      if (beat >= 1 && beat < 4 && (gT += dt) > 0.2) {
-        gT = 0;
-        dots.add({ x: g.wx + (Math.random() - .5) * g.ww * 1.4, y: g.wy + 6, vy: -(45 + Math.random() * 30), vx: (Math.random() - .5) * 14, color: "gas", r: 3, target: .9 });
-      }
-      if (beat >= 3 && (mT += dt) > 0.11) {
+      const g = drawPatch(ctx, w, h, { layers: L, neutral: true, t, pep: beat >= 2 ? 1 : 0, tissueAt: h > 430 ? .74 : .7, verdictMinX: 255 });
+      if (beat >= 2 && (mT += dt) > 0.11) {
         mT = 0;
-        const pool = g.hot.length ? g.hot : g.bac, b = pool[Math.random() * pool.length | 0];
-        const d = dots.add({ x: b.x, y: b.y, vy: 40 + Math.random() * 20, vx: (g.wx - b.x) * 0.22, color: "gel", r: 3.8 });
-        if (d) d.chk = b.layer;
+        const bx = g.left + Math.random() * (g.right - g.left);
+        const by = g.gelTop + Math.random() * (g.gelBottom - g.gelTop);
+        const d = dots.add({ x: bx, y: by, vy: 40 + Math.random() * 20, vx: (g.wx - bx) * 0.22, color: "gel", r: 3.8 });
+        if (d) d.chk = Math.floor((g.gelBottom - by) / g.lh);
       }
       dots.update(dt);
-      const stopY = Math.max(g.gelTop, g.reachY);
       for (const d of dots.a) {
         if (d.x < g.left || d.x > g.right) { dots.kill(d); d.a = 0; continue; }
         if (d.dying) continue;
-        if (d.color === "gas") { if (d.y < stopY + 26) dots.kill(d); continue; }
-        if (d.color !== "gel") continue;
         const li = Math.floor((g.gelBottom - d.y) / g.lh);
         if (li < d.chk) { d.chk = li; if (Math.random() < 0.3) dots.kill(d); }
         if (d.y > g.tissueTop + 8) dots.kill(d);
@@ -1735,7 +1740,7 @@ Steps[0] = {
     }), { rootMargin: "-42% 0px -42% 0px" });
     $$(".beat").forEach(b => io.observe(b));
     $("#startBtn").addEventListener("click", () => {
-      badge("chronic wound"); badge("nitric oxide (NO)"); badge("therapeutic peptide (TAP2)");
+      badge("chronic wound"); badge("inflammation"); badge("nitric oxide (NO)"); badge("therapeutic peptide (v14)"); badge("growth factor (FGF2)");
       complete(0); goTo(1);
     });
   }
@@ -1744,7 +1749,7 @@ Steps[0] = {
 /* ================= STEP 1 · SORT ================= */
 Steps[1] = (() => {
   const CARDS = [
-    { id: "make", t: "The bacteria make medicine", zt: "細菌製造藥物", bin: "add", why: "Making medicine puts more into the patch.", zwhy: "製造藥物會令貼片內的藥物增加。" },
+    { id: "make", t: "The patch releases medicine", zt: "貼片釋放藥物", bin: "add", why: "Releasing medicine adds more of it over time.", zwhy: "釋放藥物會令藥物隨著時間增加。" },
     { id: "colour", t: "The colour of the patch", zt: "貼片的顏色", bin: "none", why: "A blue or pink patch holds the same medicine.", zwhy: "藍色或粉紅色的貼片，裝著的藥物一樣多。" },
     { id: "break", t: "The medicine breaks down in the gel", zt: "藥物在凝膠中分解", bin: "remove", why: "Broken-down medicine is gone from the patch.", zwhy: "分解了的藥物就從貼片中消失了。" },
     { id: "shape", t: "The shape of the sticker", zt: "貼紙的形狀", bin: "none", why: "Round or square, the medicine inside doesn't change.", zwhy: "無論是圓形還是方形，裡面的藥物都不會改變。" },
@@ -1778,7 +1783,7 @@ Steps[1] = (() => {
     if (placed === CARDS.length && !quiet) finish();
   }
   function finish() {
-    note("Only three things change the medicine: it's made, it breaks down, it seeps out");
+    note("Only three things change the medicine: it's released, it breaks down, it seeps out");
     note("Colour and shape of the patch don't matter");
     badge("assumption");
     $("#s1disc").hidden = false;
@@ -1849,7 +1854,7 @@ Steps[2] = (() => {
         if ((mT += dt) > 0.9 / 5) { mT = 0; if (geo) dots.add({ x: geo.tx + 26, y: 28, vy: 160, color: "bact", r: 3.5, life: (geo.fillTop - 28) / 160 }); }
         if ((lT += dt) > 0.9 / Math.max(1, lost)) { lT = 0; if (geo) dots.add({ x: geo.tx + geo.tw - 10, y: geo.zeroY + 2, vy: 70, color: "wound", r: 3.5, life: .5 }); }
       }
-      geo = drawTank(ctx, w, h, shown, 40, dots, { dt, t, madeLabel: L("+5 MADE", "+5 製造"), lostLabel: L(`−${lost} LOST`, `−${lost} 流失`) });
+      geo = drawTank(ctx, w, h, shown, 40, dots, { dt, t, madeLabel: L("+5 RELEASED", "+5 釋放"), lostLabel: L(`−${lost} LOST`, `−${lost} 流失`) });
     });
     $("#s2pred").addEventListener("click", e => {
       const b = e.target.closest(".choice"); if (!b || running) return;
@@ -1877,8 +1882,8 @@ Steps[2] = (() => {
     const actual = lost < 5 ? "up" : lost === 5 ? "same" : "down";
     const word = { up: "went up", same: "stayed the same", down: "went down" }[actual];
     const wordZh = { up: "上升了", same: "保持不變", down: "下降了" }[actual];
-    const why = lost < 5 ? `5 made is more than ${lost} lost, so it gains ${5 - lost} a minute.` : lost === 5 ? "5 made and 5 lost cancel out, so nothing changes." : `7 lost is more than 5 made, so it drops 2 a minute.`;
-    const whyZh = lost < 5 ? `製造 5 多於流失 ${lost}，所以每分鐘增加 ${5 - lost}。` : lost === 5 ? "製造 5 和流失 5 互相抵消，所以沒有變化。" : "流失 7 多於製造 5，所以每分鐘減少 2。";
+    const why = lost < 5 ? `5 released is more than ${lost} lost, so it gains ${5 - lost} a minute.` : lost === 5 ? "5 released and 5 lost cancel out, so nothing changes." : `7 lost is more than 5 released, so it drops 2 a minute.`;
+    const whyZh = lost < 5 ? `釋放 5 多於流失 ${lost}，所以每分鐘增加 ${5 - lost}。` : lost === 5 ? "釋放 5 和流失 5 互相抵消，所以沒有變化。" : "流失 7 多於釋放 5，所以每分鐘減少 2。";
     const more = lost === 2 ? [" <b>Now try Lost 5 and Lost 7.</b>", "<b>現在試試「流失 5」和「流失 7」。</b>"] : ["", ""];
     if (pred === actual) say("#s2say", "good", `You predicted it and it ${word}. ${why}${more[0]}`, `你預測對了，它${wordZh}。${whyZh}${more[1]}`);
     else say("#s2say", "warn", `Watch what happens: it ${word}. ${why}${more[0]}`, `留意發生了甚麼：它${wordZh}。${whyZh}${more[1]}`);
@@ -1890,8 +1895,8 @@ Steps[2] = (() => {
   }
   function reveal() {
     $("#s2disc").hidden = false;
-    badge("production"); badge("degradation");
-    note("Change each minute = made − lost");
+    badge("release"); badge("degradation");
+    note("Change each minute = released − lost");
     complete(2);
   }
   function restore() { $$("#s2lost .choice").forEach(b => b.disabled = false); $("#s2seq").innerHTML = "<span>20</span><i>→</i><span>23</span><i>→</i><span>26</span><i>→</i><span>29</span>"; tried.add(5); tried.add(7); reveal(); }
@@ -1905,7 +1910,7 @@ Steps[3] = (() => {
   function init() {
     new Scene($("#s3canvas"), (ctx, w, h, dt, t) => {
       shown += (level - shown) * Math.min(1, dt * 5);
-      geo = drawTank(ctx, w, h, shown, 20, dots, { dt, t, allowNeg: true, madeLabel: L("BACTERIA OFF", "細菌關閉"), lostLabel: lostNow ? L(`−${fmt(lostNow)} LOST`, `−${fmt(lostNow)} 流失`) : "" });
+      geo = drawTank(ctx, w, h, shown, 20, dots, { dt, t, allowNeg: true, madeLabel: L("RELEASE OFF", "停止釋放"), lostLabel: lostNow ? L(`−${fmt(lostNow)} LOST`, `−${fmt(lostNow)} 流失`) : "" });
     });
     const runRule = async (rule) => {
       if (running) return; running = true;
@@ -1977,9 +1982,9 @@ Steps[3] = (() => {
 
 /* ================= STEP 4 · STEP BY STEP ================= */
 Steps[4] = (() => {
-  const ANS = [12, 21.6, 29.28];
+  const P0 = 20, ANS = [28, 34.4, 39.52];
   let row = 0, pred = null, animMin = -1, made = 12, ran = false;
-  const series = (m, n = 50) => { const p = [[0, 0]]; let l = 0; for (let i = 1; i <= n; i++) { l = Model.next(l, m); p.push([i, l]); } return p; };
+  const series = (m, n = 50) => { const p = [[0, P0]]; let l = P0; for (let i = 1; i <= n; i++) { l = Model.next(l, m); p.push([i, l]); } return p; };
   function bars(level, mEl, lEl, mv, lv, madeV) {
     const lost = level * 0.2, max = 22;
     $(mEl).style.width = Math.min(100, madeV / max * 100) + "%"; $(lEl).style.width = Math.min(100, lost / max * 100) + "%";
@@ -1988,7 +1993,7 @@ Steps[4] = (() => {
   function renderRows() {
     const tb = $("#s4table tbody"); tb.innerHTML = "";
     for (let i = 0; i <= Math.min(row, 2); i++) {
-      const old = i === 0 ? 0 : ANS[i - 1];
+      const old = i === 0 ? P0 : ANS[i - 1];
       const done = i < row;
       tb.insertAdjacentHTML("beforeend", `<tr>
         <td>${i + 1}</td><td>${fmt(old)}</td><td style="color:var(--bact)">+12</td>
@@ -2009,7 +2014,7 @@ Steps[4] = (() => {
           renderRows(); if (row === 3) { $("#s4predWrap").hidden = false; } else $(`#s4in${row}`)?.focus();
         } else if (strict) {
           inp.classList.add("try");
-          const old = row === 0 ? 0 : ANS[row - 1];
+          const old = row === 0 ? P0 : ANS[row - 1];
           say("#s4say", "warn", `Not quite. Try: <span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)}</span>`, `差一點。試試：<span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)}</span>`);
         }
       };
@@ -2022,7 +2027,7 @@ Steps[4] = (() => {
     renderRows();
     $("#s4table").addEventListener("click", e => {
       const b = e.target.closest("[data-work]"); if (!b) return;
-      const i = +b.dataset.work, old = i === 0 ? 0 : ANS[i - 1];
+      const i = +b.dataset.work, old = i === 0 ? P0 : ANS[i - 1];
       $(`#s4lost${i}`).textContent = "−" + fmt(old * .2, 2);
       say("#s4say", "info", `Calculator: <span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)} = ?</span> Type your answer in the box.`, `計算：<span class="num">${fmt(old)} + 12 − ${fmt(old * .2, 2)} = ?</span> 把答案輸入格子裡。`);
       $(`#s4in${i}`)?.focus();
@@ -2041,7 +2046,7 @@ Steps[4] = (() => {
     $("#s4layers").addEventListener("input", e => {
       const n = +e.target.value; made = 4 * n; $("#s4layersOut").textContent = n;
       const st = made / .2; $("#s4level").textContent = fmt(st); bars(st, "#s4made", "#s4lost", "#s4madeV", "#s4lostV", made);
-      say("#s4micro", "info", `${n} layer${n > 1 ? "s" : ""} make ${made} a minute, so the patch settles at <b class="num">${fmt(st)}</b>.`, `${n} 層每分鐘製造 ${made}，所以貼片會穩定在 <b class="num">${fmt(st)}</b>。`);
+      say("#s4micro", "info", `${n} layer${n > 1 ? "s" : ""} release${n > 1 ? "" : "s"} ${made} a minute, so the patch settles at <b class="num">${fmt(st)}</b>.`, `${n} 層每分鐘釋放 ${made}，所以貼片會穩定在 <b class="num">${fmt(st)}</b>。`);
     });
   }
   async function run() {
@@ -2063,16 +2068,16 @@ Steps[4] = (() => {
     animMin = 50;
     const scope = (en, zh) => `<div class="microscope"><span class="label">${B("Mistake microscope", "錯誤顯微鏡")}</span><span>${B(en, zh)}</span></div>`;
     if (pred === "flat") say("#s4micro", "good", "You predicted it: it levels off at <b class='num'>60</b>.", "你預測對了：它會穩定在 <b class='num'>60</b>。");
-    else if (pred === "rise") $("#s4micro").innerHTML = scope("Look at the bars. <b>Made</b> stays at 12, but <b>lost</b> grows as the patch fills up. At 60, lost is 12 too, so nothing changes any more. It can't keep rising.",
-      "看看那兩條橫棒。<b>製造</b>一直是 12，但隨著貼片漸漸填滿，<b>流失</b>會越來越多。到了 60，流失也是 12，所以不再有任何變化。它不可能一直上升。");
-    else $("#s4micro").innerHTML = scope("The bacteria are switched <b>on</b> this time, so 12 keeps arriving every minute. The level can only drop to zero if nothing is made.",
-      "這次細菌是<b>啟動</b>的，所以每分鐘都有 12 份新藥物。只有在完全沒有製造的情況下，水平才會跌到零。");
+    else if (pred === "rise") $("#s4micro").innerHTML = scope("Look at the bars. <b>Released</b> stays at 12, but <b>lost</b> grows as the patch fills up. At 60, lost is 12 too, so nothing changes any more. It can't keep rising.",
+      "看看那兩條橫棒。<b>釋放</b>一直是 12，但隨著貼片漸漸填滿，<b>流失</b>會越來越多。到了 60，流失也是 12，所以不再有任何變化。它不可能一直上升。");
+    else $("#s4micro").innerHTML = scope("The patch keeps <b>releasing</b> this time, so 12 keeps arriving every minute. The level can only drop to zero if nothing is released.",
+      "這次貼片一直<b>釋放</b>，所以每分鐘都有 12 份藥物到達。只有在完全沒有釋放的情況下，水平才會跌到零。");
     finish();
   }
   function finish() {
     $("#s4whatif").hidden = false; setRangeFill($("#s4layers"));
     badge("parameter");
-    value("made3", "Made by 3 layers", "12 / min");
+    value("made3", "Released by 3 layers", "12 / min");
     complete(4);
   }
   function restore() {
@@ -2130,17 +2135,17 @@ Steps[5] = (() => {
   function check() {
     const st = made / .2;
     if (made === 4) finish();
-    else say("#s5say", "info", `Made ${made} settles at <b class="num">${fmt(st)}</b>. That's ${st > 20 ? "too high" : "too low"}. ${st > 20 ? "Make less." : "Make more."}`,
-      `製造 ${made} 會穩定在 <b class="num">${fmt(st)}</b>，${st > 20 ? "太高了。要少製造一點。" : "太低了。要多製造一點。"}`);
+    else say("#s5say", "info", `Released ${made} settles at <b class="num">${fmt(st)}</b>. That's ${st > 20 ? "too high" : "too low"}. ${st > 20 ? "Release less." : "Release more."}`,
+      `釋放 ${made} 會穩定在 <b class="num">${fmt(st)}</b>，${st > 20 ? "太高了。要少釋放一點。" : "太低了。要多釋放一點。"}`);
   }
   function finish() {
     solved = true; made = 4; anim = 50; challenge = true;
     $("#s5made-in").value = 4; $("#s5madeOut").textContent = 4; setRangeFill($("#s5made-in")); updBars(20);
-    say("#s5say", "good", "Flat at 20! It makes <b class='num'>4</b> a minute. That's exactly <b>one layer</b> of bacteria.", "穩定在 20！它每分鐘製造 <b class='num'>4</b> 份藥物，剛好是<b>一層</b>細菌的產量。");
+    say("#s5say", "good", "Flat at 20! It releases <b class='num'>4</b> a minute. That's exactly <b>one layer</b> of gel.", "穩定在 20！它每分鐘釋放 <b class='num'>4</b> 份藥物，剛好是<b>一層</b>凝膠的釋放量。");
     $("#s5disc").hidden = false;
     badge("steady state");
-    note("Every layer holds the same number of bacteria");
-    value("rule", "Patch level", "made ÷ 0.2");
+    note("Every layer holds the same amount of medicine");
+    value("rule", "Patch level", "released ÷ 0.2");
     value("level3", "3-layer patch level", "60");
     complete(5);
   }
@@ -2157,7 +2162,7 @@ Steps[6] = (() => {
   function init() {
     new Scene($("#s6canvas"), (ctx, w, h, dt, t) => {
       shownLoss += (loss - shownLoss) * Math.min(1, dt * 10);
-      const a = axes(ctx, w, h, { xMax: 7, yMax: 70, xTicks: [0, 1, 2, 3, 4, 5, 6, 7], yTicks: [0, 20, 40, 60], xLabel: L("minutes after switching off", "關閉細菌後的分鐘數"), yLabel: L("medicine", "藥物") });
+      const a = axes(ctx, w, h, { xMax: 7, yMax: 70, xTicks: [0, 1, 2, 3, 4, 5, 6, 7], yTicks: [0, 20, 40, 60], xLabel: L("minutes after the release stopped", "停止釋放後的分鐘數"), yLabel: L("medicine", "藥物") });
       const pts = []; for (let x = 0; x <= 7.001; x += 0.1) pts.push([x, 60 * Math.pow(1 - shownLoss, x)]);
       polyline(ctx, pts, a.X, a.Y, passed ? "gel" : "ink", 3);
       DATA.forEach(([x, y], i) => {
@@ -2188,7 +2193,7 @@ Steps[6] = (() => {
     say("#s6say", "good", "Locked at <b class='num'>20%</b>. Your guess from step 3 was right, and now the data backs it up.", "已鎖定在 <b class='num'>20%</b>。你在第 3 步的猜測是正確的，現在還有數據支持。");
     $("#s6disc").hidden = false;
     value("loss", "Share lost / min", "20% (matches data)");
-    note("The bacteria keep working at a steady rate");
+    note("The patch keeps releasing at a steady rate");
     complete(6);
   }
   return { init, restore: finish };
@@ -2249,7 +2254,7 @@ Steps[7] = (() => {
       press($("#s7opts"), b);
       if (b.dataset.v === "broke") {
         answered = true; b.classList.add("good");
-        say("#s7say", "good", "Yes. Some breaks down inside each layer, so only 70% makes it to the next one.", "對。每一層裡都有部分藥物分解，所以只有 70% 能到達下一層。");
+        say("#s7say", "good", "Yes. Some breaks down inside each layer, so only 70% gets through to the next one.", "對。每一層裡都有部分藥物分解，所以只有 70% 能到達下一層。");
         $("#s7disc").hidden = false; badge("diffusion");
         $("#s7whatif").hidden = false; setRangeFill($("#s7n"));
         say("#s7say2", "info", "Now drag the slider to the right. How many layers until almost nothing arrives?", "現在把滑桿拖向右邊。要穿過多少層，才會幾乎沒有藥物到達？");
@@ -2322,13 +2327,13 @@ Steps[8] = (() => {
     $("#s8layers").addEventListener("click", e => { const b = e.target.closest(".lp-btn"); if (!b) return; layers = +b.dataset.k; healTarget = 0; update(true); });
     $("#s8bact").addEventListener("click", e => {
       const b = e.target.closest(".choice"); if (!b) return;
-      if (b.dataset.v === "high") { say("#s8say", "warn", "High is locked. Bacteria pushed that hard <b>burn out</b> and stop making medicine.", "「高」已鎖定。細菌被逼得太緊會<b>過勞衰竭</b>，然後停止製造藥物。"); return; }
+      if (b.dataset.v === "high") { say("#s8say", "warn", "High is locked &mdash; you can't load that much medicine into one gel.", "「高」已鎖定——凝膠無法裝載那麼多藥物。"); return; }
       bact = b.dataset.v; press($("#s8bact"), b); healTarget = 0; update(true);
     });
     $("#s8submit").addEventListener("click", submit);
     $("#s8bonus").addEventListener("click", e => {
       const b = e.target.closest(".choice"); if (!b) return; press($("#s8bonus"), b);
-      if (b.dataset.v === "no") { b.classList.add("good"); say("#s8bonusSay", "good", "Right. With Low bacteria the best is about <b class='num'>10.3</b> at 3 layers, never 18. A model can show a design is impossible before anyone builds it.", "對。細菌強度「低」時，最好的結果是 3 層、約 <b class='num'>10.3</b>，永遠達不到 18。模型可以在任何人動手製作之前，就證明某個設計不可能成功。"); }
+      if (b.dataset.v === "no") { b.classList.add("good"); say("#s8bonusSay", "good", "Right. With a Low release rate the best is about <b class='num'>10.3</b> at 3 layers, never 18. A model can show a design is impossible before anyone builds it.", "對。釋放速率「低」時，最好的結果是 3 層、約 <b class='num'>10.3</b>，永遠達不到 18。模型可以在任何人動手製作之前，就證明某個設計不可能成功。"); }
       else { b.classList.add("meh"); say("#s8bonusSay", "warn", "Watch what happens: switch to <b>Low</b> and try every thickness. Does the healing bar ever reach the line?", "留意發生了甚麼：切換到<b>低</b>，然後試遍每一種厚度。癒合量表有到達那條線嗎？"); }
     });
     new Scene($("#s8canvas"), (ctx, w, h, dt, t) => {
@@ -2360,7 +2365,7 @@ Steps[8] = (() => {
         ctx.fillStyle = C.ink; ctx.font = `700 11px ${C.mono}`; ctx.textAlign = "center"; ctx.fillText(fmt(v), a.X(k), a.Y(v) - 6);
       }
       polyline(ctx, [1, 2, 3, 4, 5].map(k => [k, Model.design(k, "low").reach]), a.X, a.Y, "ink-2", 2, [3, 4]);
-      ctx.fillStyle = C["ink-2"]; ctx.textAlign = "left"; ctx.fillText(L("low bacteria", "細菌強度低"), a.X(3.6), a.Y(Model.design(4, "low").reach) - 8);
+      ctx.fillStyle = C["ink-2"]; ctx.textAlign = "left"; ctx.fillText(L("low release", "釋放速率低"), a.X(3.6), a.Y(Model.design(4, "low").reach) - 8);
     });
   }
   function update(interact) {
@@ -2372,9 +2377,9 @@ Steps[8] = (() => {
     if (!interact) return;
     let msg, zh, kind = "info";
     const v = `<b class="num">${fmt(r.reach)}</b>`;
-    if (bact === "low") { msg = `Only ${v} arrives. ${r.heals ? "" : "Low bacteria can't make enough."}`; zh = `只有 ${v} 到達。${r.heals ? "" : "細菌強度「低」製造不到足夠的藥物。"}`; }
+    if (bact === "low") { msg = `Only ${v} arrives. ${r.heals ? "" : "A Low release rate can't provide enough."}`; zh = `只有 ${v} 到達。${r.heals ? "" : "釋放速率「低」提供不到足夠的藥物。"}`; }
     else if (r.heals) { kind = "good"; msg = `${v} reaches the wound. That's enough to heal.${layers === 3 ? " Is this the most you can get?" : ""}`; zh = `${v} 到達傷口，足以令傷口癒合。${layers === 3 ? "這是你能得到的最多嗎？" : ""}`; }
-    else if (layers <= 1) { msg = `${v} arrives. <b>Too little medicine made</b> in one layer.`; zh = `${v} 到達。一層細菌<b>製造的藥物太少</b>。`; }
+    else if (layers <= 1) { msg = `${v} arrives. <b>Too little medicine released</b> in one layer.`; zh = `${v} 到達。一層凝膠<b>釋放的藥物太少</b>。`; }
     else { msg = `${v} arrives. <b>Too far to travel</b>: it breaks down on the way.`; zh = `${v} 到達。<b>路程太遠</b>：藥物在途中分解了。`; }
     say("#s8say", kind, msg, zh);
   }
@@ -2414,14 +2419,14 @@ const FR = (a, b) => `<span class="fr"><span>${a}</span><span>${b}</span></span>
 const OP = o => `<span class="op">${o}</span>`;
 const MATHS = {
   1: {
-    bridge: "Your three boxes are the only three things that can change how much of a substance sits anywhere: something makes it, something removes it, and it spreads from where there is a lot to where there is little. Every transport model in biology is those three terms added together.",
+    bridge: "Your three boxes are the only three things that can change how much of a substance sits anywhere: something releases it, something removes it, and it spreads from where there is a lot to where there is little. Every transport model in biology is those three terms added together.",
     eq: `${FR("∂P", "∂t")} ${OP("=")} D ${FR("∂²P", "∂x²")} ${OP("−")} kP ${OP("+")} S`,
-    key: [["∂P/∂t", "how fast the amount is changing"], ["D ∂²P/∂x²", "spreading out"], ["kP", "being lost"], ["S", "being made"]]
+    key: [["∂P/∂t", "how fast the amount is changing"], ["D ∂²P/∂x²", "spreading out"], ["kP", "being lost"], ["S", "being released"]]
   },
   2: {
     bridge: "When you only care how much medicine is in the patch in total, and not whereabouts in the patch it is, the spreading term drops out. What is left is the simplest useful model in biology — and you built it from two numbers.",
     eq: `${FR("dP", "dt")} ${OP("=")} S ${OP("−")} kP`,
-    key: [["S", "made each minute"], ["k", "share lost each minute"], ["P", "how much is in the patch right now"]]
+    key: [["S", "released each minute"], ["k", "share lost each minute"], ["P", "how much is in the patch right now"]]
   },
   3: {
     bridge: "Losing a share instead of a fixed amount is what real molecules do, and it is why a share-based rule can never take you below zero. Chemists usually quote it as a half-life — the time for half of what is there to vanish — and the decay rate follows straight from it.",
@@ -2463,12 +2468,12 @@ const MATHS = {
 /* the same panels in Chinese; eq is only given where the equation itself has words in it */
 const MATHS_ZH = {
   1: {
-    bridge: "你的三個格子，正是唯一能改變某處物質數量的三件事：有東西製造它、有東西移除它，而它會從多的地方擴散到少的地方。生物學中每一個物質傳輸模型，都是由這三項加起來組成的。",
-    key: [["∂P/∂t", "數量改變的速度"], ["D ∂²P/∂x²", "向外擴散"], ["kP", "流失"], ["S", "製造"]]
+    bridge: "你的三個格子，正是唯一能改變某處物質數量的三件事：有東西釋放它、有東西移除它，而它會從多的地方擴散到少的地方。生物學中每一個物質傳輸模型，都是由這三項加起來組成的。",
+    key: [["∂P/∂t", "數量改變的速度"], ["D ∂²P/∂x²", "向外擴散"], ["kP", "流失"], ["S", "釋放"]]
   },
   2: {
     bridge: "如果你只關心貼片內總共有多少藥物，而不理會藥物在貼片的哪個位置，擴散那一項就可以刪去。剩下的，就是生物學中最簡單而又有用的模型——而你只用兩個數字就把它建立出來了。",
-    key: [["S", "每分鐘製造的量"], ["k", "每分鐘流失的比例"], ["P", "貼片內現有的藥物量"]]
+    key: [["S", "每分鐘釋放的量"], ["k", "每分鐘流失的比例"], ["P", "貼片內現有的藥物量"]]
   },
   3: {
     bridge: "每次流失一個比例，而不是固定的量，正是真實分子的表現，這也是為甚麼按比例流失的規則永遠不會跌到零以下。化學家通常用半衰期來描述它——即現有物質減少一半所需的時間——而衰減率可以直接由半衰期計算出來。",
@@ -2551,17 +2556,17 @@ const QUIZ = {
     why: ["Anything that takes medicine out of the patch goes in <b>Removes medicine</b>, just like medicine seeping into the wound.", "任何把藥物帶離貼片的東西，都應該放進<b>減少藥物</b>——就像藥物滲進傷口一樣。"]
   },
   2: {
-    q: ["A patch has <b>30</b> medicine. Bacteria make <b>4</b> a minute and <b>6</b> is lost a minute. How much is left after <b>2 minutes</b>?", "貼片裡有 <b>30</b> 份藥物。細菌每分鐘製造 <b>4</b>，每分鐘流失 <b>6</b>。<b>2 分鐘</b>後還剩多少？"],
+    q: ["A patch has <b>30</b> medicine. The patch releases <b>4</b> a minute and <b>6</b> is lost a minute. How much is left after <b>2 minutes</b>?", "貼片裡有 <b>30</b> 份藥物。貼片每分鐘釋放 <b>4</b>，每分鐘流失 <b>6</b>。<b>2 分鐘</b>後還剩多少？"],
     opts: [
       { t: ["28", "28"], fb: ["That's after 1 minute. Keep going for one more.", "這是 1 分鐘後的數量，再多計一分鐘。"] },
       { t: ["26", "26"] },
-      { t: ["34", "34"], fb: ["Check the direction: more is lost (6) than made (4), so it goes down, not up.", "留意方向：流失（6）多於製造（4），所以是下降，不是上升。"] },
-      { t: ["18", "18"], fb: ["You took away the 6 lost each minute but forgot to add the 4 made.", "你減去了每分鐘流失的 6，但忘了加上每分鐘製造的 4。"] },
+      { t: ["34", "34"], fb: ["Check the direction: more is lost (6) than released (4), so it goes down, not up.", "留意方向：流失（6）多於釋放（4），所以是下降，不是上升。"] },
+      { t: ["18", "18"], fb: ["You took away the 6 lost each minute but forgot to add the 4 released.", "你減去了每分鐘流失的 6，但忘了加上每分鐘釋放的 4。"] },
     ], a: 1,
-    why: ["change = made − lost = 4 − 6 = −2 each minute. 30 → 28 → <b>26</b>.", "變化 = 製造 − 流失 = 4 − 6 = 每分鐘 −2。30 → 28 → <b>26</b>。"]
+    why: ["change = released − lost = 4 − 6 = −2 each minute. 30 → 28 → <b>26</b>.", "變化 = 釋放 − 流失 = 4 − 6 = 每分鐘 −2。30 → 28 → <b>26</b>。"]
   },
   3: {
-    q: ["The bacteria are off. A patch has <b>50</b> medicine and loses <b>20%</b> every minute. How much is left after <b>2 minutes</b>?", "細菌關閉了。貼片裡有 <b>50</b> 份藥物，每分鐘流失 <b>20%</b>。<b>2 分鐘</b>後還剩多少？"],
+    q: ["The patch has stopped releasing. It has <b>50</b> medicine and loses <b>20%</b> every minute. How much is left after <b>2 minutes</b>?", "貼片已停止釋放。貼片裡有 <b>50</b> 份藥物，每分鐘流失 <b>20%</b>。<b>2 分鐘</b>後還剩多少？"],
     opts: [
       { t: ["30", "30"], fb: ["That's Rule A thinking: taking 10 away twice. But minute 2 starts from 40, and 20% of 40 is only 8.", "這是規則 A 的想法：兩次都減 10。但第 2 分鐘由 40 開始，而 40 的 20% 只是 8。"] },
       { t: ["40", "40"], fb: ["That's after 1 minute. Minute 2 loses 20% of 40.", "這是 1 分鐘後的數量。第 2 分鐘還要流失 40 的 20%。"] },
@@ -2573,22 +2578,22 @@ const QUIZ = {
   4: {
     q: ["Use the rule <b>new = old + 12 − 0.2 × old</b>. If <b>old = 40</b>, what is <b>new</b>?", "用這條規則：<b>新 = 舊 + 12 − 0.2 × 舊</b>。如果<b>舊 = 40</b>，<b>新</b>是多少？"],
     opts: [
-      { t: ["52", "52"], fb: ["You added the 12 made but forgot what is lost: 0.2 × 40 = 8.", "你加上了製造的 12，但忘了減去流失的量：0.2 × 40 = 8。"] },
-      { t: ["32", "32"], fb: ["You took away the 8 lost but forgot to add the 12 made.", "你減去了流失的 8，但忘了加上製造的 12。"] },
+      { t: ["52", "52"], fb: ["You added the 12 released but forgot what is lost: 0.2 × 40 = 8.", "你加上了釋放的 12，但忘了減去流失的量：0.2 × 40 = 8。"] },
+      { t: ["32", "32"], fb: ["You took away the 8 lost but forgot to add the 12 released.", "你減去了流失的 8，但忘了加上釋放的 12。"] },
       { t: ["44", "44"] },
       { t: ["60", "60"], fb: ["60 is where it levels off in the end. One minute from 40 only gets part of the way there.", "60 是最終穩定的水平。由 40 開始只過一分鐘，還未到那裡。"] },
     ], a: 2,
     why: ["0.2 × 40 = 8 is lost, so 40 + 12 − 8 = <b>44</b>. Still rising, but by less each minute, on its way to 60.", "流失 0.2 × 40 = 8，所以 40 + 12 − 8 = <b>44</b>。仍在上升，但每分鐘升得越來越少，正逐步接近 60。"]
   },
   5: {
-    q: ["A 2-layer patch makes <b>8</b> medicine a minute and loses <b>20%</b> a minute. Where does it level off?", "一塊 2 層的貼片每分鐘製造 <b>8</b> 份藥物，每分鐘流失 <b>20%</b>。它最後會穩定在哪裡？"],
+    q: ["A 2-layer patch releases <b>8</b> medicine a minute and loses <b>20%</b> a minute. Where does it level off?", "一塊 2 層的貼片每分鐘釋放 <b>8</b> 份藥物，每分鐘流失 <b>20%</b>。它最後會穩定在哪裡？"],
     opts: [
       { t: ["40", "40"] },
-      { t: ["1.6", "1.6"], fb: ["That's 20% of 8: you multiplied. The level is made <b>÷</b> share lost.", "這是 8 的 20%：你用了乘法。水平應該是製造 <b>÷</b> 流失比例。"] },
-      { t: ["8", "8"], fb: ["At 8, only 1.6 is lost a minute while 8 is made, so it would keep rising.", "在 8 的時候，每分鐘只流失 1.6，卻製造 8，所以還會繼續上升。"] },
-      { t: ["60", "60"], fb: ["60 is the 3-layer patch, which makes 12 a minute. This one makes 8.", "60 是 3 層貼片（每分鐘製造 12）的水平。這塊貼片只製造 8。"] },
+      { t: ["1.6", "1.6"], fb: ["That's 20% of 8: you multiplied. The level is released <b>÷</b> share lost.", "這是 8 的 20%：你用了乘法。水平應該是釋放 <b>÷</b> 流失比例。"] },
+      { t: ["8", "8"], fb: ["At 8, only 1.6 is lost a minute while 8 is released, so it would keep rising.", "在 8 的時候，每分鐘只流失 1.6，卻釋放 8，所以還會繼續上升。"] },
+      { t: ["60", "60"], fb: ["60 is the 3-layer patch, which releases 12 a minute. This one releases 8.", "60 是 3 層貼片（每分鐘釋放 12）的水平。這塊貼片只釋放 8。"] },
     ], a: 0,
-    why: ["It stops changing when lost = made, and 20% of 40 is 8. Level = made ÷ share lost = 8 ÷ 0.2 = <b>40</b>.", "當流失 = 製造時就不再改變，而 40 的 20% 正是 8。水平 = 製造 ÷ 流失比例 = 8 ÷ 0.2 = <b>40</b>。"]
+    why: ["It stops changing when lost = released, and 20% of 40 is 8. Level = released ÷ share lost = 8 ÷ 0.2 = <b>40</b>.", "當流失 = 釋放時就不再改變，而 40 的 20% 正是 8。水平 = 釋放 ÷ 流失比例 = 8 ÷ 0.2 = <b>40</b>。"]
   },
   6: {
     q: ["The lab tests a new gel. Now the dots fade <b>faster</b> than your model's curve. What should you do with the <b>share lost</b> slider?", "實驗室測試了一種新的凝膠。現在圓點下降得比模型的曲線<b>更快</b>。你應該怎樣調整<b>流失比例</b>滑桿？"],
@@ -2612,11 +2617,11 @@ const QUIZ = {
   8: {
     q: ["Why does a <b>5-layer</b> patch get <b>less</b> medicine to the wound than a 3-layer one?", "為甚麼 <b>5 層</b>的貼片送到傷口的藥物，反而比 3 層的<b>少</b>？"],
     opts: [
-      { t: ["A thicker patch has fewer bacteria", "較厚的貼片細菌較少"], fb: ["It's the other way round: every extra layer adds bacteria. Having them isn't the problem, where they sit is.", "剛好相反：每多一層就多一些細菌。問題不在於細菌的數量，而在於它們的位置。"] },
-      { t: ["The top layers never switch on, and medicine made high up has further to travel", "頂部的層永遠不會啟動，而在高處製造的藥物要走的路更長"] },
+      { t: ["A thicker patch holds less medicine", "較厚的貼片藥物較少"], fb: ["It's the other way round: every extra layer holds more medicine. Having more isn't the problem, where it sits is.", "剛好相反：每多一層就裝載更多藥物。問題不在於藥物的數量，而在於它們的位置。"] },
+      { t: ["Medicine loaded high up has further to travel, and more of it breaks down on the way", "裝載在高處的藥物要走的路更長，途中分解得更多"] },
       { t: ["The wound can only take in 18 medicine", "傷口最多只能吸收 18 份藥物"], fb: ["18 is the least needed to heal, not a limit. More than 18 is fine.", "18 是癒合所需的最少量，而不是上限。多於 18 也沒有問題。"] },
     ], a: 1,
-    why: ["Extra layers add bacteria, but the warning gas fades before it reaches the top ones, and medicine made high up breaks down on its long trip. The best design balances the two.", "多加的層數帶來更多細菌，但警告氣體還未到達頂部便已消散，而在高處製造的藥物在漫長的路程中會分解。最佳設計要在兩者之間取得平衡。"]
+    why: ["Extra layers hold more medicine, but the medicine loaded high up breaks down on its long trip to the wound. The best design balances the two.", "多加的層數裝載更多藥物，但裝在高處的藥物在漫長的路程中會分解。最佳設計要在兩者之間取得平衡。"]
   },
   9: {
     q: ["You change <b>pass_frac</b> from 0.7 to <b>0.6</b>, so medicine gets through each layer <i>worse</i>. What happens to the best thickness?", "你把 <b>pass_frac</b> 由 0.7 改為 <b>0.6</b>，即是藥物穿過每一層的能力變<i>差</i>了。最佳厚度會怎樣？"],
@@ -2692,21 +2697,21 @@ function renderQuiz(n, last) {
 Steps[9] = (() => {
   const CDN = "https://cdn.jsdelivr.net/pyodide/v0.29.5/full/";
   /* the starting code, in either language; v holds the four numbers exactly as typed */
-  const PARAMS = ["made_per_layer", "loss", "pass_frac", "threshold"];
-  const DEFAULTS = { made_per_layer: "4", loss: "0.2", pass_frac: "0.7", threshold: "18" };
+  const PARAMS = ["released_per_layer", "loss", "pass_frac", "threshold"];
+  const DEFAULTS = { released_per_layer: "4", loss: "0.2", pass_frac: "0.7", threshold: "18" };
   const startCode = (lang, v = DEFAULTS) => {
     const p = k => (v[k] + " ").padEnd(6);
     return lang === "zh" ? `# 你在第 5 步和第 7 步建立的規則，寫成程式碼。
 # 改一個數字，按「執行」，看看圖表的變化。
 
-made_per_layer = ${p("made_per_layer")}# 每層每分鐘製造的藥物
-loss           = ${p("loss")}# 每分鐘流失的比例
-pass_frac      = ${p("pass_frac")}# 能穿過一層的比例
-threshold      = ${p("threshold")}# 開始癒合所需的量
+released_per_layer = ${p("released_per_layer")}# 每層每分鐘釋放的藥物
+loss               = ${p("loss")}# 每分鐘流失的比例
+pass_frac          = ${p("pass_frac")}# 能穿過一層的比例
+threshold          = ${p("threshold")}# 開始癒合所需的量
 
 def reaching_wound(layers):
-    made  = made_per_layer * layers
-    level = made / loss                 # 第 5 步
+    released = released_per_layer * layers
+    level    = released / loss          # 第 5 步
     return level * pass_frac ** layers  # 第 7 步
 
 for layers in range(1, 11):
@@ -2720,14 +2725,14 @@ print("最佳厚度：", best, "層")
 ` : `# The rule you built in steps 5 and 7, as code.
 # Change a number, press Run, watch the graph.
 
-made_per_layer = ${p("made_per_layer")}# one layer makes this per minute
-loss           = ${p("loss")}# share lost each minute
-pass_frac      = ${p("pass_frac")}# share getting through one layer
-threshold      = ${p("threshold")}# enough to start healing
+released_per_layer = ${p("released_per_layer")}# one layer releases this per minute
+loss               = ${p("loss")}# share lost each minute
+pass_frac          = ${p("pass_frac")}# share getting through one layer
+threshold          = ${p("threshold")}# enough to start healing
 
 def reaching_wound(layers):
-    made  = made_per_layer * layers
-    level = made / loss                 # step 5
+    released = released_per_layer * layers
+    level    = released / loss          # step 5
     return level * pass_frac ** layers  # step 7
 
 for layers in range(1, 11):
@@ -2790,7 +2795,7 @@ print("Best thickness:", best, "layers")
       const m = code.match(new RegExp("^\\s*" + name + "\\s*=\\s*(-?[0-9.]+)", "m"));
       return m ? parseFloat(m[1]) : dflt;
     };
-    const per = num("made_per_layer", 4), loss = num("loss", .2), pf = num("pass_frac", .7), thr = num("threshold", 18);
+    const per = num("released_per_layer", 4), loss = num("loss", .2), pf = num("pass_frac", .7), thr = num("threshold", 18);
     const f = L => (per * L) / loss * Math.pow(pf, L);
     const curve = Array.from({ length: 10 }, (_, i) => f(i + 1));
     let best = 1; curve.forEach((v, i) => { if (v > curve[best - 1]) best = i + 1; });
@@ -2944,7 +2949,7 @@ Steps[10] = {
     $("#lcBact").innerHTML = B(d.bact[0].toUpperCase() + d.bact.slice(1), { low: "低", medium: "中", high: "高" }[d.bact]);
     $("#lcReach").innerHTML = `${fmt(d.reach)} <small class="kbd-hint" style="font-family:var(--body)">${B("above the 18 needed", "高於需要的 18")}</small>`;
     $("#lcAssume").innerHTML = S.assume.map(a => `<li>${nbText(a)}</li>`).join("");
-    const rules = [["change = made − lost", "變化 = 製造 − 流失"], ["lost = 20% × medicine now", "流失 = 20% × 現有藥物"], ["level in the patch = made ÷ 0.2", "貼片內的藥物水平 = 製造 ÷ 0.2"], ["each layer passes on 70%", "每一層傳下 70%"], ["heals if at least 18 reaches the wound", "至少有 18 到達傷口便會癒合"]];
+    const rules = [["change = released − lost", "變化 = 釋放 − 流失"], ["lost = 20% × medicine now", "流失 = 20% × 現有藥物"], ["level in the patch = released ÷ 0.2", "貼片內的藥物水平 = 釋放 ÷ 0.2"], ["each layer passes on 70%", "每一層傳下 70%"], ["heals if at least 18 reaches the wound", "至少有 18 到達傷口便會癒合"]];
     $("#lcRules").innerHTML = rules.map(([en, zh]) => `<li>${B(en, zh)}</li>`).join("");
   },
   restore() { complete(10); }
@@ -2955,7 +2960,7 @@ Steps[11] = (() => {
   const DEF = { per: 4, loss: 20, pass: 70, thr: 18, sel: 3 };
   const P = { ...DEF };
   const SL = [   // key, label, 中文, min, max, step, how the value reads
-    ["per", "Medicine made per layer", "每層製造的藥物", 1, 12, 1, v => B(v + " / min", v + " / 分鐘")],
+    ["per", "Medicine released per layer", "每層釋放的藥物", 1, 12, 1, v => B(v + " / min", v + " / 分鐘")],
     ["loss", "Share lost each minute", "每分鐘流失的比例", 5, 50, 1, v => v + "%"],
     ["pass", "Share passed per layer", "每層通過的比例", 40, 95, 1, v => v + "%"],
     ["thr", "Healing level", "癒合所需水平", 5, 40, 1, v => v],
