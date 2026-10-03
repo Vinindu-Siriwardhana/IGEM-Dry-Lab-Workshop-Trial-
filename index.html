@@ -169,6 +169,7 @@ main{min-width:0;display:flex;flex-direction:column;gap:28px}
 .tile{display:inline-block;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;animation:snap .5s cubic-bezier(.3,1.5,.5,1) both}
 .tile.m{border-color:var(--bact);color:var(--bact)}
 .tile.l{border-color:var(--wound);color:var(--wound)}
+.tile.g{border-color:var(--gel);color:var(--gel)}
 .tile.o{border:0;background:transparent;padding:4px 2px}
 @keyframes snap{from{transform:translateY(-18px) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
 .sci{display:inline-flex;align-items:center;gap:8px;font-size:14px;border:1px dashed var(--ink-2);border-radius:999px;padding:4px 12px 4px 6px;color:var(--ink-2);width:max-content;max-width:100%;animation:pop .5s}
@@ -186,12 +187,13 @@ main{min-width:0;display:flex;flex-direction:column;gap:28px}
 .card.placed{box-shadow:none;cursor:default}
 .card.bounce{animation:bounce .5s}
 @keyframes bounce{0%,100%{transform:none}25%{transform:translateX(-8px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
-.bins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.bins{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .bin{border:2px dashed var(--line);border-radius:16px;padding:12px;min-height:150px;display:flex;flex-direction:column;gap:8px;background:transparent;text-align:left;transition:border-color .2s,background .2s}
 .bin h4{margin:0;font-family:var(--display);font-size:18px;display:flex;align-items:center;gap:8px}
 .bin .sym{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-family:var(--mono);font-weight:800;color:var(--surface)}
 .bin[data-bin="add"] .sym{background:var(--bact)}
 .bin[data-bin="remove"] .sym{background:var(--wound)}
+.bin[data-bin="move"] .sym{background:var(--gel)}
 .bin[data-bin="none"] .sym{background:var(--ink-2)}
 .bin.over,.bin.armed{border-color:var(--focus);background:color-mix(in oklab,var(--focus) 7%,transparent)}
 .bin .slot{display:flex;flex-direction:column;gap:6px}
@@ -486,7 +488,7 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
       <div class="beat" data-beat="3">
         <span class="tag"><span data-l="en">The repair</span><span data-l="zh">修復</span></span>
         <h3><span data-l="en">FGF2 wakes the repair cells</span><span data-l="zh">FGF2 喚醒修復細胞</span></h3>
-        <p><span data-l="en">Our patch also carries a growth factor called <b>FGF2</b>. It tells repair cells to move in, multiply, and close the wound gap.</span><span data-l="zh">我們的貼片還帶着一種生長因子，叫做 <b>FGF2</b>。它會通知修復細胞移動過來、增生，把傷口的缺口填上。</span></p>
+        <p><span data-l="en">Our patch also carries a growth factor called <b>FGF2</b>. It tells repair cells to move in, multiply, and close the wound gap.</span><span data-l="zh">我們的貼片還帶著一種生長因子，叫做 <b>FGF2</b>。它會通知修復細胞移動過來、增生，把傷口的缺口填上。</span></p>
         <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">The repair cells are <b>fibroblasts</b>, and <b>FGF2</b> is a growth factor that speeds them up</span><span data-l="zh">修復細胞是<b>纖維母細胞</b>（fibroblast），而 <b>FGF2</b> 是加快它們工作的<b>生長因子</b>（growth factor）</span></span>
       </div>
       <div class="beat" data-beat="4">
@@ -519,7 +521,8 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
     <div class="deck" id="deck" aria-label="Cards to sort" data-aria-zh="待分類的卡片"></div>
     <div class="bins">
       <button class="bin" data-bin="add" aria-label="Adds medicine" data-aria-zh="增加藥物"><h4><span class="sym">+</span><span data-l="en">Adds medicine</span><span data-l="zh">增加藥物</span></h4><div class="slot"></div></button>
-      <button class="bin" data-bin="remove" aria-label="Removes medicine" data-aria-zh="減少藥物"><h4><span class="sym">−</span><span data-l="en">Removes medicine</span><span data-l="zh">減少藥物</span></h4><div class="slot"></div></button>
+      <button class="bin" data-bin="remove" aria-label="Breaks it down" data-aria-zh="分解掉"><h4><span class="sym">−</span><span data-l="en">Breaks it down</span><span data-l="zh">分解掉</span></h4><div class="slot"></div></button>
+      <button class="bin" data-bin="move" aria-label="Moves it down" data-aria-zh="往下移動"><h4><span class="sym">→</span><span data-l="en">Moves it down</span><span data-l="zh">往下移動</span></h4><div class="slot"></div></button>
       <button class="bin" data-bin="none" aria-label="Doesn't matter" data-aria-zh="沒有影響"><h4><span class="sym">0</span><span data-l="en">Doesn't matter</span><span data-l="zh">沒有影響</span></h4><div class="slot"></div></button>
     </div>
     <div id="s1say" aria-live="polite"></div>
@@ -527,8 +530,8 @@ html[data-lang="zh"] .nb-sec li.empty,html[data-lang="zh"] .lc-locked{font-style
   <div class="step-foot">
     <div class="discover" id="s1disc" hidden>
       <span class="k"><span data-l="en">You just decided</span><span data-l="zh">你剛剛決定了</span></span>
-      <div class="rule" data-l="en"><span class="tile m">released</span><span class="tile o">and</span><span class="tile l">lost</span><span class="tile o">are the only things that matter</span></div>
-      <div class="rule" data-l="zh"><span class="tile o">只有</span><span class="tile m">釋放</span><span class="tile o">和</span><span class="tile l">流失</span><span class="tile o">才是重要的</span></div>
+      <div class="rule" data-l="en"><span class="tile m">released</span><span class="tile o">, </span><span class="tile l">broken down</span><span class="tile o"> and </span><span class="tile g">seeping down</span><span class="tile o"> are the only things that matter</span></div>
+      <div class="rule" data-l="zh"><span class="tile o">只有</span><span class="tile m">釋放</span><span class="tile o">、</span><span class="tile l">分解</span><span class="tile o">和</span><span class="tile g">往下滲</span><span class="tile o">才是重要的</span></div>
       <p><span data-l="en">Ignoring colour and shape is a choice. Every model leaves things out on purpose.</span><span data-l="zh">忽略顏色和形狀是一個選擇。每個模型都會刻意省略一些東西。</span></p>
       <span class="sci"><span class="flask" aria-hidden="true">Sc</span><span data-l="en">Scientists call "something we pretend is true" an <b>assumption</b></span><span data-l="zh">科學家把「我們姑且當作是真的事」稱為<b>假設</b>（assumption）</span></span>
     </div>
@@ -1107,7 +1110,7 @@ function badge(word) { if (!S.badges.includes(word)) { S.badges.push(word); save
 /* notebook entries are saved in English (so older saves still load); these give each its Chinese.
    A value can also be saved as an [English, 中文] pair when it is built from numbers. */
 const ZH_NB = {
-  "Only three things change the medicine: it's released, it breaks down, it seeps out": "只有三件事會改變藥物量：釋放、分解、滲出",
+  "Only three things change the medicine: it's released, it breaks down, and it seeps down to the wound": "只有三件事會改變藥物量：釋放、分解、往下滲進傷口",
   "Colour and shape of the patch don't matter": "貼片的顏色和形狀沒有影響",
   "Change each minute = released − lost": "每分鐘的變化 = 釋放 − 流失",
   "Every layer holds the same amount of medicine": "每一層裝載的藥物量相同",
@@ -1235,7 +1238,7 @@ function initScrollFx() {
 
 /* ---------------- hint dialog + helper code ---------------- */
 const HINTS = {
-  1: "Think about what could make the amount go up or down. Does the colour of a sticker change how much medicine is inside?",
+  1: "Think about what could add medicine, break it down, or move it out of the patch. Does the colour of a sticker change how much medicine is inside?",
   2: "Compare the two numbers: 5 released each minute and 2 lost. Which is bigger? After predicting, run it, then try Lost 5 and Lost 7.",
   3: "Run both rules. Look closely at Rule A's last number. Can a patch really hold less than nothing?",
   4: "Minute 1: old is 20, so new = 20 + 12 − 4 = 28. Minute 2: old is 28, so new = 28 + 12 − 5.6. Use the = button if you get stuck.",
@@ -1246,7 +1249,7 @@ const HINTS = {
   9: "You do not have to write anything. Press Run the code. Then change only the number after pass_frac and press Run again.",
 };
 const HINTS_ZH = {
-  1: "想想有甚麼會令藥物量上升或下降。貼紙的顏色會改變裡面有多少藥物嗎？",
+  1: "想想有甚麼會增加藥物、分解藥物，或把藥物移出貼片。貼紙的顏色會改變裡面有多少藥物嗎？",
   2: "比較這兩個數字：每分鐘釋放 5，流失 2。哪個比較大？預測之後按運行，然後再試試「流失 5」和「流失 7」。",
   3: "兩條規則都運行一次。仔細看規則 A 的最後一個數字。貼片裡的藥物真的可以少過零嗎？",
   4: "第 1 分鐘：舊 = 20，所以新 = 20 + 12 − 4 = 28。第 2 分鐘：舊 = 28，所以新 = 28 + 12 − 5.6。如果卡住了，可以按「= 幫助」。",
@@ -1630,14 +1633,14 @@ Steps[0] = {
 /* ================= STEP 1 · SORT ================= */
 Steps[1] = (() => {
   const CARDS = [
-    { id: "make", t: "The patch releases medicine", zt: "貼片釋放藥物", bin: "add", why: "Releasing medicine adds more of it over time.", zwhy: "釋放藥物會令藥物隨著時間增加。" },
+    { id: "make", t: "The gel gives off medicine", zt: "凝膠釋出藥物", bin: "add", why: "Giving off medicine adds more over time.", zwhy: "釋出藥物會令藥物隨時間增加。" },
     { id: "colour", t: "The colour of the patch", zt: "貼片的顏色", bin: "none", why: "A blue or pink patch holds the same medicine.", zwhy: "藍色或粉紅色的貼片，裝著的藥物一樣多。" },
     { id: "break", t: "The medicine breaks down in the gel", zt: "藥物在凝膠中分解", bin: "remove", why: "Broken-down medicine is gone from the patch.", zwhy: "分解了的藥物就從貼片中消失了。" },
     { id: "shape", t: "The shape of the sticker", zt: "貼紙的形狀", bin: "none", why: "Round or square, the medicine inside doesn't change.", zwhy: "無論是圓形還是方形，裡面的藥物都不會改變。" },
-    { id: "seep", t: "Some seeps out into the wound", zt: "部分藥物滲進傷口", bin: "remove", why: "Medicine that leaves the patch isn't in it any more.", zwhy: "離開了貼片的藥物，就不再在貼片裡了。" },
+    { id: "seep", t: "Medicine seeps down to the wound", zt: "藥物往下滲到傷口", bin: "move", why: "It moves down to the wound — that's the medicine doing its job.", zwhy: "它往下走到傷口——這正是藥物要做的正事。" },
   ];
-  const NAME = { add: "Adds medicine", remove: "Removes medicine", none: "Doesn't matter" };
-  const NAME_ZH = { add: "增加藥物", remove: "減少藥物", none: "沒有影響" };
+  const NAME = { add: "Adds medicine", remove: "Breaks it down", move: "Moves it down", none: "Doesn't matter" };
+  const NAME_ZH = { add: "增加藥物", remove: "分解掉", move: "往下移動", none: "沒有影響" };
   let selected = null, placed = 0;
   const deck = () => $("#deck");
 
@@ -1664,7 +1667,7 @@ Steps[1] = (() => {
     if (placed === CARDS.length && !quiet) finish();
   }
   function finish() {
-    note("Only three things change the medicine: it's released, it breaks down, it seeps out");
+    note("Only three things change the medicine: it's released, it breaks down, and it seeps down to the wound");
     note("Colour and shape of the patch don't matter");
     badge("assumption");
     $("#s1disc").hidden = false;
@@ -2434,10 +2437,11 @@ const QUIZ = {
     q: ["A new card turns up: <b>“Some medicine leaks out of the edge of the patch.”</b> Which box does it go in?", "新卡片出現了：<b>「有些藥物從貼片邊緣漏了出去。」</b>它應該放進哪個格子？"],
     opts: [
       { t: ["Adds medicine", "增加藥物"], fb: ["Leaking takes medicine <i>out</i> of the patch. Does it put any in?", "漏出去是把藥物從貼片<i>帶走</i>。它有加入藥物嗎？"] },
-      { t: ["Removes medicine", "減少藥物"] },
+      { t: ["Breaks it down", "分解掉"], fb: ["It isn't destroyed — it's just leaving the patch. Breaking down means the medicine is gone for good.", "它沒有被破壞——只是離開貼片。分解是指藥物永遠消失。"] },
+      { t: ["Moves it down", "往下移動"] },
       { t: ["Doesn't matter", "沒有影響"], fb: ["It changes how much medicine is inside, so it matters. Colour and shape are the things that don't.", "它改變了貼片內的藥物量，所以是有影響的。顏色和形狀這類東西才沒有影響。"] },
-    ], a: 1,
-    why: ["Anything that takes medicine out of the patch goes in <b>Removes medicine</b>, just like medicine seeping into the wound.", "任何把藥物帶離貼片的東西，都應該放進<b>減少藥物</b>——就像藥物滲進傷口一樣。"]
+    ], a: 2,
+    why: ["Medicine that leaves the patch heads down to the wound, so it goes in <b>Moves it down</b> — like medicine seeping into the wound.", "任何離開貼片的藥物都會往下走向傷口，所以應該放進<b>往下移動</b>——就像藥物滲進傷口一樣。"]
   },
   2: {
     q: ["A patch has <b>30</b> medicine. The patch releases <b>4</b> a minute and <b>6</b> is lost a minute. How much is left after <b>2 minutes</b>?", "貼片裡有 <b>30</b> 份藥物。貼片每分鐘釋放 <b>4</b>，每分鐘流失 <b>6</b>。<b>2 分鐘</b>後還剩多少？"],
